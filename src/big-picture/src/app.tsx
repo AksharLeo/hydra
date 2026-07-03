@@ -14,6 +14,9 @@ import {
 } from "./layout";
 import { IS_DESKTOP } from "./constants";
 import { useNavigation, useUserPreferences } from "./hooks";
+import { ConfirmationModal } from "./components/modals";
+import { useTranslation } from "react-i18next";
+import { getGameExecutableFilters } from "@shared";
 import {
   HorizontalFocusGroup,
   InputModeProvider,
@@ -44,9 +47,24 @@ export default function App() {
   const { nodes, regions, setFocusRegion } = useNavigation();
   const userPreferences = useUserPreferences();
   const inputMode = useInputModeStore((state) => state.mode);
+  const { t } = useTranslation("downloads");
   const [pendingRouteFocusPathname, setPendingRouteFocusPathname] = useState<
     string | null
   >(pathname);
+  const [installerFoundInfo, setInstallerFoundInfo] = useState<{
+    shop: string;
+    objectId: string;
+    exePath: string;
+    folderPath: string;
+  } | null>(null);
+  const [postInstallerInfo, setPostInstallerInfo] = useState<{
+    shop: string;
+    objectId: string;
+    folderPath: string;
+  } | null>(null);
+  const [postInstallerStep, setPostInstallerStep] = useState<
+    "select-exe" | "delete-folder"
+  >("select-exe");
   const activeSidebarItemId = getBigPictureSidebarItemIdFromPathname(pathname);
   const activeGameRoute = getBigPictureGameRouteMatch(pathname);
   const leftSidebarTargetId = activeGameRoute
@@ -63,6 +81,21 @@ export default function App() {
     }
 
     initializeBigPictureRunningGamesStore();
+  }, []);
+
+  useEffect(() => {
+    const unsubInstaller = window.electron.onInstallerFound((info) => {
+      setInstallerFoundInfo(info);
+    });
+    const unsubPost = window.electron.onInstallerClosed((info) => {
+      setInstallerFoundInfo(null);
+      setPostInstallerInfo(info);
+      setPostInstallerStep("select-exe");
+    });
+    return () => {
+      unsubInstaller();
+      unsubPost();
+    };
   }, []);
 
   useEffect(() => {
@@ -102,8 +135,82 @@ export default function App() {
     );
   }, [userPreferences?.bigPictureSoundsEnabled, inputMode]);
 
+  const installerFileName =
+    installerFoundInfo?.exePath.split(/[/\\]/).pop() ?? "";
+
   return (
     <Fragment>
+      <ConfirmationModal
+        visible={installerFoundInfo !== null}
+        title={t("installer_found_title")}
+        description={t("installer_found_description", {
+          fileName: installerFileName,
+        })}
+        confirmLabel={t("installer_found_launch")}
+        onConfirm={() => {
+          if (!installerFoundInfo) return;
+          void window.electron.launchInstallerAndWatch(
+            installerFoundInfo.shop,
+            installerFoundInfo.objectId,
+            installerFoundInfo.exePath,
+            installerFoundInfo.folderPath
+          );
+          setInstallerFoundInfo(null);
+        }}
+        onClose={() => setInstallerFoundInfo(null)}
+      />
+
+      <ConfirmationModal
+        visible={postInstallerInfo !== null && postInstallerStep === "select-exe"}
+        title={t("installer_closed_title")}
+        description={t("installer_closed_description")}
+        confirmLabel={t("installer_select_executable")}
+        onConfirm={async () => {
+          if (!postInstallerInfo) return;
+          const filters = getGameExecutableFilters(window.electron.platform, {
+            executable: t("installer_select_executable"),
+            allFiles: t("all_files", { ns: "game_details" }),
+          });
+          const { filePaths } = await window.electron.showOpenDialog({
+            properties: ["openFile"],
+            filters,
+          });
+          if (filePaths?.[0]) {
+            await window.electron.updateExecutablePath(
+              postInstallerInfo.shop as never,
+              postInstallerInfo.objectId,
+              filePaths[0]
+            );
+          }
+          setPostInstallerStep("delete-folder");
+        }}
+        onClose={() => setPostInstallerInfo(null)}
+      />
+
+      <ConfirmationModal
+        visible={
+          postInstallerInfo !== null && postInstallerStep === "delete-folder"
+        }
+        title={t("installer_delete_folder_title")}
+        description={t("installer_delete_folder_description", {
+          folderPath: postInstallerInfo?.folderPath ?? "",
+        })}
+        confirmLabel={t("yes")}
+        onConfirm={async () => {
+          if (postInstallerInfo?.folderPath) {
+            await window.electron.deleteInstallerFolder(
+              postInstallerInfo.folderPath
+            );
+          }
+          setPostInstallerInfo(null);
+          setPostInstallerStep("select-exe");
+        }}
+        onClose={() => {
+          setPostInstallerInfo(null);
+          setPostInstallerStep("select-exe");
+        }}
+      />
+
       <NavigationStateBridge />
       <NavigationAutoScrollBridge />
       <NavigationHistoryBridge />
