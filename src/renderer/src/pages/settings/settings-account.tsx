@@ -1,4 +1,10 @@
-import { Avatar, Button, CheckboxField, SelectField, TextField } from "@renderer/components";
+import {
+  Avatar,
+  Button,
+  CheckboxField,
+  SelectField,
+  TextField,
+} from "@renderer/components";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDate, useToast, useUserDetails } from "@renderer/hooks";
@@ -25,7 +31,8 @@ export function SettingsAccount() {
 
   const { showSuccessToast } = useToast();
 
-  const { blockedUsers, fetchBlockedUsers, updateUserPreferences } = useContext(settingsContext);
+  const { blockedUsers, fetchBlockedUsers, updateUserPreferences } =
+    useContext(settingsContext);
 
   const { formatDate } = useDate();
 
@@ -45,9 +52,10 @@ export function SettingsAccount() {
     unblockUser,
   } = useUserDetails();
 
-  const userPreferences = useAppSelector((state) => state.userPreferences.value);
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
   const selfHostedUrl = userPreferences?.selfHostedApiUrl;
-  const selfHostedToken = userPreferences?.selfHostedApiToken;
   const isSelfHosted = Boolean(selfHostedUrl);
 
   useEffect(() => {
@@ -191,9 +199,11 @@ export function SettingsAccount() {
         <div className="settings-account__actions">
           <Button
             theme="outline"
-            onClick={() => isSelfHosted
-              ? window.electron.openSelfHostedDashboard()
-              : window.electron.openAuthWindow(AuthPage.UpdateEmail)}
+            onClick={() =>
+              isSelfHosted
+                ? window.electron.openSelfHostedDashboard()
+                : window.electron.openAuthWindow(AuthPage.UpdateEmail)
+            }
           >
             <MailIcon />
             {t("update_email")}
@@ -201,9 +211,11 @@ export function SettingsAccount() {
 
           <Button
             theme="outline"
-            onClick={() => isSelfHosted
-              ? window.electron.openSelfHostedDashboard()
-              : window.electron.openAuthWindow(AuthPage.UpdatePassword)}
+            onClick={() =>
+              isSelfHosted
+                ? window.electron.openSelfHostedDashboard()
+                : window.electron.openAuthWindow(AuthPage.UpdatePassword)
+            }
           >
             <KeyIcon />
             {t("update_password")}
@@ -220,9 +232,11 @@ export function SettingsAccount() {
         <Button
           className="settings-account__subscription-button"
           theme="outline"
-          onClick={() => isSelfHosted
-            ? window.electron.openSelfHostedDashboard()
-            : window.electron.openCheckout()}
+          onClick={() =>
+            isSelfHosted
+              ? window.electron.openSelfHostedDashboard()
+              : window.electron.openCheckout()
+          }
         >
           <CloudIcon />
           {getHydraCloudSectionContent().callToAction}
@@ -234,20 +248,35 @@ export function SettingsAccount() {
         <CheckboxField
           label="Sign out of official account when closing the app"
           checked={Boolean(userPreferences?.signOutOnExit)}
-          onChange={(e) => updateUserPreferences({ signOutOnExit: e.target.checked })}
+          onChange={(e) =>
+            updateUserPreferences({ signOutOnExit: e.target.checked })
+          }
         />
         {isSelfHosted && (
           <>
             <CheckboxField
               label="Sign out of self-hosted account when closing the app"
               checked={Boolean(userPreferences?.selfHostedSignOutOnExit)}
-              onChange={(e) => updateUserPreferences({ selfHostedSignOutOnExit: e.target.checked })}
+              onChange={(e) =>
+                updateUserPreferences({
+                  selfHostedSignOutOnExit: e.target.checked,
+                })
+              }
             />
             <TextField
               label="Self-hosted session duration (days, 0 = never expire)"
               type="number"
-              value={String(userPreferences?.selfHostedSessionDurationDays ?? 30)}
-              onChange={(e) => updateUserPreferences({ selfHostedSessionDurationDays: Math.max(0, parseInt(e.target.value) || 0) })}
+              value={String(
+                userPreferences?.selfHostedSessionDurationDays ?? 30
+              )}
+              onChange={(e) =>
+                updateUserPreferences({
+                  selfHostedSessionDurationDays: Math.max(
+                    0,
+                    parseInt(e.target.value) || 0
+                  ),
+                })
+              }
               style={{ maxWidth: "180px" }}
             />
           </>
