@@ -50,3 +50,21 @@ const deleteArchive = async (
 ) => deleteArchiveFile(filePath);
 
 registerEvent("deleteArchive", deleteArchive);
+
+const deleteInstallerFolder = async (
+  _event: Electron.IpcMainInvokeEvent,
+  folderPath: string
+) => {
+  try {
+    if (fs.existsSync(folderPath)) {
+      await fs.promises.rm(folderPath, { recursive: true, force: true });
+      logger.info(`Deleted installer folder: ${folderPath}`);
+    }
+    return true;
+  } catch (err) {
+    logger.error(`Failed to delete installer folder: ${folderPath}`, err);
+    return false;
+  }
+};
+
+registerEvent("deleteInstallerFolder", deleteInstallerFolder);

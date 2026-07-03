@@ -597,8 +597,11 @@ export class DownloadManager {
       }
     } else {
       const gameFilesManager = new GameFilesManager(game.shop, game.objectId);
-      gameFilesManager.searchAndBindExecutable();
-      void gameFilesManager.autoLinkClassicsDiscs();
+      const installerFound = await gameFilesManager.searchAndPromptInstaller();
+      if (!installerFound) {
+        void gameFilesManager.searchAndBindExecutable();
+        void gameFilesManager.autoLinkClassicsDiscs();
+      }
     }
 
     await this.processNextQueuedDownload();

@@ -254,8 +254,11 @@ export class GameFilesManager {
     this.lastProgressUpdateTime = 0;
     this.lastProgressUpdateValue = 0;
 
-    await this.searchAndBindExecutable();
-    await this.autoLinkClassicsDiscs();
+    const installerFound = await this.searchAndPromptInstaller();
+    if (!installerFound) {
+      await this.searchAndBindExecutable();
+      await this.autoLinkClassicsDiscs();
+    }
   }
 
   async autoLinkClassicsDiscs(): Promise<void> {
@@ -321,6 +324,81 @@ export class GameFilesManager {
         `[GameFilesManager] Error auto-linking classics discs: ${this.objectId}`,
         err
       );
+    }
+  }
+
+  private async findInstallerInFolder(
+    folderPath: string,
+    depth: number
+  ): Promise<string | null> {
+    if (depth > 3) return null;
+
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(folderPath, { withFileTypes: true });
+    } catch {
+      return null;
+    }
+
+    const INSTALLER_NAMES = /^(setup|install|installer)\.exe$/i;
+    const INSTALLER_CONTAINS = /\b(setup|install)\b.*\.exe$/i;
+
+    for (const entry of entries) {
+      if (
+        entry.isFile() &&
+        (INSTALLER_NAMES.test(entry.name) ||
+          INSTALLER_CONTAINS.test(entry.name))
+      ) {
+        return path.join(folderPath, entry.name);
+      }
+    }
+
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        const found = await this.findInstallerInFolder(
+          path.join(folderPath, entry.name),
+          depth + 1
+        );
+        if (found) return found;
+      }
+    }
+
+    return null;
+  }
+
+  async searchAndPromptInstaller(): Promise<boolean> {
+    try {
+      const [download, game] = await Promise.all([
+        downloadsSublevel.get(this.gameKey),
+        gamesSublevel.get(this.gameKey),
+      ]);
+
+      if (!download?.folderName || !game || game.executablePath) return false;
+
+      const folderPath = path.join(download.downloadPath, download.folderName);
+
+      if (!fs.existsSync(folderPath)) return false;
+      if (!fs.statSync(folderPath).isDirectory()) return false;
+
+      const installerPath = await this.findInstallerInFolder(folderPath, 0);
+
+      if (installerPath) {
+        WindowManager.sendToAppWindows("on-installer-found", {
+          shop: this.shop,
+          objectId: this.objectId,
+          exePath: installerPath,
+          folderPath,
+        });
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      logger.error(
+        `[GameFilesManager] Error searching for installer: ${this.objectId}`,
+        err
+      );
+      return false;
     }
   }
 

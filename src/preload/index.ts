@@ -778,6 +778,46 @@ contextBridge.exposeInMainWorld("electron", {
   },
   deleteArchive: (filePath: string) =>
     ipcRenderer.invoke("deleteArchive", filePath),
+  onInstallerFound: (
+    cb: (info: {
+      shop: string;
+      objectId: string;
+      exePath: string;
+      folderPath: string;
+    }) => void
+  ) => {
+    const listener = (_event: Electron.IpcRendererEvent, info: any) =>
+      cb(info);
+    ipcRenderer.on("on-installer-found", listener);
+    return () => ipcRenderer.removeListener("on-installer-found", listener);
+  },
+  onInstallerClosed: (
+    cb: (info: {
+      shop: string;
+      objectId: string;
+      folderPath: string;
+    }) => void
+  ) => {
+    const listener = (_event: Electron.IpcRendererEvent, info: any) =>
+      cb(info);
+    ipcRenderer.on("on-installer-closed", listener);
+    return () => ipcRenderer.removeListener("on-installer-closed", listener);
+  },
+  launchInstallerAndWatch: (
+    shop: string,
+    objectId: string,
+    exePath: string,
+    folderPath: string
+  ) =>
+    ipcRenderer.invoke(
+      "launchInstallerAndWatch",
+      shop,
+      objectId,
+      exePath,
+      folderPath
+    ),
+  deleteInstallerFolder: (folderPath: string) =>
+    ipcRenderer.invoke("deleteInstallerFolder", folderPath),
 
   /* Hardware */
   getDiskFreeSpace: (path: string) =>

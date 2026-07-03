@@ -582,6 +582,28 @@ declare global {
       cb: (archivePaths: string[]) => void
     ) => () => Electron.IpcRenderer;
     deleteArchive: (filePath: string) => Promise<boolean>;
+    onInstallerFound: (
+      cb: (info: {
+        shop: string;
+        objectId: string;
+        exePath: string;
+        folderPath: string;
+      }) => void
+    ) => () => Electron.IpcRenderer;
+    onInstallerClosed: (
+      cb: (info: {
+        shop: string;
+        objectId: string;
+        folderPath: string;
+      }) => void
+    ) => () => Electron.IpcRenderer;
+    launchInstallerAndWatch: (
+      shop: string,
+      objectId: string,
+      exePath: string,
+      folderPath: string
+    ) => Promise<void>;
+    deleteInstallerFolder: (folderPath: string) => Promise<boolean>;
     getDefaultWinePrefixSelectionPath: () => Promise<string | null>;
     createSteamShortcut: (
       shop: GameShop,

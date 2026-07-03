@@ -51,6 +51,8 @@ import "./verify-executable-path";
 import "./delete-steam-shortcut";
 import "./check-steam-shortcut";
 
+import "./launch-installer-and-watch";
+
 //UPDATEDD
 
 import "./transfer-game-files";
