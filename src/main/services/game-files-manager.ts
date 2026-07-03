@@ -327,6 +327,13 @@ export class GameFilesManager {
     }
   }
 
+  private isInstallerExe(name: string): boolean {
+    if (!/\.exe$/i.test(name)) return false;
+    const lower = name.toLowerCase();
+    if (lower.includes("uninstall")) return false;
+    return lower.includes("setup") || lower.includes("install");
+  }
+
   private async findInstallerInFolder(
     folderPath: string,
     depth: number
@@ -340,18 +347,10 @@ export class GameFilesManager {
       return null;
     }
 
-    const INSTALLER_NAMES = /^(setup|install|installer)\.exe$/i;
-    const INSTALLER_CONTAINS = /\b(setup|install)\b.*\.exe$/i;
-
-    for (const entry of entries) {
-      if (
-        entry.isFile() &&
-        (INSTALLER_NAMES.test(entry.name) ||
-          INSTALLER_CONTAINS.test(entry.name))
-      ) {
-        return path.join(folderPath, entry.name);
-      }
-    }
+    const match = entries.find(
+      (e) => e.isFile() && this.isInstallerExe(e.name)
+    );
+    if (match) return path.join(folderPath, match.name);
 
     for (const entry of entries) {
       if (entry.isDirectory()) {
@@ -375,19 +374,35 @@ export class GameFilesManager {
 
       if (!download?.folderName || !game || game.executablePath) return false;
 
-      const folderPath = path.join(download.downloadPath, download.folderName);
+      const itemPath = path.join(download.downloadPath, download.folderName);
 
-      if (!fs.existsSync(folderPath)) return false;
-      if (!fs.statSync(folderPath).isDirectory()) return false;
+      if (!fs.existsSync(itemPath)) return false;
 
-      const installerPath = await this.findInstallerInFolder(folderPath, 0);
+      const stat = fs.statSync(itemPath);
+
+      // Case 1: the downloaded item itself is an installer EXE
+      if (stat.isFile() && this.isInstallerExe(download.folderName)) {
+        const folderPath = download.downloadPath;
+        WindowManager.sendToAppWindows("on-installer-found", {
+          shop: this.shop,
+          objectId: this.objectId,
+          exePath: itemPath,
+          folderPath,
+        });
+        return true;
+      }
+
+      // Case 2: search inside the downloaded folder
+      if (!stat.isDirectory()) return false;
+
+      const installerPath = await this.findInstallerInFolder(itemPath, 0);
 
       if (installerPath) {
         WindowManager.sendToAppWindows("on-installer-found", {
           shop: this.shop,
           objectId: this.objectId,
           exePath: installerPath,
-          folderPath,
+          folderPath: itemPath,
         });
         return true;
       }
