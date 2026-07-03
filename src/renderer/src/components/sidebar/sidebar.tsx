@@ -69,7 +69,10 @@ export function Sidebar() {
   const location = useLocation();
 
   const sortedLibrary = useMemo(() => {
-    return sortBy(library, [(game) => (game.isPinned ? 0 : 1), (game) => game.title]);
+    return sortBy(library, [
+      (game) => (game.isPinned ? 0 : 1),
+      (game) => game.title,
+    ]);
   }, [library]);
 
   const { hasActiveSubscription } = useUserDetails();
@@ -92,7 +95,12 @@ export function Sidebar() {
       filteredLibrary.filter(
         (game) =>
           (!showPlayableOnly || isGamePlayable(game)) &&
-          (!hideSteamGames || !(game.shop === "steam" && !game.download))
+          (!hideSteamGames ||
+            !(
+              game.shop === "steam" &&
+              !game.download &&
+              !game.executablePath
+            ))
       ),
     [filteredLibrary, showPlayableOnly, hideSteamGames]
   );

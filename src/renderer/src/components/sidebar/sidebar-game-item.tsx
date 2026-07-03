@@ -48,7 +48,8 @@ export function SidebarGameItem({
     ? game.libraryImageUrl || game.iconUrl
     : game.customIconUrl || game.iconUrl;
 
-  const isSteamSynced = game.shop === "steam" && !game.download;
+  const isSteamSynced =
+    game.shop === "steam" && !game.download && !game.executablePath;
   const isPirated = Boolean(game.download);
 
   const getFallbackIcon = () => {

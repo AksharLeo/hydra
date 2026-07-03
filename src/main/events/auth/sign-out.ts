@@ -29,12 +29,12 @@ const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
         key: levelKeys.user,
       },
     ])
-    .then(() => {
+    .then(async () => {
       gamesPlaytime.clear();
 
-      if (isSelfHostedActive) return Promise.resolve();
+      if (isSelfHostedActive) return;
 
-      return Promise.all([
+      await Promise.all([
         gamesSublevel.clear(),
         downloadsSublevel.clear(),
         downloadLayoutStateSublevel.clear(),
@@ -57,4 +57,3 @@ const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
 };
 
 registerEvent("signOut", signOut);
-
