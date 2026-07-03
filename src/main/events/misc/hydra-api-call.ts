@@ -51,7 +51,7 @@ async function fetchHltbDirect(shop: string, objectId: string): Promise<HowLongT
     [hpKey]: hpVal,
     searchType: "games", searchTerms: name.split(" "), searchPage: 1, size: 1,
     searchOptions: {
-      games: { userId: 0, platform: "", sortCategory: "popular", rangeCategory: "main", rangeTime: { min: 0, max: 0 }, gameplay: { perspective: "", flow: "", genre: "" }, modifier: "" },
+      games: { userId: 0, platform: "", sortCategory: "popular", rangeCategory: "main", rangeTime: { min: 0, max: 0 }, gameplay: { perspective: "", flow: "", genre: "", difficulty: "" }, modifier: "" },
       filter: "", sort: 0, randomizer: 0,
     },
   }, {
