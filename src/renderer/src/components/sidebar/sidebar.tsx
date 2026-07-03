@@ -23,6 +23,8 @@ import { useFormat } from "@renderer/hooks/use-format";
 import {
   ChevronRightIcon,
   CommentDiscussionIcon,
+  FileDirectoryIcon,
+  HeartFillIcon,
   PlayIcon,
   PlusIcon,
   VideoIcon,
@@ -34,6 +36,15 @@ import { sortBy } from "lodash-es";
 import { SidebarAddingCustomGameModal } from "./sidebar-adding-custom-game-modal";
 import { SidebarGameItem } from "./sidebar-game-item";
 import { SidebarProfile } from "./sidebar-profile";
+import { useGameCollections } from "@renderer/hooks/use-game-collections";
+
+const FAVORITES_COLLECTION_ID = "__favorites__";
+
+const getGameCollectionIds = (game: LibraryGame): string[] => {
+  if (Array.isArray(game.collectionIds)) return game.collectionIds;
+  const legacy = (game as { collectionId?: string | null }).collectionId;
+  return legacy ? [legacy] : [];
+};
 
 const SIDEBAR_MIN_WIDTH = 200;
 const SIDEBAR_INITIAL_WIDTH = 250;
@@ -83,6 +94,11 @@ export function Sidebar() {
 
   const [showPlayableOnly, setShowPlayableOnly] = useState(false);
   const [hideSteamGames, setHideSteamGames] = useState(false);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<
+    string | null
+  >(null);
+
+  const { collections, hasLoaded, loadCollections } = useGameCollections();
   const [isGamesCollapsed, setIsGamesCollapsed] = useState(false);
   const [showAddGameModal, setShowAddGameModal] = useState(false);
   const [isGameListScrolled, setIsGameListScrolled] = useState(false);
@@ -100,9 +116,13 @@ export function Sidebar() {
               game.shop === "steam" &&
               !game.download &&
               !game.executablePath
-            ))
+            )) &&
+          (!selectedCollectionId ||
+            (selectedCollectionId === FAVORITES_COLLECTION_ID
+              ? Boolean(game.favorite)
+              : getGameCollectionIds(game).includes(selectedCollectionId)))
       ),
-    [filteredLibrary, showPlayableOnly, hideSteamGames]
+    [filteredLibrary, showPlayableOnly, hideSteamGames, selectedCollectionId]
   );
 
   const virtualizer = useVirtualizer({
@@ -195,6 +215,10 @@ export function Sidebar() {
   useEffect(() => {
     loadDeckyPluginInfo();
   }, []);
+
+  useEffect(() => {
+    if (!hasLoaded) loadCollections();
+  }, [hasLoaded, loadCollections]);
 
   const sidebarRef = useRef<HTMLElement>(null);
 
@@ -457,6 +481,48 @@ export function Sidebar() {
                   onChange={handleFilter}
                   theme="dark"
                 />
+
+                {collections.length > 0 && (
+                  <div className="sidebar__collections">
+                    <button
+                      type="button"
+                      className={cn("sidebar__collection-tab", {
+                        "sidebar__collection-tab--active":
+                          selectedCollectionId === FAVORITES_COLLECTION_ID,
+                      })}
+                      onClick={() =>
+                        setSelectedCollectionId(
+                          selectedCollectionId === FAVORITES_COLLECTION_ID
+                            ? null
+                            : FAVORITES_COLLECTION_ID
+                        )
+                      }
+                    >
+                      <HeartFillIcon size={10} />
+                      <span>{t("favorites")}</span>
+                    </button>
+                    {collections.map((collection) => (
+                      <button
+                        key={collection.id}
+                        type="button"
+                        className={cn("sidebar__collection-tab", {
+                          "sidebar__collection-tab--active":
+                            selectedCollectionId === collection.id,
+                        })}
+                        onClick={() =>
+                          setSelectedCollectionId(
+                            selectedCollectionId === collection.id
+                              ? null
+                              : collection.id
+                          )
+                        }
+                      >
+                        <FileDirectoryIcon size={10} />
+                        <span>{collection.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div
                   className={`sidebar__game-list${isGameListScrolled ? " sidebar__game-list--scrolled" : ""}`}
