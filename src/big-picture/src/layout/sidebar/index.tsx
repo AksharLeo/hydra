@@ -10,6 +10,7 @@ import {
   SignOutIcon,
   SquaresFourIcon,
   StarIcon,
+  UserCircleIcon,
 } from "@phosphor-icons/react";
 import { AuthPage } from "@shared";
 import {
@@ -38,6 +39,7 @@ import {
   useNavigationActions,
   useSearch,
   useUserDetails,
+  useUserPreferences,
   useBigPictureToast,
 } from "../../hooks";
 import {
@@ -84,6 +86,9 @@ import {
 import { ConfirmationModal, DownloadGameModal } from "../../components/modals";
 import { SidebarNotificationsDropdown } from "./notifications-dropdown";
 import "./styles.scss";
+
+const BIG_PICTURE_SIDEBAR_OFFICIAL_PROFILE_ID =
+  "big-picture-sidebar-official-profile";
 
 type SidebarLibraryFilter =
   | "all"
@@ -712,6 +717,13 @@ function SidebarProfile({
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { userDetails } = useUserDetails();
+  const userPreferences = useUserPreferences();
+  const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
+  const [officialProfile, setOfficialProfile] = useState<{
+    id: string;
+    displayName: string;
+    profileImageUrl: string | null;
+  } | null>(null);
   const notificationsButtonRef = useRef<HTMLButtonElement>(null);
   const [notificationCount, setNotificationCount] = useState(0);
   const contentEntryTarget =
@@ -734,6 +746,7 @@ function SidebarProfile({
   const closeNotifications = useCallback(() => {
     onNotificationsOpenChange(false);
   }, [onNotificationsOpenChange]);
+
   const handleProfileClick = useCallback(() => {
     if (!userDetails?.id) {
       void globalThis.window.electron.openAuthWindow(AuthPage.SignIn);
@@ -744,10 +757,54 @@ function SidebarProfile({
     navigate(`${basePath}/profile/${userDetails.id}`);
   }, [navigate, userDetails?.id]);
 
+  const handleOfficialProfileClick = useCallback(() => {
+    if (officialProfile) {
+      const basePath = IS_DESKTOP ? "/big-picture" : "";
+      navigate(`${basePath}/profile/${officialProfile.id}`);
+    } else {
+      void globalThis.window.electron.signInOfficial();
+    }
+  }, [navigate, officialProfile]);
+
+  useEffect(() => {
+    if (!isSelfHosted) return;
+
+    const fetchOfficialProfile = () => {
+      globalThis.window.electron
+        .getOfficialProfile()
+        .then(setOfficialProfile)
+        .catch(() => {});
+    };
+
+    fetchOfficialProfile();
+
+    const unsubSignIn = globalThis.window.electron.onOfficialSignIn(() => {
+      fetchOfficialProfile();
+    });
+
+    return () => {
+      unsubSignIn();
+    };
+  }, [isSelfHosted]);
+
   const profileFocusNavigationOverrides: FocusOverrides = {
     up: {
       type: "block",
     },
+    ...(isSelfHosted
+      ? {
+          right: getItemFocusTarget(BIG_PICTURE_SIDEBAR_OFFICIAL_PROFILE_ID),
+        }
+      : notificationsFocusable
+        ? {
+            right: getItemFocusTarget(BIG_PICTURE_SIDEBAR_NOTIFICATIONS_ID),
+          }
+        : {}),
+    down: getItemFocusTarget(BIG_PICTURE_SIDEBAR_ITEM_IDS.home),
+  };
+  const officialProfileFocusNavigationOverrides: FocusOverrides = {
+    up: { type: "block" },
+    left: getItemFocusTarget(BIG_PICTURE_SIDEBAR_PROFILE_ID),
     ...(notificationsFocusable
       ? {
           right: getItemFocusTarget(BIG_PICTURE_SIDEBAR_NOTIFICATIONS_ID),
@@ -759,7 +816,11 @@ function SidebarProfile({
     up: {
       type: "block",
     },
-    left: getItemFocusTarget(BIG_PICTURE_SIDEBAR_PROFILE_ID),
+    left: getItemFocusTarget(
+      isSelfHosted
+        ? BIG_PICTURE_SIDEBAR_OFFICIAL_PROFILE_ID
+        : BIG_PICTURE_SIDEBAR_PROFILE_ID
+    ),
     right: contentEntryTarget,
     down: getItemFocusTarget(BIG_PICTURE_SIDEBAR_ITEM_IDS.home),
   };
@@ -774,7 +835,7 @@ function SidebarProfile({
           friendCode={userDetails?.id ?? "Not signed in"}
           profileFocusId={BIG_PICTURE_SIDEBAR_PROFILE_ID}
           notificationsFocusId={BIG_PICTURE_SIDEBAR_NOTIFICATIONS_ID}
-          notificationsFocusable={notificationsFocusable}
+          notificationsFocusable={notificationsFocusable && !isSelfHosted}
           profileFocusNavigationOverrides={profileFocusNavigationOverrides}
           notificationsFocusNavigationOverrides={
             notificationsFocusNavigationOverrides
@@ -784,6 +845,40 @@ function SidebarProfile({
           onProfileClick={handleProfileClick}
           onNotificationsClick={toggleNotifications}
         />
+
+        {isSelfHosted && (
+          <div className="sidebar-profile__official-avatar">
+            <FocusItem
+              id={BIG_PICTURE_SIDEBAR_OFFICIAL_PROFILE_ID}
+              navigationOverrides={officialProfileFocusNavigationOverrides}
+              focusable={true}
+              actions={{ primary: handleOfficialProfileClick }}
+              asChild
+            >
+              <button
+                type="button"
+                title={
+                  officialProfile
+                    ? officialProfile.displayName
+                    : "Sign in to Hydra Cloud"
+                }
+                className="sidebar-profile__official-btn"
+                onClick={handleOfficialProfileClick}
+              >
+                {officialProfile?.profileImageUrl ? (
+                  <img
+                    src={officialProfile.profileImageUrl}
+                    alt={officialProfile.displayName}
+                    className="sidebar-profile__official-img"
+                    draggable={false}
+                  />
+                ) : (
+                  <UserCircleIcon size={28} weight="fill" />
+                )}
+              </button>
+            </FocusItem>
+          </div>
+        )}
       </div>
 
       <SidebarNotificationsDropdown

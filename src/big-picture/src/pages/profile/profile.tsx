@@ -56,7 +56,7 @@ import {
   getGameLandscapeImageSource,
 } from "../../helpers";
 import { useHeroBackgroundLayers } from "../../components/pages/library/hero/use-hero-background-layers";
-import { useLibrary, useUserDetails } from "../../hooks";
+import { useLibrary, useUserDetails, useUserPreferences } from "../../hooks";
 import { BIG_PICTURE_SIDEBAR_PROFILE_ID } from "../../layout";
 import type { FocusOverrides } from "../../services";
 import {
@@ -518,6 +518,8 @@ export default function Profile() {
     blockUser,
   } = useUserDetails();
   const { library } = useLibrary();
+  const userPreferences = useUserPreferences();
+  const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
   const [externalProfile, setExternalProfile] = useState<UserProfile | null>(
     null
   );
@@ -779,23 +781,43 @@ export default function Profile() {
     let isMounted = true;
 
     const fetchRecentAchievementGroups = async () => {
-      const searchParams = new URLSearchParams({
-        take: String(PROFILE_RECENT_ACHIEVEMENT_LIBRARY_TAKE),
-        skip: "0",
-        sortBy: "achievementCount",
-      });
+      let gamesWithAchievements: UserGame[];
 
-      searchParams.append("shop", "steam");
-      searchParams.append("shop", "launchbox");
+      if (isOwnProfileTarget && isSelfHosted) {
+        gamesWithAchievements = [...library]
+          .filter(
+            (game) =>
+              (game.unlockedAchievementCount ?? 0) > 0 &&
+              (game.shop === "steam" || game.shop === "launchbox")
+          )
+          .sort(
+            (a, b) =>
+              (b.unlockedAchievementCount ?? 0) -
+              (a.unlockedAchievementCount ?? 0)
+          )
+          .slice(
+            0,
+            PROFILE_RECENT_ACHIEVEMENT_LIBRARY_TAKE
+          ) as unknown as UserGame[];
+      } else {
+        const searchParams = new URLSearchParams({
+          take: String(PROFILE_RECENT_ACHIEVEMENT_LIBRARY_TAKE),
+          skip: "0",
+          sortBy: "achievementCount",
+        });
 
-      const response =
-        await globalThis.window.electron.hydraApi.get<UserLibraryResponse>(
-          `/users/${targetUserId}/library?${searchParams.toString()}`
+        searchParams.append("shop", "steam");
+        searchParams.append("shop", "launchbox");
+
+        const response =
+          await globalThis.window.electron.hydraApi.get<UserLibraryResponse>(
+            `/users/${targetUserId}/library?${searchParams.toString()}`
+          );
+
+        gamesWithAchievements = response.library.filter(
+          (game) => (game.unlockedAchievementCount ?? 0) > 0
         );
-
-      const gamesWithAchievements = response.library.filter(
-        (game) => (game.unlockedAchievementCount ?? 0) > 0
-      );
+      }
 
       if (gamesWithAchievements.length === 0) {
         return [];
@@ -874,6 +896,8 @@ export default function Profile() {
   }, [
     achievementRefreshKey,
     isOwnProfileTarget,
+    isSelfHosted,
+    library,
     targetHasActiveSubscription,
     targetUserId,
   ]);
@@ -957,6 +981,30 @@ export default function Profile() {
         )[0] ?? null
     );
   }, [isOwnProfileTarget, library]);
+  const localUserStats = useMemo<UserStats | null>(() => {
+    if (!isOwnProfileTarget) return null;
+
+    const totalPlayTimeInSeconds = library.reduce(
+      (sum, game) => sum + (game.playTimeInMilliseconds ?? 0) / 1000,
+      0
+    );
+
+    return {
+      libraryCount: library.length,
+      friendsCount: 0,
+      totalPlayTimeInSeconds: {
+        value: totalPlayTimeInSeconds,
+        topPercentile: 0,
+      },
+      unlockedAchievementSum: library.reduce(
+        (sum, game) => sum + (game.unlockedAchievementCount ?? 0),
+        0
+      ),
+    };
+  }, [isOwnProfileTarget, library]);
+
+  const effectiveUserStats = userStats ?? localUserStats;
+
   const remoteFavoriteGameFallback = useMemo<UserGame | null>(() => {
     return (
       [...remoteLibraryGames]
@@ -1010,10 +1058,11 @@ export default function Profile() {
   }, [library, profileUser?.isOwnProfile, remoteLibraryGames]);
   const totalLibraryGames = profileUser?.isOwnProfile
     ? library.length
-    : (userStats?.libraryCount ?? remoteLibraryTotalCount);
+    : (effectiveUserStats?.libraryCount ?? remoteLibraryTotalCount);
   const profileHasActiveSubscription = targetHasActiveSubscription;
   const canViewRecentAchievements =
-    Boolean(profileUser) && profileHasActiveSubscription;
+    Boolean(profileUser) &&
+    (profileHasActiveSubscription || (isSelfHosted && isOwnProfileTarget));
   const canFocusRecentAchievements =
     canViewRecentAchievements && Boolean(profileUser?.isOwnProfile);
   const firstActivityFocusId = recentActivityGames[0]
@@ -1344,7 +1393,9 @@ export default function Profile() {
                     <div className="profile-page__stat-value">
                       <ClockIcon size={36} />
                       <span>
-                        {formatHours(userStats?.totalPlayTimeInSeconds.value)}
+                        {formatHours(
+                          effectiveUserStats?.totalPlayTimeInSeconds.value
+                        )}
                       </span>
                     </div>
 
@@ -1381,7 +1432,9 @@ export default function Profile() {
                       <div className="profile-page__stat-value">
                         <GameController size={36} />
                         <span>
-                          {formatCompactNumber(userStats?.libraryCount)}
+                          {formatCompactNumber(
+                            effectiveUserStats?.libraryCount
+                          )}
                         </span>
                       </div>
                     </div>
@@ -1392,7 +1445,7 @@ export default function Profile() {
                     <div className="profile-page__stat-main">
                       <div className="profile-page__stat-value">
                         <ClockIcon size={36} />
-                        <span>{formatAveragePlaytime(userStats)}</span>
+                        <span>{formatAveragePlaytime(effectiveUserStats)}</span>
                       </div>
                     </div>
                     <div className="profile-page__stat-label">
@@ -1439,7 +1492,7 @@ export default function Profile() {
                         <TrophyIcon size={36} />
                         <span>
                           {formatCompactNumber(
-                            userStats?.unlockedAchievementSum
+                            effectiveUserStats?.unlockedAchievementSum
                           )}
                         </span>
                       </div>
@@ -1458,7 +1511,8 @@ export default function Profile() {
                         />
                         <span>
                           {formatCompactNumber(
-                            userStats?.achievementsPointsEarnedSum?.value
+                            effectiveUserStats?.achievementsPointsEarnedSum
+                              ?.value
                           )}
                         </span>
                       </div>
@@ -1608,7 +1662,9 @@ export default function Profile() {
                     <div className="profile-page__section-header">
                       <h2>Recent Achievements</h2>
                       <span>
-                        {formatCompactNumber(userStats?.unlockedAchievementSum)}
+                        {formatCompactNumber(
+                          effectiveUserStats?.unlockedAchievementSum
+                        )}
                       </span>
                     </div>
 
