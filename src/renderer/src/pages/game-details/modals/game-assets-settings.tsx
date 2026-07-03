@@ -101,7 +101,9 @@ export function GameAssetsSettings({
   >(null);
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType>("icon");
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
-  const [sgdbResults, setSgdbResults] = useState<{ id: number; url: string; thumb: string }[]>([]);
+  const [sgdbResults, setSgdbResults] = useState<
+    { id: number; url: string; thumb: string }[]
+  >([]);
   const [sgdbQuery, setSgdbQuery] = useState("");
   const [sgdbLoading, setSgdbLoading] = useState(false);
   const [sgdbOpen, setSgdbOpen] = useState(false);
@@ -570,7 +572,11 @@ export function GameAssetsSettings({
     setSgdbLoading(true);
     try {
       const steamAppId = game.shop === "steam" ? game.objectId : null;
-      const results = await window.electron.searchSteamGridDb(query, assetType, steamAppId);
+      const results = await window.electron.searchSteamGridDb(
+        query,
+        assetType,
+        steamAppId
+      );
       setSgdbResults(results);
     } finally {
       setSgdbLoading(false);
@@ -585,10 +591,18 @@ export function GameAssetsSettings({
       const buffer = await res.arrayBuffer();
       const ext = url.split("?")[0].split(".").pop() ?? "png";
       const fileName = `sgdb-${assetType}-${Date.now()}.${ext}`;
-      const tempPath = await window.electron.saveTempFile(fileName, new Uint8Array(buffer));
-      const copiedUrl = await window.electron.copyCustomGameAsset(tempPath, assetType);
+      const tempPath = await window.electron.saveTempFile(
+        fileName,
+        new Uint8Array(buffer)
+      );
+      const copiedUrl = await window.electron.copyCustomGameAsset(
+        tempPath,
+        assetType
+      );
       updateAssetPaths(assetType, copiedUrl.replace("local:", ""), tempPath);
-      setPendingUpdateMessage(`${capitalizeAssetType(assetType)} updated successfully!`);
+      setPendingUpdateMessage(
+        `${capitalizeAssetType(assetType)} updated successfully!`
+      );
       await window.electron.deleteTempFile?.(tempPath);
     } catch {
       showErrorToast(t("edit_game_modal_failed"));
@@ -748,7 +762,8 @@ export function GameAssetsSettings({
                 value={sgdbQuery}
                 onChange={(e) => setSgdbQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") searchSgdb(sgdbQuery, sgdbSearchedAssetRef.current);
+                  if (e.key === "Enter")
+                    searchSgdb(sgdbQuery, sgdbSearchedAssetRef.current);
                 }}
                 placeholder={t("edit_game_modal_sgdb_search")}
                 theme="dark"
@@ -757,7 +772,9 @@ export function GameAssetsSettings({
             <Button
               type="button"
               theme="outline"
-              onClick={() => searchSgdb(sgdbQuery, sgdbSearchedAssetRef.current)}
+              onClick={() =>
+                searchSgdb(sgdbQuery, sgdbSearchedAssetRef.current)
+              }
               disabled={sgdbLoading}
             >
               <SearchIcon />

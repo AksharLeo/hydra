@@ -255,8 +255,12 @@ export function UserProfileContextProvider({
           const enriched = await Promise.all(
             userProfile.recentGames.map(async (game) => {
               if (game.iconUrl) return game;
-              const assets = await window.electron.getGameAssets(game.objectId, game.shop).catch(() => null);
-              return assets?.iconUrl ? { ...game, iconUrl: assets.iconUrl } : game;
+              const assets = await window.electron
+                .getGameAssets(game.objectId, game.shop)
+                .catch(() => null);
+              return assets?.iconUrl
+                ? { ...game, iconUrl: assets.iconUrl }
+                : game;
             })
           );
           userProfile = { ...userProfile, recentGames: enriched };

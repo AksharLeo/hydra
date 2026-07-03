@@ -20,7 +20,11 @@ export const selfHostedSignIn = async (
   );
   await db.put<string, UserPreferences>(
     levelKeys.userPreferences,
-    { ...prefs, selfHostedUserToken: userToken, selfHostedTokenIssuedAt: Date.now() },
+    {
+      ...prefs,
+      selfHostedUserToken: userToken,
+      selfHostedTokenIssuedAt: Date.now(),
+    },
     { valueEncoding: "json" }
   );
 

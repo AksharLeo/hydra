@@ -161,7 +161,9 @@ export default function App() {
       />
 
       <ConfirmationModal
-        visible={postInstallerInfo !== null && postInstallerStep === "select-exe"}
+        visible={
+          postInstallerInfo !== null && postInstallerStep === "select-exe"
+        }
         title={t("installer_closed_title")}
         description={t("installer_closed_description")}
         confirmLabel={t("installer_select_executable")}

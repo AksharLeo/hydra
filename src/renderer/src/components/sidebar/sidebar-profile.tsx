@@ -267,7 +267,10 @@ export function SidebarProfile() {
     closeDropdown();
     try {
       if (isSelfHosted && userPreferences?.selfHostedUserToken) {
-        await window.electron.updateUserPreferences({ selfHostedUserToken: null, selfHostedTokenIssuedAt: undefined });
+        await window.electron.updateUserPreferences({
+          selfHostedUserToken: null,
+          selfHostedTokenIssuedAt: undefined,
+        });
       }
       await signOut();
       showSuccessToast(t("user_profile:successfully_signed_out"));

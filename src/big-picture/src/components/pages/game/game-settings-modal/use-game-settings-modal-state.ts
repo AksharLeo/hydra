@@ -413,7 +413,10 @@ export function useGameSettingsModalState({
         new Uint8Array(buffer)
       );
       const copiedAssetUrl =
-        await globalThis.window.electron.copyCustomGameAsset(tempPath, assetType);
+        await globalThis.window.electron.copyCustomGameAsset(
+          tempPath,
+          assetType
+        );
       await updateCustomizationAsset(assetType, copiedAssetUrl);
       await refreshGameDetails();
       await globalThis.window.electron.deleteTempFile?.(tempPath);

@@ -593,7 +593,10 @@ export class WindowManager {
     this.bindAuthNavigation(authWindow.webContents, () => authWindow.close());
   }
 
-  public static openSelfHostedDashboard(baseUrl: string, userToken?: string | null) {
+  public static openSelfHostedDashboard(
+    baseUrl: string,
+    userToken?: string | null
+  ) {
     const parentWindow = this.mainWindow;
     if (!parentWindow || parentWindow.isDestroyed()) return;
 
@@ -610,7 +613,10 @@ export class WindowManager {
 
     if (userToken) {
       const { net } = require("electron");
-      const req = net.request({ method: "POST", url: `${baseUrl}/web/auto-login` });
+      const req = net.request({
+        method: "POST",
+        url: `${baseUrl}/web/auto-login`,
+      });
       req.setHeader("Content-Type", "application/json");
       req.on("response", (res: any) => {
         // read response to completion so cookie is set, then load dashboard
@@ -1160,7 +1166,10 @@ export class WindowManager {
     }
   }
 
-  public static openSelfHostedAuthWindow(selfHostedUrl?: string, apiToken?: string) {
+  public static openSelfHostedAuthWindow(
+    selfHostedUrl?: string,
+    apiToken?: string
+  ) {
     const parentWindow = this.mainWindow;
     if (!parentWindow || parentWindow.isDestroyed()) return;
 
@@ -1188,7 +1197,10 @@ export class WindowManager {
       if (apiToken) {
         // POST token to set gate cookie without exposing it in URL
         const { net } = require("electron");
-        const req = net.request({ method: "POST", url: `${selfHostedUrl}/web/launcher-gate` });
+        const req = net.request({
+          method: "POST",
+          url: `${selfHostedUrl}/web/launcher-gate`,
+        });
         req.setHeader("Content-Type", "application/json");
         req.on("response", () => loadLogin());
         req.on("error", () => loadLogin());
@@ -1211,7 +1223,9 @@ export class WindowManager {
     const handleToken = (_e: any, url: string) => {
       if (!url.startsWith("hydra-self-hosted://token/")) return;
       const token = url.replace("hydra-self-hosted://token/", "");
-      import("@main/events/auth/self-hosted-sign-in").then((m) => m.selfHostedSignIn(null, token)).catch(() => {});
+      import("@main/events/auth/self-hosted-sign-in")
+        .then((m) => m.selfHostedSignIn(null, token))
+        .catch(() => {});
       win.close();
     };
     win.webContents.on("will-navigate", handleToken);

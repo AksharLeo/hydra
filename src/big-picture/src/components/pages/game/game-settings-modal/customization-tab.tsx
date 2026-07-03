@@ -9,6 +9,7 @@ import {
   FileExplorerModal,
   FocusItem,
   GridFocusGroup,
+  HorizontalFocusGroup,
   Input,
   Tabs,
   type TabsItem,
@@ -187,7 +188,7 @@ function SgdbPickerModal({
       closeOnEscape
     >
       <div className="sgdb-picker">
-        <div className="sgdb-picker__search-row">
+        <HorizontalFocusGroup className="sgdb-picker__search-row">
           <Input
             id="sgdb-search"
             className="sgdb-picker__search-input"
@@ -221,7 +222,7 @@ function SgdbPickerModal({
           >
             {t("sgdb_search_button")}
           </Button>
-        </div>
+        </HorizontalFocusGroup>
 
         {loading && <p className="sgdb-picker__status">{t("sgdb_loading")}</p>}
 
@@ -244,7 +245,12 @@ function SgdbPickerModal({
                   {applying === item.id && (
                     <div className="sgdb-picker__item-overlay" aria-hidden />
                   )}
-                  <img src={item.thumb} alt="" loading="lazy" draggable={false} />
+                  <img
+                    src={item.thumb}
+                    alt=""
+                    loading="lazy"
+                    draggable={false}
+                  />
                 </button>
               </FocusItem>
             ))}

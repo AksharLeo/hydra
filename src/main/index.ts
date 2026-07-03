@@ -311,14 +311,29 @@ app.on("before-quit", async (e) => {
     await clearGamesPlaytime();
 
     // Sign out if configured
-    const prefs = await db.get<string, UserPreferences>(levelKeys.userPreferences, { valueEncoding: "json" }).catch(() => null);
+    const prefs = await db
+      .get<
+        string,
+        UserPreferences
+      >(levelKeys.userPreferences, { valueEncoding: "json" })
+      .catch(() => null);
     if (prefs?.signOutOnExit) {
       const { HydraApi } = await import("./services/hydra-api");
       HydraApi.handleSignOut();
-      await db.batch([{ type: "del", key: levelKeys.auth }, { type: "del", key: levelKeys.user }]).catch(() => {});
+      await db
+        .batch([
+          { type: "del", key: levelKeys.auth },
+          { type: "del", key: levelKeys.user },
+        ])
+        .catch(() => {});
     }
     if (prefs?.selfHostedSignOutOnExit && prefs.selfHostedApiUrl) {
-      await db.put<string, UserPreferences>(levelKeys.userPreferences, { ...prefs, selfHostedUserToken: null, selfHostedTokenIssuedAt: undefined }, { valueEncoding: "json" }).catch(() => {});
+      await db
+        .put<
+          string,
+          UserPreferences
+        >(levelKeys.userPreferences, { ...prefs, selfHostedUserToken: null, selfHostedTokenIssuedAt: undefined }, { valueEncoding: "json" })
+        .catch(() => {});
     }
 
     canAppBeClosed = true;

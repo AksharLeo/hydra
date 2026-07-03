@@ -114,17 +114,32 @@ export function SettingsSelfHosted() {
             {t("self_hosted_change_password")}
           </Button>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              marginTop: "8px",
+            }}
+          >
             <CheckboxField
               label={t("self_hosted_use_steam_catalogue")}
               checked={Boolean(userPreferences?.useSelfHostedCatalogue)}
-              onChange={(e) => updateUserPreferences({ useSelfHostedCatalogue: e.target.checked })}
+              onChange={(e) =>
+                updateUserPreferences({
+                  useSelfHostedCatalogue: e.target.checked,
+                })
+              }
             />
 
             <CheckboxField
               label={t("self_hosted_use_reviews")}
               checked={Boolean(userPreferences?.useSelfHostedReviews)}
-              onChange={(e) => updateUserPreferences({ useSelfHostedReviews: e.target.checked })}
+              onChange={(e) =>
+                updateUserPreferences({
+                  useSelfHostedReviews: e.target.checked,
+                })
+              }
             />
           </div>
 
@@ -134,7 +149,9 @@ export function SettingsSelfHosted() {
             onClick={handleImport}
             style={{ marginTop: "16px" }}
           >
-            {importing ? t("self_hosted_importing") : t("self_hosted_import_hydra_cloud")}
+            {importing
+              ? t("self_hosted_importing")
+              : t("self_hosted_import_hydra_cloud")}
           </Button>
         </>
       )}

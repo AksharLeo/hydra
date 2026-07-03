@@ -6,7 +6,9 @@ import { settingsContext } from "@renderer/context";
 import { LinkExternalIcon } from "@primer/octicons-react";
 
 export function SettingsSteamGridDb() {
-  const userPreferences = useAppSelector((state) => state.userPreferences.value);
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
   const { updateUserPreferences } = useContext(settingsContext);
   const { showSuccessToast, showErrorToast } = useToast();
   const { t } = useTranslation("settings");
@@ -32,7 +34,14 @@ export function SettingsSteamGridDb() {
 
   return (
     <div>
-      <p style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+      <p
+        style={{
+          marginBottom: 8,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+        }}
+      >
         {t("steamgriddb_description")}
         <a
           href="https://www.steamgriddb.com/profile/preferences/api"

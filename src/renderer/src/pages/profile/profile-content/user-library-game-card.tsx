@@ -187,7 +187,10 @@ export function UserLibraryGameCard({
                 {formatPlayTime((game.playTimeInMilliseconds ?? 0) / 1000)}
               </span>
               <span className="user-library-game__playtime-short">
-                {formatPlayTime((game.playTimeInMilliseconds ?? 0) / 1000, true)}
+                {formatPlayTime(
+                  (game.playTimeInMilliseconds ?? 0) / 1000,
+                  true
+                )}
               </span>
             </div>
 

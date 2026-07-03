@@ -454,13 +454,18 @@ export function AccountPrivacySettingsSection({
             <Button
               variant="secondary"
               focusId="account-update-email"
-              focusNavigationOverrides={{ up: { type: "block" }, down: { type: "item", itemId: "account-update-password" } }}
+              focusNavigationOverrides={{
+                up: { type: "block" },
+                down: { type: "item", itemId: "account-update-password" },
+              }}
               onClick={() => {
                 const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
                 if (isSelfHosted) {
                   globalThis.window.electron.openSelfHostedDashboard();
                 } else {
-                  (globalThis.window.electron as any).openAuthWindow("update-email");
+                  (globalThis.window.electron as any).openAuthWindow(
+                    "update-email"
+                  );
                 }
               }}
             >
@@ -469,13 +474,18 @@ export function AccountPrivacySettingsSection({
             <Button
               variant="secondary"
               focusId="account-update-password"
-              focusNavigationOverrides={{ up: { type: "item", itemId: "account-update-email" }, down: { type: "item", itemId: "account-sign-out-exit" } }}
+              focusNavigationOverrides={{
+                up: { type: "item", itemId: "account-update-email" },
+                down: { type: "item", itemId: "account-sign-out-exit" },
+              }}
               onClick={() => {
                 const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
                 if (isSelfHosted) {
                   globalThis.window.electron.openSelfHostedDashboard();
                 } else {
-                  (globalThis.window.electron as any).openAuthWindow("update-password");
+                  (globalThis.window.electron as any).openAuthWindow(
+                    "update-password"
+                  );
                 }
               }}
             >
@@ -495,9 +505,18 @@ export function AccountPrivacySettingsSection({
             label="Sign out of official account when closing the app"
             checked={Boolean(userPreferences?.signOutOnExit)}
             focusId="account-sign-out-exit"
-            navigationOverrides={{ up: { type: "item", itemId: "account-update-password" }, down: Boolean(userPreferences?.selfHostedApiUrl) ? { type: "item", itemId: "account-self-sign-out-exit" } : { type: "block" } }}
+            navigationOverrides={{
+              up: { type: "item", itemId: "account-update-password" },
+              down: userPreferences?.selfHostedApiUrl
+                ? { type: "item", itemId: "account-self-sign-out-exit" }
+                : { type: "block" },
+            }}
             block
-            onChange={(v) => globalThis.window.electron.updateUserPreferences({ signOutOnExit: v })}
+            onChange={(v) =>
+              globalThis.window.electron.updateUserPreferences({
+                signOutOnExit: v,
+              })
+            }
           />
           {Boolean(userPreferences?.selfHostedApiUrl) && (
             <Checkbox
@@ -505,9 +524,16 @@ export function AccountPrivacySettingsSection({
               label="Sign out of self-hosted account when closing the app"
               checked={Boolean(userPreferences?.selfHostedSignOutOnExit)}
               focusId="account-self-sign-out-exit"
-              navigationOverrides={{ up: { type: "item", itemId: "account-sign-out-exit" }, down: { type: "block" } }}
+              navigationOverrides={{
+                up: { type: "item", itemId: "account-sign-out-exit" },
+                down: { type: "block" },
+              }}
               block
-              onChange={(v) => globalThis.window.electron.updateUserPreferences({ selfHostedSignOutOnExit: v })}
+              onChange={(v) =>
+                globalThis.window.electron.updateUserPreferences({
+                  selfHostedSignOutOnExit: v,
+                })
+              }
             />
           )}
         </div>

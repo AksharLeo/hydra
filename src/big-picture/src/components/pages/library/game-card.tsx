@@ -1,6 +1,10 @@
 import type { LibraryGame } from "@types";
 import { DotsThreeVerticalIcon } from "@phosphor-icons/react";
-import type { CSSProperties, MouseEvent as ReactMouseEvent, RefObject } from "react";
+import type {
+  CSSProperties,
+  MouseEvent as ReactMouseEvent,
+  RefObject,
+} from "react";
 import {
   FocusItem,
   HorizontalLibraryGameCard,
@@ -37,7 +41,11 @@ function GameSourceBadge({ type }: { type: "steam" | "hydra" }) {
   };
   return (
     <div style={style}>
-      {type === "steam" ? <SteamLogo width={12} height={12} /> : <HydraIcon width={12} height={12} />}
+      {type === "steam" ? (
+        <SteamLogo width={12} height={12} />
+      ) : (
+        <HydraIcon width={12} height={12} />
+      )}
     </div>
   );
 }

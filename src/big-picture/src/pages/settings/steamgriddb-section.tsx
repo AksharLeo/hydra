@@ -26,7 +26,9 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
     await globalThis.window.electron.updateUserPreferences({
       steamGridDbApiKey: apiKey.trim() || null,
     });
-    showSuccessToast("SteamGridDB API key saved", { fallbackVisual: "settings" });
+    showSuccessToast("SteamGridDB API key saved", {
+      fallbackVisual: "settings",
+    });
   };
 
   const inputNav = useMemo<FocusOverrides>(

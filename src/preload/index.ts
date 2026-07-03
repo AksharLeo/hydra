@@ -809,20 +809,14 @@ contextBridge.exposeInMainWorld("electron", {
       folderPath: string;
     }) => void
   ) => {
-    const listener = (_event: Electron.IpcRendererEvent, info: any) =>
-      cb(info);
+    const listener = (_event: Electron.IpcRendererEvent, info: any) => cb(info);
     ipcRenderer.on("on-installer-found", listener);
     return () => ipcRenderer.removeListener("on-installer-found", listener);
   },
   onInstallerClosed: (
-    cb: (info: {
-      shop: string;
-      objectId: string;
-      folderPath: string;
-    }) => void
+    cb: (info: { shop: string; objectId: string; folderPath: string }) => void
   ) => {
-    const listener = (_event: Electron.IpcRendererEvent, info: any) =>
-      cb(info);
+    const listener = (_event: Electron.IpcRendererEvent, info: any) => cb(info);
     ipcRenderer.on("on-installer-closed", listener);
     return () => ipcRenderer.removeListener("on-installer-closed", listener);
   },
@@ -1147,9 +1141,11 @@ contextBridge.exposeInMainWorld("electron", {
   /* Auth */
   getAuth: () => ipcRenderer.invoke("getAuth"),
   signOut: () => ipcRenderer.invoke("signOut"),
-  selfHostedSignIn: (userToken: string) => ipcRenderer.invoke("selfHostedSignIn", userToken),
+  selfHostedSignIn: (userToken: string) =>
+    ipcRenderer.invoke("selfHostedSignIn", userToken),
   openSelfHostedDashboard: () => ipcRenderer.invoke("openSelfHostedDashboard"),
-  importFromHydraCloud: (officialToken: string) => ipcRenderer.invoke("importFromHydraCloud", officialToken),
+  importFromHydraCloud: (officialToken: string) =>
+    ipcRenderer.invoke("importFromHydraCloud", officialToken),
   openHydraCloudImport: () => ipcRenderer.invoke("openHydraCloudImport"),
   getOfficialProfile: () => ipcRenderer.invoke("getOfficialProfile"),
   signInOfficial: () => ipcRenderer.invoke("signInOfficial"),

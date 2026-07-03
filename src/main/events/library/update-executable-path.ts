@@ -33,7 +33,9 @@ const updateExecutablePath = async (
       executablePath === null ? false : game.automaticCloudSync,
   });
 
-  HydraApi.put(`/profile/games/${shop}/${objectId}`, { executablePath }).catch(() => {});
+  HydraApi.put(`/profile/games/${shop}/${objectId}`, { executablePath }).catch(
+    () => {}
+  );
 
   // Calculate size in background and update later
   if (parsedPath) {

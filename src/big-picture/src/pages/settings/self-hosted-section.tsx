@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Button,
-  Checkbox,
-  Input,
-  VerticalFocusGroup,
-} from "../../components";
+import { Button, Checkbox, Input, VerticalFocusGroup } from "../../components";
 import { useBigPictureToast, useUserPreferences } from "../../hooks";
 import { SettingsSection } from "./settings-section";
 import type { FocusOverrideTarget, FocusOverrides } from "../../services";
@@ -40,7 +35,11 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
 
   useEffect(() => {
     if (!userPreferences) return;
-    setEnabled(Boolean(userPreferences.selfHostedApiUrl && userPreferences.selfHostedApiToken));
+    setEnabled(
+      Boolean(
+        userPreferences.selfHostedApiUrl && userPreferences.selfHostedApiToken
+      )
+    );
     setForm({
       url: userPreferences.selfHostedApiUrl ?? "",
       token: userPreferences.selfHostedApiToken ?? "",
@@ -83,8 +82,13 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
   const handleImport = async () => {
     setImporting(true);
     try {
-      const result = await (globalThis.window.electron as any).openHydraCloudImport();
-      showSuccessToast(`Imported ${result.imported} games, ${result.achievements} achievements`, opts);
+      const result = await (
+        globalThis.window.electron as any
+      ).openHydraCloudImport();
+      showSuccessToast(
+        `Imported ${result.imported} games, ${result.achievements} achievements`,
+        opts
+      );
     } catch (err: any) {
       if (err?.message !== "cancelled") showErrorToast("Import failed", opts);
     } finally {
@@ -96,14 +100,21 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
     globalThis.window.electron.updateUserPreferences({ [key]: value });
 
   // nav helpers
-  const nav = (up: string | FocusOverrideTarget, down: string | FocusOverrideTarget, extra?: Partial<FocusOverrides>): FocusOverrides => ({
+  const nav = (
+    up: string | FocusOverrideTarget,
+    down: string | FocusOverrideTarget,
+    extra?: Partial<FocusOverrides>
+  ): FocusOverrides => ({
     up: typeof up === "string" ? { type: "item", itemId: up } : up,
     down: typeof down === "string" ? { type: "item", itemId: down } : down,
     ...extra,
   });
 
   const checkboxNav = useMemo<FocusOverrides>(
-    () => ({ up: upTarget, down: enabled ? { type: "item", itemId: F.URL } : downTarget }),
+    () => ({
+      up: upTarget,
+      down: enabled ? { type: "item", itemId: F.URL } : downTarget,
+    }),
     [upTarget, downTarget, enabled]
   );
 
@@ -174,9 +185,13 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
               placeholder="API_TOKEN from .env"
               value={form.token}
               focusId={F.TOKEN}
-              focusNavigationOverrides={nav(F.URL, F.DASHBOARD, { right: { type: "item", itemId: F.SAVE } })}
+              focusNavigationOverrides={nav(F.URL, F.DASHBOARD, {
+                right: { type: "item", itemId: F.SAVE },
+              })}
               autoComplete="off"
-              onChange={(e) => setForm((p) => ({ ...p, token: e.target.value }))}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, token: e.target.value }))
+              }
             />
             <Button
               type="button"
@@ -184,7 +199,9 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
               loading={isLoading}
               disabled={!form.url || !form.token || isLoading}
               focusId={F.SAVE}
-              focusNavigationOverrides={nav(F.CHECKBOX, F.DASHBOARD, { left: { type: "item", itemId: F.TOKEN } })}
+              focusNavigationOverrides={nav(F.CHECKBOX, F.DASHBOARD, {
+                left: { type: "item", itemId: F.TOKEN },
+              })}
               onClick={handleSave}
             >
               Save
@@ -197,7 +214,9 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
               variant="tertiary"
               focusId={F.DASHBOARD}
               focusNavigationOverrides={nav(F.TOKEN, F.IMPORT)}
-              onClick={() => globalThis.window.electron.openSelfHostedDashboard()}
+              onClick={() =>
+                globalThis.window.electron.openSelfHostedDashboard()
+              }
             >
               Open Dashboard
             </Button>
@@ -207,7 +226,9 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
               variant="tertiary"
               loading={importing}
               focusId={F.IMPORT}
-              focusNavigationOverrides={nav(F.TOKEN, F.CATALOGUE, { left: { type: "item", itemId: F.DASHBOARD } })}
+              focusNavigationOverrides={nav(F.TOKEN, F.CATALOGUE, {
+                left: { type: "item", itemId: F.DASHBOARD },
+              })}
               onClick={handleImport}
             >
               Import from Hydra Cloud
@@ -262,7 +283,10 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
             focusId={F.SESSION}
             focusNavigationOverrides={lastOptionalNav}
             onChange={(e) =>
-              pref("selfHostedSessionDurationDays", Math.max(0, parseInt(e.target.value) || 0))
+              pref(
+                "selfHostedSessionDurationDays",
+                Math.max(0, parseInt(e.target.value) || 0)
+              )
             }
           />
         </div>
