@@ -11,12 +11,14 @@ import { getUserData } from "./user/get-user-data";
 import { db } from "@main/level";
 import { levelKeys } from "@main/level/sublevels";
 import type { Auth, User } from "@types";
-import { WSClient } from "./ws";
+import { SSEClient } from "./sse";
 
 export interface HydraApiOptions {
   needsAuth?: boolean;
   needsSubscription?: boolean;
   ifModifiedSince?: Date;
+  ifNoneMatch?: string;
+  validateStatus?: (status: number) => boolean;
 }
 
 interface HydraApiUserAuth {
@@ -274,8 +276,8 @@ export class HydraApi {
         await clearGamesRemoteIds();
         void uploadGamesBatch();
 
-        WSClient.close();
-        WSClient.connect();
+      SSEClient.close();
+      SSEClient.connect();
 
         const { syncDownloadSourcesFromApi } = await import("./user");
         syncDownloadSourcesFromApi();
@@ -533,6 +535,7 @@ export class HydraApi {
         },
       ]);
 
+      SSEClient.close();
       this.sendSignOutEvent();
     }
 
@@ -570,11 +573,45 @@ export class HydraApi {
     const headers = {
       ...this.getAxiosConfig(url).headers,
       "Hydra-If-Modified-Since": options?.ifModifiedSince?.toUTCString(),
+      "If-None-Match": options?.ifNoneMatch,
     };
 
     return this.getInstanceForUrl(url)
-      .get<T>(url, { params, ...this.getAxiosConfig(url), headers })
+      .get<T>(url, {
+        params,
+        ...this.getAxiosConfig(url),
+        headers,
+        validateStatus: options?.validateStatus,
+      })
       .then((response) => response.data)
+      .catch(this.handleUnauthorizedError);
+  }
+
+  static async getResponse<T = any>(
+    url: string,
+    params?: any,
+    options?: HydraApiOptions
+  ) {
+    await this.validateOptions(options);
+
+    const headers = {
+      ...this.getAxiosConfig().headers,
+      "Hydra-If-Modified-Since": options?.ifModifiedSince?.toUTCString(),
+      "If-None-Match": options?.ifNoneMatch,
+    };
+
+    return this.instance
+      .get<T>(url, {
+        params,
+        ...this.getAxiosConfig(),
+        headers,
+        validateStatus: options?.validateStatus,
+      })
+      .then((response) => ({
+        status: response.status,
+        data: response.data,
+        headers: response.headers,
+      }))
       .catch(this.handleUnauthorizedError);
   }
 

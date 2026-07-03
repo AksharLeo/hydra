@@ -6,11 +6,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Button,
+  FileExplorerModal,
   FocusItem,
   GridFocusGroup,
   Input,
   Tabs,
   type TabsItem,
+  type FileFilter,
   VerticalFocusGroup,
 } from "../../../common";
 import { Modal } from "../../../common/modal";
@@ -40,9 +42,13 @@ export interface GameCustomizationSettingsProps {
   game: LibraryGame;
   gameTitle: string;
   updatingGameTitle: boolean;
+  assetPickerFilters: FileFilter[];
   onChangeGameTitle: (event: ChangeEvent<HTMLInputElement>) => void;
   onBlurGameTitle: () => Promise<void>;
-  onSelectAsset: (assetType: AssetTab) => Promise<void>;
+  onProcessAssetPath: (
+    sourcePath: string,
+    assetType: AssetTab
+  ) => Promise<void>;
   onSelectAssetFromSgdb: (assetType: AssetTab, url: string) => Promise<void>;
   onClearAsset: (assetType: AssetTab) => Promise<void>;
 }
@@ -57,16 +63,23 @@ function getAssetPreviewState(game: LibraryGame): AssetPreviewState {
     },
     logo: {
       src: preferredAssets.logoSrc,
-      hasCustom: isCustom ? Boolean(game.logoImageUrl) : Boolean(game.customLogoImageUrl),
+      hasCustom: isCustom
+        ? Boolean(game.logoImageUrl)
+        : Boolean(game.customLogoImageUrl),
     },
     hero: {
       src: preferredAssets.heroSrc,
-      hasCustom: isCustom ? Boolean(game.libraryHeroImageUrl) : Boolean(game.customHeroImageUrl),
+      hasCustom: isCustom
+        ? Boolean(game.libraryHeroImageUrl)
+        : Boolean(game.customHeroImageUrl),
     },
   };
 }
 
-function getFallbackPreviewState(game: LibraryGame, assetType: AssetTab): AssetPreviewState[AssetTab] {
+function getFallbackPreviewState(
+  game: LibraryGame,
+  assetType: AssetTab
+): AssetPreviewState[AssetTab] {
   const isCustom = game.shop === "custom";
   const keyMap: Record<AssetTab, string> = {
     icon: isCustom ? "iconUrl" : "customIconUrl",
@@ -76,7 +89,12 @@ function getFallbackPreviewState(game: LibraryGame, assetType: AssetTab): AssetP
   const nextGame = { ...game, [keyMap[assetType]]: null };
   const assets = resolvePreferredGameAssets(nextGame, null);
   return {
-    src: assetType === "icon" ? assets.iconSrc : assetType === "logo" ? assets.logoSrc : assets.heroSrc,
+    src:
+      assetType === "icon"
+        ? assets.iconSrc
+        : assetType === "logo"
+          ? assets.logoSrc
+          : assets.heroSrc,
     hasCustom: false,
   };
 }
@@ -89,32 +107,47 @@ interface SgdbPickerModalProps {
   onSelect: (url: string) => Promise<void>;
 }
 
-function SgdbPickerModal({ visible, game, assetType, onClose, onSelect }: Readonly<SgdbPickerModalProps>) {
+function SgdbPickerModal({
+  visible,
+  game,
+  assetType,
+  onClose,
+  onSelect,
+}: Readonly<SgdbPickerModalProps>) {
   const { t } = useTranslation("big_picture");
   const { showErrorToast } = useBigPictureToast();
   const [query, setQuery] = useState(game.title);
-  const [results, setResults] = useState<{ id: number; url: string; thumb: string }[]>([]);
+  const [results, setResults] = useState<
+    { id: number; url: string; thumb: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [applying, setApplying] = useState<number | null>(null);
   const hasSearched = useRef(false);
 
-  const doSearch = useCallback(async (q: string) => {
-    if (!q.trim()) return;
-    setLoading(true);
-    setResults([]);
-    try {
-      const steamAppId = game.shop === "steam" ? game.objectId : null;
-      const res = await globalThis.window.electron.searchSteamGridDb(q.trim(), assetType, steamAppId);
-      setResults(res);
-      if (res.length === 0) {
+  const doSearch = useCallback(
+    async (q: string) => {
+      if (!q.trim()) return;
+      setLoading(true);
+      setResults([]);
+      try {
+        const steamAppId = game.shop === "steam" ? game.objectId : null;
+        const res = await globalThis.window.electron.searchSteamGridDb(
+          q.trim(),
+          assetType,
+          steamAppId
+        );
+        setResults(res);
+        if (res.length === 0) {
+          showErrorToast(t("sgdb_no_results"), { fallbackVisual: "settings" });
+        }
+      } catch {
         showErrorToast(t("sgdb_no_results"), { fallbackVisual: "settings" });
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      showErrorToast(t("sgdb_no_results"), { fallbackVisual: "settings" });
-    } finally {
-      setLoading(false);
-    }
-  }, [assetType, game, showErrorToast, t]);
+    },
+    [assetType, game, showErrorToast, t]
+  );
 
   useEffect(() => {
     if (visible && !hasSearched.current) {
@@ -128,17 +161,20 @@ function SgdbPickerModal({ visible, game, assetType, onClose, onSelect }: Readon
     }
   }, [visible, doSearch, game.title]);
 
-  const handleSelect = useCallback(async (item: { id: number; url: string; thumb: string }) => {
-    setApplying(item.id);
-    try {
-      await onSelect(item.url);
-      onClose();
-    } catch {
-      showErrorToast(t("sgdb_no_results"), { fallbackVisual: "settings" });
-    } finally {
-      setApplying(null);
-    }
-  }, [onClose, onSelect, showErrorToast, t]);
+  const handleSelect = useCallback(
+    async (item: { id: number; url: string; thumb: string }) => {
+      setApplying(item.id);
+      try {
+        await onSelect(item.url);
+        onClose();
+      } catch {
+        showErrorToast(t("sgdb_no_results"), { fallbackVisual: "settings" });
+      } finally {
+        setApplying(null);
+      }
+    },
+    [onClose, onSelect, showErrorToast, t]
+  );
 
   return (
     <Modal
@@ -160,7 +196,9 @@ function SgdbPickerModal({ visible, game, assetType, onClose, onSelect }: Readon
             focusId={SGDB_SEARCH_INPUT_ID}
             focusNavigationOverrides={{
               right: { type: "item", itemId: SGDB_SEARCH_BTN_ID },
-              down: results.length ? { type: "item", itemId: `sgdb-item-0` } : { type: "block" },
+              down: results.length
+                ? { type: "item", itemId: `sgdb-item-0` }
+                : { type: "block" },
             }}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -174,7 +212,9 @@ function SgdbPickerModal({ visible, game, assetType, onClose, onSelect }: Readon
             focusId={SGDB_SEARCH_BTN_ID}
             focusNavigationOverrides={{
               left: { type: "item", itemId: SGDB_SEARCH_INPUT_ID },
-              down: results.length ? { type: "item", itemId: `sgdb-item-0` } : { type: "block" },
+              down: results.length
+                ? { type: "item", itemId: `sgdb-item-0` }
+                : { type: "block" },
             }}
             icon={<SearchIcon size={16} />}
             onClick={() => void doSearch(query)}
@@ -183,9 +223,7 @@ function SgdbPickerModal({ visible, game, assetType, onClose, onSelect }: Readon
           </Button>
         </div>
 
-        {loading && (
-          <p className="sgdb-picker__status">{t("sgdb_loading")}</p>
-        )}
+        {loading && <p className="sgdb-picker__status">{t("sgdb_loading")}</p>}
 
         {!loading && results.length > 0 && (
           <GridFocusGroup className="sgdb-picker__grid">
@@ -206,12 +244,7 @@ function SgdbPickerModal({ visible, game, assetType, onClose, onSelect }: Readon
                   {applying === item.id && (
                     <div className="sgdb-picker__item-overlay" aria-hidden />
                   )}
-                  <img
-                    src={item.thumb}
-                    alt=""
-                    loading="lazy"
-                    draggable={false}
-                  />
+                  <img src={item.thumb} alt="" loading="lazy" draggable={false} />
                 </button>
               </FocusItem>
             ))}
@@ -230,9 +263,10 @@ export function GameCustomizationSettingsTab({
   game,
   gameTitle,
   updatingGameTitle,
+  assetPickerFilters,
   onChangeGameTitle,
   onBlurGameTitle,
-  onSelectAsset,
+  onProcessAssetPath,
   onSelectAssetFromSgdb,
   onClearAsset,
 }: Readonly<GameCustomizationSettingsProps>) {
@@ -243,6 +277,7 @@ export function GameCustomizationSettingsTab({
     () => getAssetPreviewState(game)
   );
   const [pendingAssetTab, setPendingAssetTab] = useState<AssetTab | null>(null);
+  const [assetPickerOpen, setAssetPickerOpen] = useState(false);
   const [sgdbPickerOpen, setSgdbPickerOpen] = useState(false);
 
   const assetTabItems = useMemo(
@@ -264,6 +299,23 @@ export function GameCustomizationSettingsTab({
   const hasCustomAsset = assetPreviewState[selectedAssetTab].hasCustom;
   const assetImageSource = assetPreviewState[selectedAssetTab].src;
 
+  const handleAssetPicked = useCallback(
+    (path: string) => {
+      setAssetPickerOpen(false);
+      setPendingAssetTab(selectedAssetTab);
+
+      void onProcessAssetPath(path, selectedAssetTab).finally(() => {
+        setPendingAssetTab(null);
+      });
+    },
+    [onProcessAssetPath, selectedAssetTab]
+  );
+
+  const handleAssetPickerClose = useCallback(() => {
+    setAssetPickerOpen(false);
+    setPendingAssetTab(null);
+  }, []);
+
   const handleAssetPreviewAction = useCallback(() => {
     if (pendingAssetTab) return;
     if (hasCustomAsset) {
@@ -277,108 +329,145 @@ export function GameCustomizationSettingsTab({
       });
       return;
     }
-    setPendingAssetTab(selectedAssetTab);
-    void onSelectAsset(selectedAssetTab).finally(() => {
-      setPendingAssetTab((cur) => (cur === selectedAssetTab ? null : cur));
-    });
-  }, [game, hasCustomAsset, onClearAsset, onSelectAsset, pendingAssetTab, selectedAssetTab]);
+
+    setAssetPickerOpen(true);
+  }, [game, hasCustomAsset, onClearAsset, pendingAssetTab, selectedAssetTab]);
 
   useEffect(() => {
     setAssetPreviewState(getAssetPreviewState(game));
     setPendingAssetTab(null);
   }, [game]);
 
-  const handleSgdbSelect = useCallback(async (url: string) => {
-    await onSelectAssetFromSgdb(selectedAssetTab, url);
-  }, [onSelectAssetFromSgdb, selectedAssetTab]);
+  const handleSgdbSelect = useCallback(
+    async (url: string) => {
+      await onSelectAssetFromSgdb(selectedAssetTab, url);
+    },
+    [onSelectAssetFromSgdb, selectedAssetTab]
+  );
 
   return (
-    <VerticalFocusGroup className="game-customization-settings-tab">
-      <SettingsSection
-        className="game-customization-settings-tab__section"
-        title={t("edit_game_modal_section_title")}
-        description={t("edit_game_modal_section_title_description")}
-      >
-        <div className="game-customization-settings-tab__section-content">
-          <Input
-            focusId={GAME_CUSTOMIZATION_SETTINGS_PRIMARY_CONTROL_ID}
-            placeholder={t("edit_game_modal_enter_title")}
-            value={gameTitle}
-            disabled={updatingGameTitle}
-            onChange={onChangeGameTitle}
-            onBlur={() => { void onBlurGameTitle(); }}
-          />
-        </div>
-      </SettingsSection>
+    <>
+      <VerticalFocusGroup className="game-customization-settings-tab">
+        <SettingsSection
+          className="game-customization-settings-tab__section"
+          title={t("edit_game_modal_section_title")}
+          description={t("edit_game_modal_section_title_description")}
+        >
+          <div className="game-customization-settings-tab__section-content">
+            <Input
+              focusId={GAME_CUSTOMIZATION_SETTINGS_PRIMARY_CONTROL_ID}
+              placeholder={t("edit_game_modal_enter_title")}
+              value={gameTitle}
+              disabled={updatingGameTitle}
+              onChange={onChangeGameTitle}
+              onBlur={() => {
+                void onBlurGameTitle();
+              }}
+            />
+          </div>
+        </SettingsSection>
 
-      <SettingsSection
-        className="game-customization-settings-tab__section game-customization-settings-tab__section--assets"
-        title={t("edit_game_modal_assets")}
-        description={t("edit_game_modal_section_assets_description")}
-      >
-        <div className="game-customization-settings-tab__section-content game-customization-settings-tab__section-content--assets">
-          <Tabs
-            items={assetTabItems}
-            value={selectedAssetTab}
-            defaultValue="icon"
-            onValueChange={handleAssetTabChange}
-            itemsFocusable={false}
-            animateSegmentedIndicator={hasAssetTabsInteracted}
-            variant="segmented"
-            ariaLabel={t("edit_game_modal_assets")}
-            className="game-customization-settings-tab__asset-tabs"
-          />
+        <SettingsSection
+          className="game-customization-settings-tab__section game-customization-settings-tab__section--assets"
+          title={t("edit_game_modal_assets")}
+          description={t("edit_game_modal_section_assets_description")}
+        >
+          <div className="game-customization-settings-tab__section-content game-customization-settings-tab__section-content--assets">
+            <Tabs
+              items={assetTabItems}
+              value={selectedAssetTab}
+              defaultValue="icon"
+              onValueChange={handleAssetTabChange}
+              itemsFocusable={false}
+              animateSegmentedIndicator={hasAssetTabsInteracted}
+              variant="segmented"
+              ariaLabel={t("edit_game_modal_assets")}
+              className="game-customization-settings-tab__asset-tabs"
+            />
 
-          <div className="game-customization-settings-tab__asset-preview">
+            <div className="game-customization-settings-tab__asset-preview">
+              <FocusItem
+                id={GAME_CUSTOMIZATION_SETTINGS_ASSET_PREVIEW_ID}
+                asChild
+                actions={{
+                  primary: handleAssetPreviewAction,
+                }}
+              >
+                <button
+                  type="button"
+                  className="game-customization-settings-tab__asset-preview-frame"
+                  onClick={handleAssetPreviewAction}
+                  style={{
+                    width: assetFrameSize.width,
+                    height: assetFrameSize.height,
+                  }}
+                  aria-label={
+                    hasCustomAsset
+                      ? t("edit_game_modal_remove_asset")
+                      : t("edit_game_modal_assets")
+                  }
+                >
+                  {assetImageSource ? (
+                    <img
+                      className="game-customization-settings-tab__asset-preview-image"
+                      src={assetImageSource}
+                      alt={gameTitle}
+                      draggable={false}
+                    />
+                  ) : null}
+
+                  <span
+                    className={`game-customization-settings-tab__asset-preview-overlay${
+                      hasCustomAsset
+                        ? " game-customization-settings-tab__asset-preview-overlay--danger"
+                        : ""
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <span
+                      className={`game-customization-settings-tab__asset-preview-overlay-icon${
+                        hasCustomAsset
+                          ? " game-customization-settings-tab__asset-preview-overlay-icon--danger"
+                          : ""
+                      }`}
+                    >
+                      {hasCustomAsset ? (
+                        <Trash size={20} />
+                      ) : (
+                        <PencilIcon size={22} />
+                      )}
+                    </span>
+                  </span>
+                </button>
+              </FocusItem>
+            </div>
+
             <FocusItem
-              id={GAME_CUSTOMIZATION_SETTINGS_ASSET_PREVIEW_ID}
+              id="sgdb-open-btn"
               asChild
-              actions={{ primary: handleAssetPreviewAction }}
+              actions={{ primary: () => setSgdbPickerOpen(true) }}
             >
               <button
                 type="button"
-                className="game-customization-settings-tab__asset-preview-frame"
-                onClick={handleAssetPreviewAction}
-                style={{ width: assetFrameSize.width, height: assetFrameSize.height }}
-                aria-label={hasCustomAsset ? t("edit_game_modal_remove_asset") : t("edit_game_modal_assets")}
+                className="game-customization-settings-tab__sgdb-btn"
+                onClick={() => setSgdbPickerOpen(true)}
+                disabled={Boolean(pendingAssetTab)}
               >
-                {assetImageSource ? (
-                  <img
-                    className="game-customization-settings-tab__asset-preview-image"
-                    src={assetImageSource}
-                    alt={gameTitle}
-                    draggable={false}
-                  />
-                ) : null}
-                <span
-                  className={`game-customization-settings-tab__asset-preview-overlay${hasCustomAsset ? " game-customization-settings-tab__asset-preview-overlay--danger" : ""}`}
-                  aria-hidden="true"
-                >
-                  <span className={`game-customization-settings-tab__asset-preview-overlay-icon${hasCustomAsset ? " game-customization-settings-tab__asset-preview-overlay-icon--danger" : ""}`}>
-                    {hasCustomAsset ? <Trash size={20} /> : <PencilIcon size={22} />}
-                  </span>
-                </span>
+                <SearchIcon size={14} />
+                {t("sgdb_browse_button")}
               </button>
             </FocusItem>
           </div>
+        </SettingsSection>
+      </VerticalFocusGroup>
 
-          <FocusItem
-            id="sgdb-open-btn"
-            asChild
-            actions={{ primary: () => setSgdbPickerOpen(true) }}
-          >
-            <button
-              type="button"
-              className="game-customization-settings-tab__sgdb-btn"
-              onClick={() => setSgdbPickerOpen(true)}
-              disabled={Boolean(pendingAssetTab)}
-            >
-              <SearchIcon size={14} />
-              {t("sgdb_browse_button")}
-            </button>
-          </FocusItem>
-        </div>
-      </SettingsSection>
+      <FileExplorerModal
+        visible={assetPickerOpen}
+        onClose={handleAssetPickerClose}
+        onSelect={handleAssetPicked}
+        title={t("edit_game_modal_assets")}
+        filters={assetPickerFilters}
+      />
 
       <SgdbPickerModal
         visible={sgdbPickerOpen}
@@ -387,6 +476,6 @@ export function GameCustomizationSettingsTab({
         onClose={() => setSgdbPickerOpen(false)}
         onSelect={handleSgdbSelect}
       />
-    </VerticalFocusGroup>
+    </>
   );
 }

@@ -230,6 +230,7 @@ export function App() {
           "install-duckstation": 6441,
           "install-pcsx2": 6192,
           "install-rpcs3": 6510,
+          "retroachievements-emulators": 6629,
         },
         en: {
           "cannot-write-directory": 4122,
@@ -239,16 +240,19 @@ export function App() {
           "install-duckstation": 6465,
           "install-pcsx2": 6390,
           "install-rpcs3": 6524,
+          "retroachievements-emulators": 6692,
         },
         ru: {
           "install-duckstation": 6479,
           "install-pcsx2": 6429,
           "install-rpcs3": 6541,
+          "retroachievements-emulators": 6717,
         },
         es: {
           "install-duckstation": 6492,
           "install-pcsx2": 6410,
           "install-rpcs3": 6552,
+          "retroachievements-emulators": 6743,
         },
       };
 

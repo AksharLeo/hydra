@@ -95,6 +95,12 @@ const updateUserPreferences = async (
     );
   }
 
+  if (Object.hasOwn(preferences, "torrentNetworkInterface")) {
+    await DownloadManager.applyNetworkInterface(
+      preferences.torrentNetworkInterface ?? null
+    );
+  }
+
   if (
     Object.hasOwn(preferences, "selfHostedApiUrl") ||
     Object.hasOwn(preferences, "selfHostedApiToken") ||
