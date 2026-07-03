@@ -154,6 +154,11 @@ declare global {
       shop: GameShop,
       options?: { forceFresh?: boolean }
     ) => Promise<ShopAssets | null>;
+    searchSteamGridDb: (
+      query: string,
+      assetType: "icon" | "logo" | "hero",
+      steamAppId?: string | null
+    ) => Promise<{ id: number; url: string; thumb: string }[]>;
     onUpdateAchievements: (
       objectId: string,
       shop: GameShop,
@@ -617,11 +622,7 @@ declare global {
       }) => void
     ) => () => Electron.IpcRenderer;
     onInstallerClosed: (
-      cb: (info: {
-        shop: string;
-        objectId: string;
-        folderPath: string;
-      }) => void
+      cb: (info: { shop: string; objectId: string; folderPath: string }) => void
     ) => () => Electron.IpcRenderer;
     launchInstallerAndWatch: (
       shop: string,
@@ -804,8 +805,13 @@ declare global {
     signOut: () => Promise<void>;
     selfHostedSignIn: (userToken: string) => Promise<void>;
     openSelfHostedDashboard: () => Promise<void>;
-    importFromHydraCloud: (officialToken: string) => Promise<{ imported: number; achievements: number }>;
-    openHydraCloudImport: () => Promise<{ imported: number; achievements: number }>;
+    importFromHydraCloud: (
+      officialToken: string
+    ) => Promise<{ imported: number; achievements: number }>;
+    openHydraCloudImport: () => Promise<{
+      imported: number;
+      achievements: number;
+    }>;
     getOfficialProfile: () => Promise<any>;
     signInOfficial: () => Promise<void>;
     onOfficialSignIn: (cb: () => void) => () => void;
