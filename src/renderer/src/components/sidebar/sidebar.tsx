@@ -28,6 +28,7 @@ import {
   VideoIcon,
 } from "@primer/octicons-react";
 import deckyIcon from "@renderer/assets/icons/decky.png";
+import SteamLogo from "@renderer/assets/steam-logo.svg?react";
 import cn from "classnames";
 import { sortBy } from "lodash-es";
 import { SidebarAddingCustomGameModal } from "./sidebar-adding-custom-game-modal";
@@ -78,6 +79,7 @@ export function Sidebar() {
   const { showWarningToast, showSuccessToast, showErrorToast } = useToast();
 
   const [showPlayableOnly, setShowPlayableOnly] = useState(false);
+  const [hideSteamGames, setHideSteamGames] = useState(false);
   const [isGamesCollapsed, setIsGamesCollapsed] = useState(false);
   const [showAddGameModal, setShowAddGameModal] = useState(false);
   const [isGameListScrolled, setIsGameListScrolled] = useState(false);
@@ -88,9 +90,11 @@ export function Sidebar() {
   const visibleGames = useMemo(
     () =>
       filteredLibrary.filter(
-        (game) => !showPlayableOnly || isGamePlayable(game)
+        (game) =>
+          (!showPlayableOnly || isGamePlayable(game)) &&
+          (!hideSteamGames || !(game.shop === "steam" && !game.download))
       ),
-    [filteredLibrary, showPlayableOnly]
+    [filteredLibrary, showPlayableOnly, hideSteamGames]
   );
 
   const virtualizer = useVirtualizer({
@@ -422,6 +426,18 @@ export function Sidebar() {
                 >
                   <PlayIcon size={16} />
                 </button>
+                <button
+                  type="button"
+                  className={cn("sidebar__play-button", {
+                    "sidebar__play-button--active": hideSteamGames,
+                  })}
+                  onClick={() => setHideSteamGames(!hideSteamGames)}
+                  data-tooltip-id="hide-steam-games-tooltip"
+                  data-tooltip-content={t("hide_steam_games_tooltip")}
+                  data-tooltip-place="top"
+                >
+                  <SteamLogo style={{ width: 16, height: 16 }} />
+                </button>
               </div>
             </div>
 
@@ -528,6 +544,7 @@ export function Sidebar() {
 
       <Tooltip id="add-custom-game-tooltip" />
       <Tooltip id="show-playable-only-tooltip" />
+      <Tooltip id="hide-steam-games-tooltip" />
     </aside>
   );
 }

@@ -1,5 +1,6 @@
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
 import PlayLogo from "@renderer/assets/play-logo.svg?react";
+import HydraIcon from "@renderer/assets/hydra-icon.svg?react";
 import { LibraryGame } from "@types";
 import cn from "classnames";
 import { useLocation } from "react-router-dom";
@@ -47,7 +48,9 @@ export function SidebarGameItem({
     ? game.libraryImageUrl || game.iconUrl
     : game.customIconUrl || game.iconUrl;
 
-  // Determine fallback icon based on game type
+  const isSteamSynced = game.shop === "steam" && !game.download;
+  const isPirated = Boolean(game.download);
+
   const getFallbackIcon = () => {
     if (isCustomGame) {
       return <PlayLogo className="sidebar__game-icon" />;
@@ -71,16 +74,24 @@ export function SidebarGameItem({
           onClick={(event) => handleSidebarGameClick(event, game)}
           onContextMenu={handleContextMenu}
         >
-          {sidebarIcon ? (
-            <img
-              className="sidebar__game-icon"
-              src={sidebarIcon}
-              alt={game.title}
-              loading="lazy"
-            />
-          ) : (
-            getFallbackIcon()
-          )}
+          <div className="sidebar__game-icon-wrapper">
+            {sidebarIcon ? (
+              <img
+                className="sidebar__game-icon"
+                src={sidebarIcon}
+                alt={game.title}
+                loading="lazy"
+              />
+            ) : (
+              getFallbackIcon()
+            )}
+            {isSteamSynced && (
+              <SteamLogo className="sidebar__game-source-badge sidebar__game-source-badge--steam" />
+            )}
+            {isPirated && !isSteamSynced && (
+              <HydraIcon className="sidebar__game-source-badge sidebar__game-source-badge--hydra" />
+            )}
+          </div>
 
           <span className="sidebar__menu-item-button-label">
             {getGameTitle(game)}
