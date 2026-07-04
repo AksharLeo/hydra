@@ -135,6 +135,20 @@ export type AppUpdaterEvent =
   | { type: "update-available"; info: { version: string } }
   | { type: "update-downloaded" };
 
+export interface ForkUpdateInfo {
+  runId: number;
+  runNumber: number;
+  commitMessage: string;
+  commitSha: string;
+  publishedAt: string;
+}
+
+export type ForkUpdaterEvent =
+  | { type: "fork-update-available"; info: ForkUpdateInfo }
+  | { type: "fork-update-progress"; percent: number }
+  | { type: "fork-update-downloaded"; installerPath: string }
+  | { type: "fork-update-error"; error: string };
+
 /* Events */
 export interface StartGameDownloadPayload {
   objectId: string;

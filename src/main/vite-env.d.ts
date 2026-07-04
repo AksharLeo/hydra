@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   readonly MAIN_VITE_NIMBUS_API_URL: string;
   readonly MAIN_VITE_LAUNCHER_SUBDOMAIN: string;
   readonly ELECTRON_RENDERER_URL: string;
+  readonly MAIN_VITE_GITHUB_RUN_ID: string | undefined;
 }
 
 interface ImportMeta {

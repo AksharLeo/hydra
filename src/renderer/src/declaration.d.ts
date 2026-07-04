@@ -58,6 +58,8 @@ import type {
   MemcardFormatState,
   MemcardRestoreResult,
   MemcardRestoreTarget,
+  ForkUpdateInfo,
+  ForkUpdaterEvent,
 } from "@types";
 import type { AxiosProgressEvent } from "axios";
 
@@ -799,6 +801,14 @@ declare global {
     ) => () => Electron.IpcRenderer;
     checkForUpdates: () => Promise<boolean>;
     restartAndInstallUpdate: () => Promise<void>;
+
+    /* Fork updater */
+    checkForkUpdate: () => Promise<ForkUpdateInfo | null>;
+    downloadForkUpdate: () => Promise<void>;
+    installForkUpdate: (installerPath: string) => Promise<void>;
+    onForkUpdaterEvent: (
+      cb: (event: ForkUpdaterEvent) => void
+    ) => () => void;
 
     /* Auth */
     getAuth: () => Promise<Auth | null>;

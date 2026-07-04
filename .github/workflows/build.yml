@@ -161,6 +161,7 @@ jobs:
           RENDERER_VITE_SENTRY_DSN: ${{ vars.SENTRY_DSN }}
           RENDERER_VITE_REAL_DEBRID_REFERRAL_ID: ${{ vars.RENDERER_VITE_REAL_DEBRID_REFERRAL_ID }}
           RENDERER_VITE_TORBOX_REFERRAL_CODE: ${{ vars.RENDERER_VITE_TORBOX_REFERRAL_CODE }}
+          MAIN_VITE_GITHUB_RUN_ID: ${{ github.run_id }}
 
       - name: Build Windows
         if: matrix.os == 'windows-2022'
@@ -177,6 +178,7 @@ jobs:
           RENDERER_VITE_SENTRY_DSN: ${{ vars.SENTRY_DSN }}
           RENDERER_VITE_REAL_DEBRID_REFERRAL_ID: ${{ vars.RENDERER_VITE_REAL_DEBRID_REFERRAL_ID }}
           RENDERER_VITE_TORBOX_REFERRAL_CODE: ${{ vars.RENDERER_VITE_TORBOX_REFERRAL_CODE }}
+          MAIN_VITE_GITHUB_RUN_ID: ${{ github.run_id }}
 
       - name: Upload build
         env:

@@ -7,6 +7,8 @@ import type {
   DownloadProgress,
   UserPreferences,
   AppUpdaterEvent,
+  ForkUpdateInfo,
+  ForkUpdaterEvent,
   StartGameDownloadPayload,
   GameRunning,
   UpdateProfileRequest,
@@ -1428,6 +1430,25 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("setCpuGovernor", governor),
   setGpuPerfLevel: (level: string) =>
     ipcRenderer.invoke("setGpuPerfLevel", level),
+
+  /* Fork updater */
+  checkForkUpdate: (): Promise<ForkUpdateInfo | null> =>
+    ipcRenderer.invoke("checkForkUpdate"),
+  downloadForkUpdate: () => ipcRenderer.invoke("downloadForkUpdate"),
+  installForkUpdate: (installerPath: string) =>
+    ipcRenderer.invoke("installForkUpdate", installerPath),
+  onForkUpdaterEvent: (cb: (event: ForkUpdaterEvent) => void) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      value: ForkUpdaterEvent
+    ) => cb(value);
+
+    ipcRenderer.on("forkUpdaterEvent", listener);
+
+    return () => {
+      ipcRenderer.removeListener("forkUpdaterEvent", listener);
+    };
+  },
 });
 
 const reportNetworkStatus = (online: boolean, switched = false) => {

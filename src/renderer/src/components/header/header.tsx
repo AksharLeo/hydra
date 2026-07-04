@@ -25,6 +25,7 @@ import {
 
 import "./header.scss";
 import { AutoUpdateSubHeader } from "./auto-update-sub-header";
+import { ForkUpdateSubHeader } from "./fork-update-sub-header";
 import { ScanGamesModal } from "./scan-games-modal";
 import { setFilters, setLibrarySearchQuery } from "@renderer/features";
 import cn from "classnames";
@@ -449,6 +450,7 @@ export function Header() {
       )}
 
       <AutoUpdateSubHeader />
+      <ForkUpdateSubHeader />
 
       <SearchDropdown
         visible={
