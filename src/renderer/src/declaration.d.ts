@@ -58,7 +58,6 @@ import type {
   MemcardFormatState,
   MemcardRestoreResult,
   MemcardRestoreTarget,
-  ForkUpdateInfo,
   ForkUpdaterEvent,
 } from "@types";
 
