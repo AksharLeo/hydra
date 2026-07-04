@@ -139,7 +139,16 @@
     "scan_games_no_results": "Non siamo riusciti a trovare giochi installati.",
     "scan_games_in_progress": "Scansione dei dischi per giochi installati…",
     "scan_games_close": "Chiudi",
-    "scan_games_scan_again": "Scansiona di nuovo"
+    "scan_games_scan_again": "Scansiona di nuovo",
+    "fork_update_available": "Aggiornamento Fork disponibile — Build #{{buildNumber}}",
+    "fork_update_downloading": "Download in corso... {{percent}}%",
+    "fork_update_download": "Scarica",
+    "fork_update_install": "Riavvia e installa",
+    "fork_update_dismiss": "Ignora",
+    "fork_update_confirm_title": "Installare l'aggiornamento Fork?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Installa e riavvia",
+    "fork_update_confirm_cancel": "Annulla"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Nessun download in corso",

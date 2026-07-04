@@ -139,7 +139,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork 更新可用 — 构建 #{{buildNumber}}",
+    "fork_update_downloading": "下载中... {{percent}}%",
+    "fork_update_download": "下载",
+    "fork_update_install": "重启并安装",
+    "fork_update_dismiss": "关闭",
+    "fork_update_confirm_title": "安装 Fork 更新？",
+    "fork_update_confirm_description": "构建 #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "安装并重启",
+    "fork_update_confirm_cancel": "取消"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "没有正在进行的下载",

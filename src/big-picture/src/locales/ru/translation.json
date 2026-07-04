@@ -777,6 +777,15 @@
     "file_explorer_error_enotdir": "Этот путь не является папкой.",
     "file_explorer_error_default": "Не удалось открыть это расположение.",
     "file_explorer_select_this_directory": "Выбрать эту папку",
-    "file_explorer_select_download_directory": "Выбрать папку загрузки"
+    "file_explorer_select_download_directory": "Выбрать папку загрузки",
+    "fork_update_available": "Доступно обновление форка — Сборка #{{buildNumber}}",
+    "fork_update_downloading": "Загрузка... {{percent}}%",
+    "fork_update_download": "Загрузить",
+    "fork_update_install": "Перезапустить и установить",
+    "fork_update_dismiss": "Скрыть",
+    "fork_update_confirm_title": "Установить обновление форка?",
+    "fork_update_confirm_description": "Сборка #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Установить и перезапустить",
+    "fork_update_confirm_cancel": "Отмена"
   }
 }

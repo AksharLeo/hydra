@@ -140,7 +140,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Доступне оновлення форку — Збірка #{{buildNumber}}",
+    "fork_update_downloading": "Завантаження... {{percent}}%",
+    "fork_update_download": "Завантажити",
+    "fork_update_install": "Перезапустити та встановити",
+    "fork_update_dismiss": "Сховати",
+    "fork_update_confirm_title": "Встановити оновлення форку?",
+    "fork_update_confirm_description": "Збірка #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Встановити та перезапустити",
+    "fork_update_confirm_cancel": "Скасувати"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Немає активних завантажень",

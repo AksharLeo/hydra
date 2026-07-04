@@ -140,7 +140,16 @@
     "catalogue": "Katalog",
     "downloads": "Pobrane",
     "search_results": "Wyniki wyszukiwania",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "fork_update_available": "Dostępna aktualizacja Fork — Build #{{buildNumber}}",
+    "fork_update_downloading": "Pobieranie... {{percent}}%",
+    "fork_update_download": "Pobierz",
+    "fork_update_install": "Uruchom ponownie i zainstaluj",
+    "fork_update_dismiss": "Zamknij",
+    "fork_update_confirm_title": "Zainstalować aktualizację Fork?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Zainstaluj i uruchom ponownie",
+    "fork_update_confirm_cancel": "Anuluj"
   },
   "bottom_panel": {
     "downloading": "Pobieranie {{title}}… ({{percentage}} ukończono) - Do końca {{eta}} - {{speed}}",

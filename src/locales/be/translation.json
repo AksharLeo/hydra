@@ -136,7 +136,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Даступнае абнаўленне Fork — Зборка #{{buildNumber}}",
+    "fork_update_downloading": "Загрузка... {{percent}}%",
+    "fork_update_download": "Спампаваць",
+    "fork_update_install": "Перазапусціць і ўсталяваць",
+    "fork_update_dismiss": "Схаваць",
+    "fork_update_confirm_title": "Усталяваць абнаўленне Fork?",
+    "fork_update_confirm_description": "Зборка #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Усталяваць і перазапусціць",
+    "fork_update_confirm_cancel": "Адмена"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Няма актыўных сцягванняў",

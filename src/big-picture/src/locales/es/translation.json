@@ -755,6 +755,18 @@
     "file_explorer_error_enotdir": "Esta ruta no es una carpeta.",
     "file_explorer_error_default": "No se puede abrir esta ubicación.",
     "file_explorer_select_this_directory": "Seleccionar esta carpeta",
-    "file_explorer_select_download_directory": "Seleccionar directorio de descarga"
+    "file_explorer_select_download_directory": "Seleccionar directorio de descarga",
+    "settings_session_section_title": "Sesión predeterminada (Experimental)",
+    "settings_session_section_description": "Cambia la sesión de inicio automático de SDDM entre Steam UI y Hydra Big Picture. Solo disponible en CachyOS Handheld.",
+    "settings_use_hydra_session": "Usar Hydra Big Picture como sesión predeterminada",
+    "fork_update_available": "Actualización del fork disponible — Build #{{buildNumber}}",
+    "fork_update_downloading": "Descargando... {{percent}}%",
+    "fork_update_download": "Descargar",
+    "fork_update_install": "Reiniciar e instalar",
+    "fork_update_dismiss": "Descartar",
+    "fork_update_confirm_title": "¿Instalar la actualización del fork?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Instalar y reiniciar",
+    "fork_update_confirm_cancel": "Cancelar"
   }
 }

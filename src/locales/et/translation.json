@@ -139,7 +139,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork'i uuendus saadaval — Build #{{buildNumber}}",
+    "fork_update_downloading": "Allalaadimine... {{percent}}%",
+    "fork_update_download": "Laadi alla",
+    "fork_update_install": "Taaskäivita ja installi",
+    "fork_update_dismiss": "Sulge",
+    "fork_update_confirm_title": "Installida Fork'i uuendus?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Installi ja taaskäivita",
+    "fork_update_confirm_cancel": "Tühista"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Allalaadimisi pole pooleli",

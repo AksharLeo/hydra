@@ -136,7 +136,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "به‌روزرسانی Fork در دسترس است — ساخت #{{buildNumber}}",
+    "fork_update_downloading": "در حال دانلود... {{percent}}%",
+    "fork_update_download": "دانلود",
+    "fork_update_install": "راه‌اندازی مجدد و نصب",
+    "fork_update_dismiss": "رد کردن",
+    "fork_update_confirm_title": "به‌روزرسانی Fork نصب شود؟",
+    "fork_update_confirm_description": "ساخت #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "نصب و راه‌اندازی مجدد",
+    "fork_update_confirm_cancel": "لغو"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "دانلودی در حال انجام نیست",

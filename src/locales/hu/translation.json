@@ -139,7 +139,16 @@
     "scan_games_no_results": "Egyetlen telepített játék sem található.",
     "scan_games_in_progress": "Meghajtók átnézése végrehajtható fájlok után...",
     "scan_games_close": "Mégse",
-    "scan_games_scan_again": "Játékok Keresése"
+    "scan_games_scan_again": "Játékok Keresése",
+    "fork_update_available": "Fork frissítés elérhető — Build #{{buildNumber}}",
+    "fork_update_downloading": "Letöltés... {{percent}}%",
+    "fork_update_download": "Letöltés",
+    "fork_update_install": "Újraindítás és telepítés",
+    "fork_update_dismiss": "Bezárás",
+    "fork_update_confirm_title": "Fork frissítés telepítése?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Telepítés és újraindítás",
+    "fork_update_confirm_cancel": "Mégse"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Nincs folyamatban lévő letöltés",

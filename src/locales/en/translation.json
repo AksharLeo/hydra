@@ -159,6 +159,7 @@
     "fork_update_downloading": "Downloading... {{percent}}%",
     "fork_update_download": "Download",
     "fork_update_install": "Restart & Install",
+    "fork_update_dismiss": "Dismiss",
     "fork_update_confirm_title": "Install fork update?",
     "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
     "fork_update_confirm_ok": "Install & Restart",

@@ -136,7 +136,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork-update beschikbaar — Build #{{buildNumber}}",
+    "fork_update_downloading": "Downloaden... {{percent}}%",
+    "fork_update_download": "Downloaden",
+    "fork_update_install": "Herstarten en installeren",
+    "fork_update_dismiss": "Sluiten",
+    "fork_update_confirm_title": "Fork-update installeren?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Installeren en herstarten",
+    "fork_update_confirm_cancel": "Annuleren"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Geen Downloads bezig",

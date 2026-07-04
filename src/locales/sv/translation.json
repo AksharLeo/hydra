@@ -139,7 +139,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork-uppdatering tillgänglig — Build #{{buildNumber}}",
+    "fork_update_downloading": "Laddar ner... {{percent}}%",
+    "fork_update_download": "Ladda ner",
+    "fork_update_install": "Starta om och installera",
+    "fork_update_dismiss": "Stäng",
+    "fork_update_confirm_title": "Installera Fork-uppdatering?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Installera och starta om",
+    "fork_update_confirm_cancel": "Avbryt"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Inga nedladdningar pågår",

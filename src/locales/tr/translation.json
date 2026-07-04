@@ -139,7 +139,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork güncellemesi mevcut — Build #{{buildNumber}}",
+    "fork_update_downloading": "İndiriliyor... {{percent}}%",
+    "fork_update_download": "İndir",
+    "fork_update_install": "Yeniden başlat ve yükle",
+    "fork_update_dismiss": "Kapat",
+    "fork_update_confirm_title": "Fork güncellemesini yükle?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Yükle ve yeniden başlat",
+    "fork_update_confirm_cancel": "İptal"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Devam eden indirme yok",

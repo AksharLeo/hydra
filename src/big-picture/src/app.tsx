@@ -16,6 +16,7 @@ import { IS_DESKTOP } from "./constants";
 import { useNavigation, useUserPreferences } from "./hooks";
 import { ConfirmationModal } from "./components/modals";
 import { QuickAccessMenu } from "./components/quick-access-menu";
+import { ForkUpdateBanner } from "./components/fork-update-banner";
 import { useTranslation } from "react-i18next";
 import { getGameExecutableFilters } from "@shared";
 import {
@@ -259,6 +260,7 @@ export default function App() {
           <NavigationDiagnostics />
           <BigPictureToastHost />
           <QuickAccessMenu />
+          <ForkUpdateBanner />
         </div>
       </NavigationInputProvider>
     </Fragment>

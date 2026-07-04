@@ -43,7 +43,9 @@ export class ForkUpdater {
       const url = `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${BRANCH}&status=success&event=push&per_page=1`;
       const data = await fetchJson(url);
 
-      const run = data?.workflow_runs?.[0] as Record<string, unknown> | undefined;
+      const run = data?.workflow_runs?.[0] as
+        | Record<string, unknown>
+        | undefined;
       if (!run) return null;
 
       const runId = run.id as number;
@@ -73,7 +75,10 @@ export class ForkUpdater {
   static async downloadAndInstall(): Promise<void> {
     const downloadUrl = this.getNightlyLinkUrl();
     if (!downloadUrl) {
-      this.sendEvent({ type: "fork-update-error", error: "Platform not supported" });
+      this.sendEvent({
+        type: "fork-update-error",
+        error: "Platform not supported",
+      });
       return;
     }
 
@@ -94,7 +99,8 @@ export class ForkUpdater {
 
       const files = fs.readdirSync(tmpDir);
       const installerFile = files.find((f) => pattern.test(f));
-      if (!installerFile) throw new Error("Installer not found in artifact ZIP");
+      if (!installerFile)
+        throw new Error("Installer not found in artifact ZIP");
 
       const installerPath = path.join(tmpDir, installerFile);
       logger.info("[ForkUpdater] installer found", { installerPath });
@@ -121,7 +127,9 @@ export class ForkUpdater {
         app.relaunch();
         app.quit();
       } catch (err) {
-        logger.error("[ForkUpdater] AppImage replace failed, trying pkexec", { err });
+        logger.error("[ForkUpdater] AppImage replace failed, trying pkexec", {
+          err,
+        });
         execFile("pkexec", ["cp", installerPath, currentExe], () => {
           app.relaunch();
           app.quit();
@@ -197,16 +205,12 @@ function downloadFile(
               reject(new Error(`HTTP ${res.statusCode}`));
               return;
             }
-            const total = parseInt(
-              res.headers["content-length"] ?? "0",
-              10
-            );
+            const total = parseInt(res.headers["content-length"] ?? "0", 10);
             let received = 0;
             const file = fs.createWriteStream(dest);
             res.on("data", (chunk: Buffer) => {
               received += chunk.length;
-              if (total > 0)
-                onProgress(Math.round((received / total) * 100));
+              if (total > 0) onProgress(Math.round((received / total) * 100));
             });
             res.pipe(file);
             file.on("finish", () => file.close(() => resolve()));

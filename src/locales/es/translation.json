@@ -144,7 +144,16 @@
     "scan_games_no_results": "No pudimos encontrar ningún juego instalado.",
     "scan_games_in_progress": "Escaneando tus discos en busca de juegos instalados...",
     "scan_games_close": "Cerrar",
-    "scan_games_scan_again": "Escanear nuevamente"
+    "scan_games_scan_again": "Escanear nuevamente",
+    "fork_update_available": "Actualización del fork disponible — Build #{{buildNumber}}",
+    "fork_update_downloading": "Descargando... {{percent}}%",
+    "fork_update_download": "Descargar",
+    "fork_update_install": "Reiniciar e instalar",
+    "fork_update_dismiss": "Descartar",
+    "fork_update_confirm_title": "¿Instalar la actualización del fork?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Instalar y reiniciar",
+    "fork_update_confirm_cancel": "Cancelar"
   },
   "bottom_panel": {
     "reconnecting": "Reconectando {{title}}…",

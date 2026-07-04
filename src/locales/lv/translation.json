@@ -139,7 +139,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork atjauninājums pieejams — Build #{{buildNumber}}",
+    "fork_update_downloading": "Lejupielāde... {{percent}}%",
+    "fork_update_download": "Lejupielādēt",
+    "fork_update_install": "Restartēt un instalēt",
+    "fork_update_dismiss": "Aizvērt",
+    "fork_update_confirm_title": "Instalēt Fork atjauninājumu?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Instalēt un restartēt",
+    "fork_update_confirm_cancel": "Atcelt"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Nav aktīvu lejupielāžu",

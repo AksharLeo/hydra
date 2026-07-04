@@ -5,22 +5,27 @@ import type { ForkUpdateInfo, ForkUpdaterEvent } from "@types";
 import "./auto-update-header.scss";
 import "./fork-update-header.scss";
 
+const DISMISSED_KEY = "fork-update-dismissed-run";
+
 type DownloadState = "idle" | "downloading" | "downloaded";
 
 export function ForkUpdateSubHeader() {
   const { t } = useTranslation("header");
 
   const [updateInfo, setUpdateInfo] = useState<ForkUpdateInfo | null>(null);
+  const [dismissed, setDismissed] = useState(false);
   const [downloadState, setDownloadState] = useState<DownloadState>("idle");
   const [progress, setProgress] = useState(0);
-  const [installerPath, setInstallerPath] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const installerRef = useRef<string | null>(null);
 
   useEffect(() => {
     window.electron.checkForkUpdate().then((info) => {
-      if (info) setUpdateInfo(info);
+      if (!info) return;
+      const saved = localStorage.getItem(DISMISSED_KEY);
+      if (saved === String(info.runId)) return;
+      setUpdateInfo(info);
     });
 
     const unsubscribe = window.electron.onForkUpdaterEvent(
@@ -29,7 +34,6 @@ export function ForkUpdateSubHeader() {
           setProgress(event.percent);
         } else if (event.type === "fork-update-downloaded") {
           installerRef.current = event.installerPath;
-          setInstallerPath(event.installerPath);
           setDownloadState("downloaded");
         } else if (event.type === "fork-update-error") {
           setDownloadState("idle");
@@ -42,9 +46,14 @@ export function ForkUpdateSubHeader() {
     };
   }, []);
 
-  if (!updateInfo) return null;
+  if (!updateInfo || dismissed) return null;
 
   const commitSnippet = updateInfo.commitMessage.split("\n")[0].slice(0, 80);
+
+  const handleDismiss = () => {
+    localStorage.setItem(DISMISSED_KEY, String(updateInfo.runId));
+    setDismissed(true);
+  };
 
   const handleDownload = () => {
     setDownloadState("downloading");
@@ -112,7 +121,7 @@ export function ForkUpdateSubHeader() {
     );
   }
 
-  if (downloadState === "downloaded" && installerPath) {
+  if (downloadState === "downloaded") {
     return (
       <header className="auto-update-sub-header">
         <button
@@ -152,6 +161,13 @@ export function ForkUpdateSubHeader() {
         onClick={handleDownload}
       >
         {t("fork_update_download")}
+      </button>
+      <button
+        type="button"
+        className="auto-update-sub-header__new-version-button fork-update-available__dismiss"
+        onClick={handleDismiss}
+      >
+        {t("fork_update_dismiss")}
       </button>
     </header>
   );

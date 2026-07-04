@@ -139,7 +139,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork yangilanishi mavjud — Build #{{buildNumber}}",
+    "fork_update_downloading": "Yuklanmoqda... {{percent}}%",
+    "fork_update_download": "Yuklash",
+    "fork_update_install": "Qayta ishga tushirish va o'rnatish",
+    "fork_update_dismiss": "Yopish",
+    "fork_update_confirm_title": "Fork yangilanishini o'rnatish?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "O'rnatish va qayta ishga tushirish",
+    "fork_update_confirm_cancel": "Bekor qilish"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Faol yuklab olishlar yo'q",

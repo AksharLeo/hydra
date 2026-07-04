@@ -139,7 +139,16 @@
     "scan_games_no_results": "インストール済みのゲームが見つかりませんでした。",
     "scan_games_in_progress": "インストール済みゲームをディスクでスキャン中...",
     "scan_games_close": "閉じる",
-    "scan_games_scan_again": "再スキャン"
+    "scan_games_scan_again": "再スキャン",
+    "fork_update_available": "Forkアップデートが利用可能 — ビルド #{{buildNumber}}",
+    "fork_update_downloading": "ダウンロード中... {{percent}}%",
+    "fork_update_download": "ダウンロード",
+    "fork_update_install": "再起動してインストール",
+    "fork_update_dismiss": "閉じる",
+    "fork_update_confirm_title": "Forkアップデートをインストールしますか？",
+    "fork_update_confirm_description": "ビルド #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "インストールして再起動",
+    "fork_update_confirm_cancel": "キャンセル"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "ダウンロード中のものはありません",

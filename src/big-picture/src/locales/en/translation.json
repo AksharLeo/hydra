@@ -769,6 +769,15 @@
     "file_explorer_error_enotdir": "This is not a directory.",
     "file_explorer_error_default": "This location can't be opened.",
     "file_explorer_select_this_directory": "Select this directory",
-    "file_explorer_select_download_directory": "Select Download Directory"
+    "file_explorer_select_download_directory": "Select Download Directory",
+    "fork_update_available": "Fork update available — Build #{{buildNumber}}",
+    "fork_update_downloading": "Downloading... {{percent}}%",
+    "fork_update_download": "Download",
+    "fork_update_install": "Restart & Install",
+    "fork_update_dismiss": "Dismiss",
+    "fork_update_confirm_title": "Install fork update?",
+    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Install & Restart",
+    "fork_update_confirm_cancel": "Cancel"
   }
 }

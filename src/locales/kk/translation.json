@@ -139,7 +139,16 @@
     "scan_games_no_results": "We couldn't find any installed games.",
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
-    "scan_games_scan_again": "Scan Again"
+    "scan_games_scan_again": "Scan Again",
+    "fork_update_available": "Fork жаңартуы қол жетімді — Сборка #{{buildNumber}}",
+    "fork_update_downloading": "Жүктеп алу... {{percent}}%",
+    "fork_update_download": "Жүктеп алу",
+    "fork_update_install": "Қайта іске қосу және орнату",
+    "fork_update_dismiss": "Жабу",
+    "fork_update_confirm_title": "Fork жаңартуын орнату?",
+    "fork_update_confirm_description": "Сборка #{{buildNumber}}: {{commitMessage}}",
+    "fork_update_confirm_ok": "Орнату және қайта іске қосу",
+    "fork_update_confirm_cancel": "Бас тарту"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Белсенді жүктеулер жоқ",
