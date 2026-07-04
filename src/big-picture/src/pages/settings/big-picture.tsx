@@ -465,13 +465,8 @@ export function BigPictureSettingsSection({
 
       {sddmState.isSupported && (
         <SettingsSection
-          title={t("settings_session_section_title", {
-            defaultValue: "Default Session (Experimental)",
-          })}
-          description={t("settings_session_section_description", {
-            defaultValue:
-              "Switch the SDDM autologin session between Steam UI and Hydra Big Picture.",
-          })}
+          title={t("settings_session_section_title")}
+          description={t("settings_session_section_description")}
         >
           <VerticalFocusGroup
             regionId={BIG_PICTURE_SESSION_SECTION_REGION_ID}
@@ -481,9 +476,7 @@ export function BigPictureSettingsSection({
               <Checkbox
                 id="use-hydra-session"
                 focusId={BIG_PICTURE_ITEM_FOCUS_IDS.useHydraSession}
-                label={t("settings_use_hydra_session", {
-                  defaultValue: "Use Hydra Big Picture as default session",
-                })}
+                label={t("settings_use_hydra_session")}
                 checked={sddmState.isHydraSession}
                 disabled={sddmState.busy}
                 block
