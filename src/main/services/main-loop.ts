@@ -3,6 +3,7 @@ import { DownloadManager } from "./download";
 import { gamesPlaytime, watchProcesses } from "./process-watcher";
 import { AchievementWatcherManager } from "./achievements/achievement-watcher-manager";
 import { UpdateManager } from "./update-manager";
+import { ForkUpdater } from "./fork-updater";
 import { INTERVALS } from "@main/constants";
 import { PowerSaveBlockerManager } from "./power-save-blocker";
 import { logger } from "./logger";
@@ -37,6 +38,7 @@ export const startMainLoop = async () => {
     INTERVALS.seedStatusWatcher
   );
   wrapInLoop(() => UpdateManager.checkForUpdates(), INTERVALS.updateChecker);
+  wrapInLoop(() => ForkUpdater.checkAndNotify(), INTERVALS.updateChecker);
 
   wrapInLoop(() => {
     PowerSaveBlockerManager.syncState({
