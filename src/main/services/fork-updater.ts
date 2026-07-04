@@ -97,12 +97,9 @@ export class ForkUpdater {
       const pattern = FILE_PATTERN[process.platform];
       if (!pattern) throw new Error("Unsupported platform");
 
-      const files = fs.readdirSync(tmpDir);
-      const installerFile = files.find((f) => pattern.test(f));
-      if (!installerFile)
+      const installerPath = findFile(tmpDir, pattern);
+      if (!installerPath)
         throw new Error("Installer not found in artifact ZIP");
-
-      const installerPath = path.join(tmpDir, installerFile);
       logger.info("[ForkUpdater] installer found", { installerPath });
       this.sendEvent({ type: "fork-update-downloaded", installerPath });
     } catch (err) {
@@ -144,6 +141,20 @@ export class ForkUpdater {
       app.quit();
     }
   }
+}
+
+function findFile(dir: string, pattern: RegExp): string | null {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      const found = findFile(full, pattern);
+      if (found) return found;
+    } else if (pattern.test(entry.name)) {
+      return full;
+    }
+  }
+  return null;
 }
 
 function buildInfo(run: Record<string, unknown>): ForkUpdateInfo {
