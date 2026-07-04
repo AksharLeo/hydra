@@ -806,9 +806,7 @@ declare global {
     checkForkUpdate: () => Promise<ForkUpdateInfo | null>;
     downloadForkUpdate: () => Promise<void>;
     installForkUpdate: (installerPath: string) => Promise<void>;
-    onForkUpdaterEvent: (
-      cb: (event: ForkUpdaterEvent) => void
-    ) => () => void;
+    onForkUpdaterEvent: (cb: (event: ForkUpdaterEvent) => void) => () => void;
 
     /* Auth */
     getAuth: () => Promise<Auth | null>;

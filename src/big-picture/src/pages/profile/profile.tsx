@@ -655,7 +655,8 @@ export default function Profile() {
           remoteGames.push(...(response.library ?? []));
 
           if (
-            (response.library ?? []).length < PROFILE_REMOTE_LIBRARY_PAGE_SIZE ||
+            (response.library ?? []).length <
+              PROFILE_REMOTE_LIBRARY_PAGE_SIZE ||
             remoteGames.length >= (response.totalCount ?? 0)
           ) {
             break;
