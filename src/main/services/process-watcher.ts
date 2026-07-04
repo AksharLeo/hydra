@@ -166,6 +166,7 @@ const getSystemProcessMap = async () => {
   const {
     processMap: rawMap,
     winePrefixMap: rawWineMap,
+    steamAppIds,
     linuxProcesses,
   } = await NativeAddon.getSystemProcessMap();
 
@@ -175,7 +176,7 @@ const getSystemProcessMap = async () => {
 
   const winePrefixMap = new Map<string, string>(Object.entries(rawWineMap));
 
-  return { processMap, winePrefixMap, linuxProcesses };
+  return { processMap, winePrefixMap, steamAppIds, linuxProcesses };
 };
 
 const hasLinuxCompatibilityProcessMatch = (
@@ -231,8 +232,10 @@ export const watchProcesses = async () => {
 
   if (!games.length) return;
 
-  const { processMap, winePrefixMap, linuxProcesses } =
+  const { processMap, winePrefixMap, steamAppIds, linuxProcesses } =
     await getSystemProcessMap();
+
+  const steamAppIdSet = new Set(steamAppIds);
 
   const pidToProcess = new Map<number, LinuxProcessInfo>(
     linuxProcesses.map((process) => [process.pid, process])
@@ -242,6 +245,26 @@ export const watchProcesses = async () => {
     const gameKey = levelKeys.game(game.shop, game.objectId);
     const executablePath = game.executablePath;
     if (!executablePath) {
+      if (
+        game.shop === "steam" &&
+        game.launchViaSteam !== false &&
+        steamAppIdSet.has(game.objectId)
+      ) {
+        if (gamesPlaytime.has(gameKey)) {
+          onTickGame(game);
+        } else {
+          onOpenGame(game);
+        }
+        continue;
+      } else if (
+        game.shop === "steam" &&
+        game.launchViaSteam !== false &&
+        gamesPlaytime.has(gameKey)
+      ) {
+        onCloseGame(game);
+        continue;
+      }
+
       if (gameExecutables[game.objectId]) {
         await findGamePathByProcess(processMap, winePrefixMap, game.objectId);
       }

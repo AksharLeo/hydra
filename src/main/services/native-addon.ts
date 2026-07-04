@@ -38,6 +38,7 @@ type HydraNativeModule = {
 export type SystemProcessMap = {
   processMap: Record<string, string[]>;
   winePrefixMap: Record<string, string>;
+  steamAppIds: string[];
   linuxProcesses: Array<{
     name: string;
     cwd: string;
@@ -65,6 +66,7 @@ const platform = process.platform;
 function buildMaps(processes) {
   const processMap = Object.create(null);
   const winePrefixMap = Object.create(null);
+  const steamAppIds = [];
   const linuxProcesses = [];
 
   for (const proc of processes) {
@@ -77,6 +79,9 @@ function buildMaps(processes) {
 
     const steamCompatDataPath = proc.environ && proc.environ.STEAM_COMPAT_DATA_PATH;
     if (steamCompatDataPath) winePrefixMap[value] = steamCompatDataPath;
+
+    const steamAppId = proc.environ && (proc.environ.SteamAppId || proc.environ.STEAMAPPID || proc.environ.SteamGameId);
+    if (steamAppId) steamAppIds.push(String(steamAppId));
 
     if (platform === 'linux') {
       const appImagePath = proc.environ && proc.environ.APPIMAGE;
@@ -94,7 +99,7 @@ function buildMaps(processes) {
     processMap[key].push(value);
   }
 
-  return { processMap, winePrefixMap, linuxProcesses };
+  return { processMap, winePrefixMap, steamAppIds, linuxProcesses };
 }
 
 parentPort.on('message', (type) => {
@@ -107,7 +112,7 @@ parentPort.on('message', (type) => {
     }
   } catch (_) {
     if (type === 'map') {
-      parentPort.postMessage({ type: 'map', result: { processMap: {}, winePrefixMap: {}, linuxProcesses: [] } });
+      parentPort.postMessage({ type: 'map', result: { processMap: {}, winePrefixMap: {}, steamAppIds: [], linuxProcesses: [] } });
     } else {
       parentPort.postMessage({ type: 'list', result: [] });
     }
