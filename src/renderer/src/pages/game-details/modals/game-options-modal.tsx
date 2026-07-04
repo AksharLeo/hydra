@@ -122,6 +122,9 @@ export function GameOptionsModal({
   const [autoRunGamemode, setAutoRunGamemode] = useState<boolean>(
     game.autoRunGamemode === true
   );
+  const [launchViaSteam, setLaunchViaSteam] = useState<boolean>(
+    game.launchViaSteam !== false
+  );
   const [gamemodeAvailable, setGamemodeAvailable] = useState(false);
   const [mangohudAvailable, setMangohudAvailable] = useState(false);
   const [winetricksAvailable, setWinetricksAvailable] = useState(false);
@@ -191,6 +194,9 @@ export function GameOptionsModal({
   useEffect(() => {
     setAutoRunGamemode(game.autoRunGamemode === true);
   }, [game.autoRunGamemode]);
+  useEffect(() => {
+    setLaunchViaSteam(game.launchViaSteam !== false);
+  }, [game.launchViaSteam]);
 
   useEffect(() => {
     if (!visible || globalThis.window.electron.platform !== "linux") return;
@@ -602,6 +608,16 @@ export function GameOptionsModal({
     updateGame();
   };
 
+  const handleChangeLaunchViaSteam = async (value: boolean) => {
+    setLaunchViaSteam(value);
+    await globalThis.window.electron.toggleGameLaunchViaSteam(
+      game.shop,
+      game.objectId,
+      value
+    );
+    updateGame();
+  };
+
   const applyProtonPathChange = async (protonPath: string) => {
     try {
       await globalThis.window.electron.selectGameProtonPath(
@@ -873,6 +889,8 @@ export function GameOptionsModal({
       onResetGameTitle: handleResetGameTitle,
       onChangeLaunchOptions: handleChangeLaunchOptions,
       onClearLaunchOptions: handleClearLaunchOptions,
+      launchViaSteam,
+      onToggleLaunchViaSteam: handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
       drives,
@@ -907,6 +925,8 @@ export function GameOptionsModal({
       handleResetGameTitle,
       handleChangeLaunchOptions,
       handleClearLaunchOptions,
+      launchViaSteam,
+      handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
       drives,

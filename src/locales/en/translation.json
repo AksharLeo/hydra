@@ -520,6 +520,7 @@
     "settings_category_danger_zone": "Danger Zone",
     "settings_category_danger_zone_description": "Irreversible actions for this game",
     "settings_not_available_for_custom_games": "This category is not available for custom games.",
+    "launch_via_steam": "Launch via Steam",
     "launch_options": "Launch Options",
     "launch_options_description": "Add game launch arguments.",
     "launch_options_description_linux": "Add game launch arguments, or use <code>%command%</code> to wrap the launch command.",

@@ -80,6 +80,7 @@ export interface Game {
   selectedDiscPath?: string | null;
   dontAskDiscSelection?: boolean;
   romSizeBytes?: number | null;
+  launchViaSteam?: boolean | null;
 }
 
 export interface Download {

@@ -514,6 +514,17 @@ contextBridge.exposeInMainWorld("electron", {
     autoRunGamemode: boolean
   ) =>
     ipcRenderer.invoke("toggleGameGamemode", shop, objectId, autoRunGamemode),
+  toggleGameLaunchViaSteam: (
+    shop: GameShop,
+    objectId: string,
+    launchViaSteam: boolean
+  ) =>
+    ipcRenderer.invoke(
+      "toggleGameLaunchViaSteam",
+      shop,
+      objectId,
+      launchViaSteam
+    ),
   isGamemodeAvailable: () => ipcRenderer.invoke("isGamemodeAvailable"),
   isMangohudAvailable: () => ipcRenderer.invoke("isMangohudAvailable"),
   isWinetricksAvailable: () => ipcRenderer.invoke("isWinetricksAvailable"),

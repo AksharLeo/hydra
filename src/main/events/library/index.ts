@@ -42,6 +42,7 @@ import "./select-game-wine-prefix";
 import "./toggle-automatic-cloud-sync";
 import "./toggle-game-gamemode";
 import "./toggle-game-mangohud";
+import "./toggle-game-launch-via-steam";
 import "./toggle-game-pin";
 import "./update-custom-game";
 import "./update-executable-path";

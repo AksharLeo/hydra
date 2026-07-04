@@ -183,6 +183,11 @@ declare global {
       objectId: string,
       autoRunGamemode: boolean
     ) => Promise<void>;
+    toggleGameLaunchViaSteam: (
+      shop: GameShop,
+      objectId: string,
+      launchViaSteam: boolean
+    ) => Promise<void>;
     isGamemodeAvailable: () => Promise<boolean>;
     isMangohudAvailable: () => Promise<boolean>;
     isWinetricksAvailable: () => Promise<boolean>;

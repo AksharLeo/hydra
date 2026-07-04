@@ -287,6 +287,16 @@ export function HeroPanelActions() {
       return;
     }
 
+    if (game.shop === "steam" && game.launchViaSteam !== false) {
+      window.electron.openGame(
+        game.shop,
+        game.objectId,
+        game.executablePath ?? "",
+        game.launchOptions
+      );
+      return;
+    }
+
     if (game.executablePath) {
       window.electron.openGame(
         game.shop,
@@ -370,7 +380,10 @@ export function HeroPanelActions() {
     const isPlayableClassics =
       game?.shop === "launchbox" && (game?.discs?.length ?? 0) > 0;
 
-    if (game?.executablePath || isPlayableClassics) {
+    const canLaunchViaSteam =
+      game?.shop === "steam" && game?.launchViaSteam !== false;
+
+    if (game?.executablePath || isPlayableClassics || canLaunchViaSteam) {
       return (
         <Button
           onClick={openGame}
