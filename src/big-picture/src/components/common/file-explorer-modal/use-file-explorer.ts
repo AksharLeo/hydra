@@ -19,7 +19,7 @@ function getErrorMessage(
   let code: string | undefined;
 
   if (err instanceof Error) {
-    const errWithCode = err as Record<string, unknown>;
+    const errWithCode = err as unknown as Record<string, unknown>;
     if (typeof errWithCode.code === "string") {
       code = errWithCode.code;
     }
