@@ -16,7 +16,7 @@ import {
   useToast,
   useUserDetails,
 } from "@renderer/hooks";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { gameDetailsContext } from "@renderer/context";
@@ -64,6 +64,7 @@ export function HeroPanelActions() {
 
   const navigate = useNavigate();
 
+  const [isOwnedOnSteam, setIsOwnedOnSteam] = useState(false);
   const [showDiscSelectionModal, setShowDiscSelectionModal] = useState(false);
   const [pendingClassicsLaunch, setPendingClassicsLaunch] = useState<{
     discPath: string | undefined;
@@ -91,6 +92,14 @@ export function HeroPanelActions() {
       );
     };
   }, [game?.objectId, game?.shop, game?.discs?.length]);
+
+  useEffect(() => {
+    if (game?.shop !== "steam") return;
+    window.electron
+      .checkGameOnSteam(game.shop, game.objectId)
+      .then(setIsOwnedOnSteam)
+      .catch(() => setIsOwnedOnSteam(false));
+  }, [game?.shop, game?.objectId]);
 
   useEffect(() => {
     const onFavoriteToggled = () => {
@@ -287,7 +296,12 @@ export function HeroPanelActions() {
       return;
     }
 
-    if (game.shop === "steam" && game.launchViaSteam !== false) {
+    const steamLaunch =
+      game.shop === "steam" &&
+      (game.launchViaSteam === true ||
+        (game.launchViaSteam == null && isOwnedOnSteam));
+
+    if (steamLaunch) {
       window.electron.openGame(
         game.shop,
         game.objectId,
@@ -381,7 +395,9 @@ export function HeroPanelActions() {
       game?.shop === "launchbox" && (game?.discs?.length ?? 0) > 0;
 
     const canLaunchViaSteam =
-      game?.shop === "steam" && game?.launchViaSteam !== false;
+      game?.shop === "steam" &&
+      (game?.launchViaSteam === true ||
+        (game?.launchViaSteam == null && isOwnedOnSteam));
 
     if (game?.executablePath || isPlayableClassics || canLaunchViaSteam) {
       return (

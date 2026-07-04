@@ -188,6 +188,7 @@ declare global {
       objectId: string,
       launchViaSteam: boolean
     ) => Promise<void>;
+    checkGameOnSteam: (shop: GameShop, objectId: string) => Promise<boolean>;
     isGamemodeAvailable: () => Promise<boolean>;
     isMangohudAvailable: () => Promise<boolean>;
     isWinetricksAvailable: () => Promise<boolean>;

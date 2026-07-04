@@ -13,6 +13,7 @@ import {
   Wine,
   NativeAddon,
   launchedGamePids,
+  isGameInstalledOnSteam,
 } from "@main/services";
 import { CommonRedistManager } from "@main/services/common-redist-manager";
 import { parseExecutablePath } from "../events/helpers/parse-executable-path";
@@ -319,13 +320,20 @@ export const launchGame = async (
       game?.autoRunGamemode === true) &&
     isGamemodeAvailable();
 
-  if (shop === "steam" && game?.launchViaSteam !== false) {
-    if (game) {
-      await gamesSublevel.put(gameKey, { ...game, launchOptions });
+  if (shop === "steam") {
+    const shouldLaunchViaSteam =
+      game?.launchViaSteam === true ||
+      (game?.launchViaSteam == null &&
+        (await isGameInstalledOnSteam(objectId).catch(() => false)));
+
+    if (shouldLaunchViaSteam) {
+      if (game) {
+        await gamesSublevel.put(gameKey, { ...game, launchOptions });
+      }
+      logger.info("Launching Steam game via Steam URI", { objectId });
+      await shell.openExternal(`steam://rungameid/${objectId}`);
+      return null;
     }
-    logger.info("Launching Steam game via Steam URI", { objectId });
-    await shell.openExternal(`steam://rungameid/${objectId}`);
-    return null;
   }
 
   if (game) {

@@ -525,6 +525,8 @@ contextBridge.exposeInMainWorld("electron", {
       objectId,
       launchViaSteam
     ),
+  checkGameOnSteam: (shop: GameShop, objectId: string) =>
+    ipcRenderer.invoke("checkGameOnSteam", shop, objectId) as Promise<boolean>,
   isGamemodeAvailable: () => ipcRenderer.invoke("isGamemodeAvailable"),
   isMangohudAvailable: () => ipcRenderer.invoke("isMangohudAvailable"),
   isWinetricksAvailable: () => ipcRenderer.invoke("isWinetricksAvailable"),

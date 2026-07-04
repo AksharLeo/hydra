@@ -122,9 +122,10 @@ export function GameOptionsModal({
   const [autoRunGamemode, setAutoRunGamemode] = useState<boolean>(
     game.autoRunGamemode === true
   );
-  const [launchViaSteam, setLaunchViaSteam] = useState<boolean>(
-    game.launchViaSteam !== false
+  const [launchViaSteam, setLaunchViaSteam] = useState<boolean | null>(
+    game.launchViaSteam ?? null
   );
+  const [isOwnedOnSteam, setIsOwnedOnSteam] = useState(false);
   const [gamemodeAvailable, setGamemodeAvailable] = useState(false);
   const [mangohudAvailable, setMangohudAvailable] = useState(false);
   const [winetricksAvailable, setWinetricksAvailable] = useState(false);
@@ -195,8 +196,16 @@ export function GameOptionsModal({
     setAutoRunGamemode(game.autoRunGamemode === true);
   }, [game.autoRunGamemode]);
   useEffect(() => {
-    setLaunchViaSteam(game.launchViaSteam !== false);
+    setLaunchViaSteam(game.launchViaSteam ?? null);
   }, [game.launchViaSteam]);
+
+  useEffect(() => {
+    if (game.shop !== "steam") return;
+    globalThis.window.electron
+      .checkGameOnSteam(game.shop, game.objectId)
+      .then(setIsOwnedOnSteam)
+      .catch(() => setIsOwnedOnSteam(false));
+  }, [game.shop, game.objectId]);
 
   useEffect(() => {
     if (!visible || globalThis.window.electron.platform !== "linux") return;
@@ -889,7 +898,7 @@ export function GameOptionsModal({
       onResetGameTitle: handleResetGameTitle,
       onChangeLaunchOptions: handleChangeLaunchOptions,
       onClearLaunchOptions: handleClearLaunchOptions,
-      launchViaSteam,
+      launchViaSteam: launchViaSteam ?? isOwnedOnSteam,
       onToggleLaunchViaSteam: handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
@@ -926,6 +935,7 @@ export function GameOptionsModal({
       handleChangeLaunchOptions,
       handleClearLaunchOptions,
       launchViaSteam,
+      isOwnedOnSteam,
       handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
