@@ -285,6 +285,7 @@ export class NativeAddon {
         pending.resolve({
           processMap: {},
           winePrefixMap: {},
+          steamAppIds: [],
           linuxProcesses: [],
         });
     }
@@ -309,7 +310,12 @@ export class NativeAddon {
         this.pendingResolvers.push({ type: "map", resolve });
         worker.postMessage("map");
       } catch {
-        resolve({ processMap: {}, winePrefixMap: {}, linuxProcesses: [] });
+        resolve({
+          processMap: {},
+          winePrefixMap: {},
+          steamAppIds: [],
+          linuxProcesses: [],
+        });
       }
     });
   }
