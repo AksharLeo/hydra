@@ -1,4 +1,5 @@
 import { BottomPanel, Header, Sidebar, Toast } from "@renderer/components";
+import { ForkUpdateModal } from "@renderer/components/fork-update-modal/fork-update-modal";
 import { VideoIcon } from "@primer/octicons-react";
 import {
   DashIcon,
@@ -540,6 +541,7 @@ export function App() {
 
   return (
     <>
+      <ForkUpdateModal />
       {(window.electron.platform === "win32" ||
         window.electron.platform === "linux") && (
         <div

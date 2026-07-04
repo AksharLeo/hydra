@@ -787,5 +787,10 @@
     "fork_update_confirm_description": "Сборка #{{buildNumber}}: {{commitMessage}}",
     "fork_update_confirm_ok": "Установить и перезапустить",
     "fork_update_confirm_cancel": "Отмена"
-  }
+  },
+  "fork_update_title": "Доступна новая сборка — #{{buildNumber}}",
+  "fork_update_instructions_linux": "Скачайте AppImage, .deb или .rpm со страницы артефактов. Для AppImage: chmod +x и запустите. Для .deb: sudo dpkg -i file.deb. Для .rpm: sudo rpm -i file.rpm.",
+  "fork_update_instructions_windows": "Скачайте и запустите установщик (-setup.exe) со страницы артефактов.",
+  "fork_update_open_artifacts": "Открыть артефакты",
+  "fork_update_close": "Закрыть"
 }

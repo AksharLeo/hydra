@@ -1,0 +1,29 @@
+.fork-update-modal {
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+
+  &__commit {
+    margin: 0;
+    font-size: 13px;
+    color: var(--body-color);
+    opacity: 0.8;
+  }
+
+  &__instructions {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}

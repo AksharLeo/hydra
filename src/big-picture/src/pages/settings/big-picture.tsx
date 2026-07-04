@@ -14,7 +14,6 @@ import {
   BIG_PICTURE_DIAGNOSTICS_SECTION_REGION_ID,
   BIG_PICTURE_ITEM_FOCUS_IDS,
   BIG_PICTURE_SECTION_REGION_ID,
-  BIG_PICTURE_SESSION_SECTION_REGION_ID,
   BIG_PICTURE_STARTUP_SECTION_REGION_ID,
   SETTINGS_HEADER_RETURN_TARGET,
 } from "./settings-navigation";
@@ -30,12 +29,6 @@ interface BigPictureForm {
   bigPictureVirtualKeyboardEnabled: boolean;
   bigPictureDiagnosticsEnabled: boolean;
   bigPictureDiagnosticsPosition: BigPictureDiagnosticsPosition;
-}
-
-interface SddmSessionState {
-  isSupported: boolean;
-  isHydraSession: boolean;
-  busy: boolean;
 }
 
 interface BigPictureItem {
@@ -67,12 +60,6 @@ export function BigPictureSettingsSection({
   const { t } = useTranslation("big_picture");
   const userPreferences = useUserPreferences();
   const [form, setForm] = useState<BigPictureForm>(DEFAULT_FORM);
-  const [sddmState, setSddmState] = useState<SddmSessionState>({
-    isSupported: false,
-    isHydraSession: false,
-    busy: false,
-  });
-
   useEffect(() => {
     if (!userPreferences) return;
 
@@ -87,26 +74,6 @@ export function BigPictureSettingsSection({
         userPreferences.bigPictureDiagnosticsPosition ?? "bottom-center",
     });
   }, [userPreferences]);
-
-  useEffect(() => {
-    globalThis.window.electron.getSddmSession().then((state) => {
-      setSddmState((s) => ({
-        ...s,
-        isSupported: state.isSupported,
-        isHydraSession: state.isHydraSession,
-      }));
-    });
-  }, []);
-
-  const handleSddmSessionToggle = useCallback(async (useHydra: boolean) => {
-    setSddmState((s) => ({ ...s, busy: true }));
-    try {
-      await globalThis.window.electron.setSddmSession(useHydra);
-      setSddmState((s) => ({ ...s, isHydraSession: useHydra }));
-    } finally {
-      setSddmState((s) => ({ ...s, busy: false }));
-    }
-  }, []);
 
   const updateUserPreferences = useCallback(
     async (values: Partial<BigPictureForm>) => {
@@ -462,30 +429,6 @@ export function BigPictureSettingsSection({
           </div>
         </VerticalFocusGroup>
       </SettingsSection>
-
-      {sddmState.isSupported && (
-        <SettingsSection
-          title={t("settings_session_section_title")}
-          description={t("settings_session_section_description")}
-        >
-          <VerticalFocusGroup
-            regionId={BIG_PICTURE_SESSION_SECTION_REGION_ID}
-            asChild
-          >
-            <div className="big-picture-settings-section__content">
-              <Checkbox
-                id="use-hydra-session"
-                focusId={BIG_PICTURE_ITEM_FOCUS_IDS.useHydraSession}
-                label={t("settings_use_hydra_session")}
-                checked={sddmState.isHydraSession}
-                disabled={sddmState.busy}
-                block
-                onChange={handleSddmSessionToggle}
-              />
-            </div>
-          </VerticalFocusGroup>
-        </SettingsSection>
-      )}
 
       <SettingsSection
         title={t("settings_diagnostics_section_title")}

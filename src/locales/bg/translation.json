@@ -152,15 +152,11 @@
     "scan_games_remove_folder": "Премахни папка",
     "scan_games_folders_hint_manual": "Добави поне една папка за сканиране на игри.",
     "scan_games_detection_warning": "Детекцията разчита на списък с известни игри, поддържан от общността и може да е остарял, поради което някои игри може да не бъдат намерени.",
-    "fork_update_available": "Налична е актуализация на Fork — Билд #{{buildNumber}}",
-    "fork_update_downloading": "Изтегляне... {{percent}}%",
-    "fork_update_download": "Изтегли",
-    "fork_update_install": "Рестартирай и инсталирай",
-    "fork_update_dismiss": "Скрий",
-    "fork_update_confirm_title": "Инсталирай актуализация на Fork?",
-    "fork_update_confirm_description": "Билд #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "Инсталирай и рестартирай",
-    "fork_update_confirm_cancel": "Отказ"
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Няма текущи изтегляния",

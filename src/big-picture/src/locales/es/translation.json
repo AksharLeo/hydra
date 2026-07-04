@@ -768,5 +768,10 @@
     "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
     "fork_update_confirm_ok": "Instalar y reiniciar",
     "fork_update_confirm_cancel": "Cancelar"
-  }
+  },
+  "fork_update_title": "New build available — #{{buildNumber}}",
+  "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+  "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+  "fork_update_open_artifacts": "Open artifacts",
+  "fork_update_close": "Close"
 }

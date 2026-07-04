@@ -140,15 +140,11 @@
     "scan_games_in_progress": "Scansione dei dischi per giochi installati…",
     "scan_games_close": "Chiudi",
     "scan_games_scan_again": "Scansiona di nuovo",
-    "fork_update_available": "Aggiornamento Fork disponibile — Build #{{buildNumber}}",
-    "fork_update_downloading": "Download in corso... {{percent}}%",
-    "fork_update_download": "Scarica",
-    "fork_update_install": "Riavvia e installa",
-    "fork_update_dismiss": "Ignora",
-    "fork_update_confirm_title": "Installare l'aggiornamento Fork?",
-    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "Installa e riavvia",
-    "fork_update_confirm_cancel": "Annulla"
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Nessun download in corso",

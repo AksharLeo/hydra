@@ -155,15 +155,11 @@
     "scan_games_remove_folder": "Убрать папку",
     "scan_games_folders_hint_manual": "Добавьте как минимум одну папку для поиска игр.",
     "scan_games_detection_warning": "Обнаружение основано на поддерживаемом сообществом списке известных игр и может быть устаревшим, поэтому некоторые игры могут быть не найдены.",
-    "fork_update_available": "Доступно обновление форка — Сборка #{{buildNumber}}",
-    "fork_update_downloading": "Загрузка... {{percent}}%",
-    "fork_update_download": "Загрузить",
-    "fork_update_install": "Перезапустить и установить",
-    "fork_update_dismiss": "Скрыть",
-    "fork_update_confirm_title": "Установить обновление форка?",
-    "fork_update_confirm_description": "Сборка #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "Установить и перезапустить",
-    "fork_update_confirm_cancel": "Отмена"
+    "fork_update_title": "Доступна новая сборка — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Скачайте AppImage, .deb или .rpm со страницы артефактов. Для AppImage: chmod +x и запустите. Для .deb: sudo dpkg -i file.deb. Для .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Скачайте и запустите установщик (-setup.exe) со страницы артефактов.",
+    "fork_update_open_artifacts": "Открыть артефакты",
+    "fork_update_close": "Закрыть"
   },
   "bottom_panel": {
     "reconnecting": "Переподключение к {{title}}…",

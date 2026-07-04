@@ -7,7 +7,6 @@ import type {
   DownloadProgress,
   UserPreferences,
   AppUpdaterEvent,
-  ForkUpdateInfo,
   ForkUpdaterEvent,
   StartGameDownloadPayload,
   GameRunning,
@@ -1418,25 +1417,7 @@ contextBridge.exposeInMainWorld("electron", {
   transferGameFiles: (shop: GameShop, objectId: string, destParent: string) =>
     ipcRenderer.invoke("transferGameFiles", shop, objectId, destParent),
 
-  /* Session (CachyOS Handheld) */
-  getSddmSession: () => ipcRenderer.invoke("getSddmSession"),
-  setSddmSession: (useHydra: boolean) =>
-    ipcRenderer.invoke("setSddmSession", useHydra),
-
-  /* Performance (CachyOS Handheld) */
-  getPerformanceState: () => ipcRenderer.invoke("getPerformanceState"),
-  setTdp: (watts: number) => ipcRenderer.invoke("setTdp", watts),
-  setCpuGovernor: (governor: string) =>
-    ipcRenderer.invoke("setCpuGovernor", governor),
-  setGpuPerfLevel: (level: string) =>
-    ipcRenderer.invoke("setGpuPerfLevel", level),
-
   /* Fork updater */
-  checkForkUpdate: (): Promise<ForkUpdateInfo | null> =>
-    ipcRenderer.invoke("checkForkUpdate"),
-  downloadForkUpdate: () => ipcRenderer.invoke("downloadForkUpdate"),
-  installForkUpdate: (installerPath: string) =>
-    ipcRenderer.invoke("installForkUpdate", installerPath),
   onForkUpdaterEvent: (cb: (event: ForkUpdaterEvent) => void) => {
     const listener = (
       _event: Electron.IpcRendererEvent,

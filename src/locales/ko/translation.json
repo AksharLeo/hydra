@@ -137,15 +137,11 @@
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
     "scan_games_scan_again": "Scan Again",
-    "fork_update_available": "Fork 업데이트 사용 가능 — 빌드 #{{buildNumber}}",
-    "fork_update_downloading": "다운로드 중... {{percent}}%",
-    "fork_update_download": "다운로드",
-    "fork_update_install": "재시작 및 설치",
-    "fork_update_dismiss": "닫기",
-    "fork_update_confirm_title": "Fork 업데이트를 설치하시겠습니까?",
-    "fork_update_confirm_description": "빌드 #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "설치 및 재시작",
-    "fork_update_confirm_cancel": "취소"
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "진행중인 다운로드 없음",

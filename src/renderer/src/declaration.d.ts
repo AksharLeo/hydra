@@ -61,6 +61,7 @@ import type {
   ForkUpdateInfo,
   ForkUpdaterEvent,
 } from "@types";
+
 import type { AxiosProgressEvent } from "axios";
 
 export interface DriveInfo {
@@ -803,9 +804,6 @@ declare global {
     restartAndInstallUpdate: () => Promise<void>;
 
     /* Fork updater */
-    checkForkUpdate: () => Promise<ForkUpdateInfo | null>;
-    downloadForkUpdate: () => Promise<void>;
-    installForkUpdate: (installerPath: string) => Promise<void>;
     onForkUpdaterEvent: (cb: (event: ForkUpdaterEvent) => void) => () => void;
 
     /* Auth */
@@ -1016,29 +1014,6 @@ declare global {
     on: (channel: string, listener: (...args) => void) => void;
     off: (channel: string, listener: (...args) => void) => void;
 
-    /* Session (CachyOS Handheld) */
-    getSddmSession: () => Promise<{
-      isSupported: boolean;
-      session: string | null;
-      isHydraSession: boolean;
-    }>;
-    setSddmSession: (
-      useHydra: boolean
-    ) => Promise<{ ok: boolean; error?: string }>;
-
-    /* Performance (CachyOS Handheld) */
-    getPerformanceState: () => Promise<{
-      isSupported: boolean;
-      governor: string | null;
-      gpuPerfLevel: string | null;
-    }>;
-    setTdp: (watts: number) => Promise<{ ok: boolean; error?: string }>;
-    setCpuGovernor: (
-      governor: string
-    ) => Promise<{ ok: boolean; error?: string }>;
-    setGpuPerfLevel: (
-      level: string
-    ) => Promise<{ ok: boolean; error?: string }>;
   }
 
   interface Window {

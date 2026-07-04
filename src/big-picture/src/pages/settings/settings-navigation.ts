@@ -132,15 +132,11 @@ export const CONTENT_ITEM_FOCUS_IDS = {
   enableSteamAchievements: "content-enable-steam-achievements",
 } as const;
 
-export const BIG_PICTURE_SESSION_SECTION_REGION_ID =
-  "big-picture-session-section-region";
-
 export const BIG_PICTURE_ITEM_FOCUS_IDS = {
   launchInBigPicture: "big-picture-launch-in-big-picture",
   enableSounds: "big-picture-enable-sounds",
   enableVirtualKeyboard: "big-picture-enable-virtual-keyboard",
   enableDiagnostics: "big-picture-enable-diagnostics",
-  useHydraSession: "big-picture-use-hydra-session",
 } as const;
 
 export const COMPATIBILITY_PROTON_OPTION_AUTO_FOCUS_ID =

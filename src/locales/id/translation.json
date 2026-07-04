@@ -141,15 +141,11 @@
     "scan_games_in_progress": "Memindai disk Anda untuk mencari game yang terinstal...",
     "scan_games_close": "Tutup",
     "scan_games_scan_again": "Pindai Lagi",
-    "fork_update_available": "Pembaruan Fork tersedia — Build #{{buildNumber}}",
-    "fork_update_downloading": "Mengunduh... {{percent}}%",
-    "fork_update_download": "Unduh",
-    "fork_update_install": "Mulai ulang dan pasang",
-    "fork_update_dismiss": "Tutup",
-    "fork_update_confirm_title": "Pasang pembaruan Fork?",
-    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "Pasang dan mulai ulang",
-    "fork_update_confirm_cancel": "Batal"
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "Tidak ada unduhan yang sedang berjalan",

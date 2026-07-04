@@ -155,15 +155,11 @@
     "scan_games_remove_folder": "Remove folder",
     "scan_games_folders_hint_manual": "Add at least one folder to scan for games.",
     "scan_games_detection_warning": "Detection relies on a community-maintained list of known games and may be outdated, so some games might not be found.",
-    "fork_update_available": "Fork update available — Build #{{buildNumber}}",
-    "fork_update_downloading": "Downloading... {{percent}}%",
-    "fork_update_download": "Download",
-    "fork_update_install": "Restart & Install",
-    "fork_update_dismiss": "Dismiss",
-    "fork_update_confirm_title": "Install fork update?",
-    "fork_update_confirm_description": "Build #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "Install & Restart",
-    "fork_update_confirm_cancel": "Cancel"
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "reconnecting": "Reconnecting {{title}}…",

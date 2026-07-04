@@ -140,15 +140,11 @@
     "scan_games_in_progress": "インストール済みゲームをディスクでスキャン中...",
     "scan_games_close": "閉じる",
     "scan_games_scan_again": "再スキャン",
-    "fork_update_available": "Forkアップデートが利用可能 — ビルド #{{buildNumber}}",
-    "fork_update_downloading": "ダウンロード中... {{percent}}%",
-    "fork_update_download": "ダウンロード",
-    "fork_update_install": "再起動してインストール",
-    "fork_update_dismiss": "閉じる",
-    "fork_update_confirm_title": "Forkアップデートをインストールしますか？",
-    "fork_update_confirm_description": "ビルド #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "インストールして再起動",
-    "fork_update_confirm_cancel": "キャンセル"
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "ダウンロード中のものはありません",

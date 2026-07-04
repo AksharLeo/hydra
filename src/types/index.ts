@@ -143,11 +143,7 @@ export interface ForkUpdateInfo {
   publishedAt: string;
 }
 
-export type ForkUpdaterEvent =
-  | { type: "fork-update-available"; info: ForkUpdateInfo }
-  | { type: "fork-update-progress"; percent: number }
-  | { type: "fork-update-downloaded"; installerPath: string }
-  | { type: "fork-update-error"; error: string };
+export type ForkUpdaterEvent = { type: "fork-update-available"; info: ForkUpdateInfo };
 
 /* Events */
 export interface StartGameDownloadPayload {

@@ -140,15 +140,11 @@
     "scan_games_in_progress": "Scanning your disks for installed games...",
     "scan_games_close": "Close",
     "scan_games_scan_again": "Scan Again",
-    "fork_update_available": "تحديث Fork متاح — البناء #{{buildNumber}}",
-    "fork_update_downloading": "جار التنزيل... {{percent}}%",
-    "fork_update_download": "تنزيل",
-    "fork_update_install": "إعادة التشغيل والتثبيت",
-    "fork_update_dismiss": "تجاهل",
-    "fork_update_confirm_title": "تثبيت تحديث Fork؟",
-    "fork_update_confirm_description": "البناء #{{buildNumber}}: {{commitMessage}}",
-    "fork_update_confirm_ok": "تثبيت وإعادة التشغيل",
-    "fork_update_confirm_cancel": "إلغاء"
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "no_downloads_in_progress": "لا توجد تنزيلات قيد التقدم",
