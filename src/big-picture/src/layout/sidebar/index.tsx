@@ -779,13 +779,22 @@ function SidebarProfile({
     fetchOfficialProfile();
 
     const unsubSignIn = globalThis.window.electron.onOfficialSignIn(() => {
-      fetchOfficialProfile();
+      globalThis.window.electron
+        .getOfficialProfile()
+        .then((profile) => {
+          setOfficialProfile(profile);
+          if (profile) {
+            const basePath = IS_DESKTOP ? "/big-picture" : "";
+            navigate(`${basePath}/profile/${profile.id}`);
+          }
+        })
+        .catch(() => {});
     });
 
     return () => {
       unsubSignIn();
     };
-  }, [isSelfHosted]);
+  }, [isSelfHosted, navigate]);
 
   const profileFocusNavigationOverrides: FocusOverrides = {
     up: {
