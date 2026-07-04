@@ -256,7 +256,7 @@ function formatHours(valueInSeconds: number | null | undefined) {
 function formatAveragePlaytime(stats: UserStats | null) {
   if (!stats || stats.libraryCount <= 0) return "--";
 
-  return formatHours(stats.totalPlayTimeInSeconds.value / stats.libraryCount);
+  return formatHours((stats.totalPlayTimeInSeconds?.value ?? 0) / stats.libraryCount);
 }
 
 function getFavoriteGameImage(game: ProfileFavoriteGame | null) {
@@ -756,8 +756,8 @@ export default function Profile() {
       .then((response) => {
         if (!isMounted) return;
 
-        setFriends(response.friends);
-        setTotalFriends(response.totalFriends);
+        setFriends(response.friends ?? []);
+        setTotalFriends(response.totalFriends ?? 0);
       })
       .catch(() => {
         if (!isMounted) return;
@@ -1405,7 +1405,7 @@ export default function Profile() {
                       <ClockIcon size={36} />
                       <span>
                         {formatHours(
-                          effectiveUserStats?.totalPlayTimeInSeconds.value
+                          effectiveUserStats?.totalPlayTimeInSeconds?.value
                         )}
                       </span>
                     </div>
