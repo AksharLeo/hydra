@@ -1007,6 +1007,20 @@ declare global {
     /* Event listeners for transfer progress */
     on: (channel: string, listener: (...args) => void) => void;
     off: (channel: string, listener: (...args) => void) => void;
+
+    /* Performance (CachyOS Handheld) */
+    getPerformanceState: () => Promise<{
+      isSupported: boolean;
+      governor: string | null;
+      gpuPerfLevel: string | null;
+    }>;
+    setTdp: (watts: number) => Promise<{ ok: boolean; error?: string }>;
+    setCpuGovernor: (
+      governor: string
+    ) => Promise<{ ok: boolean; error?: string }>;
+    setGpuPerfLevel: (
+      level: string
+    ) => Promise<{ ok: boolean; error?: string }>;
   }
 
   interface Window {

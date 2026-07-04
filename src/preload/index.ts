@@ -1415,6 +1415,14 @@ contextBridge.exposeInMainWorld("electron", {
   getAvailableDrives: () => ipcRenderer.invoke("getAvailableDrives"),
   transferGameFiles: (shop: GameShop, objectId: string, destParent: string) =>
     ipcRenderer.invoke("transferGameFiles", shop, objectId, destParent),
+
+  /* Performance (CachyOS Handheld) */
+  getPerformanceState: () => ipcRenderer.invoke("getPerformanceState"),
+  setTdp: (watts: number) => ipcRenderer.invoke("setTdp", watts),
+  setCpuGovernor: (governor: string) =>
+    ipcRenderer.invoke("setCpuGovernor", governor),
+  setGpuPerfLevel: (level: string) =>
+    ipcRenderer.invoke("setGpuPerfLevel", level),
 });
 
 const reportNetworkStatus = (online: boolean, switched = false) => {

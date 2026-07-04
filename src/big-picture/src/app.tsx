@@ -15,6 +15,7 @@ import {
 import { IS_DESKTOP } from "./constants";
 import { useNavigation, useUserPreferences } from "./hooks";
 import { ConfirmationModal } from "./components/modals";
+import { QuickAccessMenu } from "./components/quick-access-menu";
 import { useTranslation } from "react-i18next";
 import { getGameExecutableFilters } from "@shared";
 import {
@@ -257,6 +258,7 @@ export default function App() {
           <InputModeProvider />
           <NavigationDiagnostics />
           <BigPictureToastHost />
+          <QuickAccessMenu />
         </div>
       </NavigationInputProvider>
     </Fragment>
