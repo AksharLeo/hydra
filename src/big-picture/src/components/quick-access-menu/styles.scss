@@ -6,6 +6,15 @@
   display: flex;
   align-items: stretch;
   justify-content: flex-end;
+
+  &__close {
+    position: absolute;
+    inset: 0;
+    background: none;
+    border: none;
+    cursor: default;
+    z-index: 0;
+  }
 }
 
 .qam-panel {
@@ -17,6 +26,8 @@
   box-shadow: -4px 0 32px rgba(0, 0, 0, 0.7);
   overflow-y: auto;
   animation: qam-slide-in 0.18s ease-out;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes qam-slide-in {
@@ -139,7 +150,10 @@
   color: var(--text);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
 
   &:hover:not(:disabled) {
     background: var(--secondary-hover);

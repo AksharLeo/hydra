@@ -68,11 +68,18 @@ export function QuickAccessMenu() {
   };
 
   return (
-    <div className="qam-backdrop" onClick={() => setOpen(false)}>
+    <div className="qam-backdrop">
+      <button
+        className="qam-backdrop__close"
+        aria-label="Close Quick Access Menu"
+        onClick={() => setOpen(false)}
+      />
       <div
         className="qam-panel"
         ref={panelRef}
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Quick Access Menu"
       >
         <div className="qam-header">
           <span className="qam-header__title">
@@ -109,14 +116,10 @@ export function QuickAccessMenu() {
                   className="qam-slider"
                   onChange={(e) => setTdp(Number(e.target.value))}
                   onMouseUp={() =>
-                    withBusy(() =>
-                      globalThis.window.electron.setTdp(tdp)
-                    )
+                    withBusy(() => globalThis.window.electron.setTdp(tdp))
                   }
                   onTouchEnd={() =>
-                    withBusy(() =>
-                      globalThis.window.electron.setTdp(tdp)
-                    )
+                    withBusy(() => globalThis.window.electron.setTdp(tdp))
                   }
                 />
                 <span>{TDP_MAX}W</span>
