@@ -19,11 +19,12 @@ function getErrorMessage(
   let code: string | undefined;
 
   if (err instanceof Error) {
-    // Prefer explicit .code property
-    if ("code" in err) {
-      code = (err as Record<string, unknown>).code as string;
-    } else {
-      // Electron IPC strips custom properties; parse code from the message
+    const errWithCode = err as Record<string, unknown>;
+    if (typeof errWithCode.code === "string") {
+      code = errWithCode.code;
+    }
+    if (!code) {
+      // Electron IPC may strip .code or leave it as undefined; parse from message
       // e.g. "ENOENT: no such file or directory, scandir '/path'"
       const match = /^([A-Z_]+):/.exec(err.message);
       if (match) code = match[1];
@@ -47,14 +48,20 @@ export interface FileExplorerModalProps {
   selectDirectory?: boolean;
 }
 
-function getDefaultPath(): Promise<string> {
-  return globalThis.window.electron
+async function getDefaultPath(): Promise<string> {
+  const prefsPath = await globalThis.window.electron
     .getUserPreferences()
     .then((prefs) => prefs?.downloadsPath)
-    .catch(() => null)
-    .then(
-      (path) => path ?? globalThis.window.electron.getDefaultDownloadsPath()
-    );
+    .catch(() => null);
+
+  if (prefsPath) {
+    const info = await globalThis.window.electron
+      .getPathInfo(prefsPath)
+      .catch(() => null);
+    if (info?.exists && !info.isFile) return prefsPath;
+  }
+
+  return globalThis.window.electron.getDefaultDownloadsPath();
 }
 
 function resolveStartPath(initialPath?: string): Promise<string> {

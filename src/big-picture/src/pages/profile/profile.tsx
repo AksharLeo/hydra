@@ -256,7 +256,9 @@ function formatHours(valueInSeconds: number | null | undefined) {
 function formatAveragePlaytime(stats: UserStats | null) {
   if (!stats || stats.libraryCount <= 0) return "--";
 
-  return formatHours((stats.totalPlayTimeInSeconds?.value ?? 0) / stats.libraryCount);
+  return formatHours(
+    (stats.totalPlayTimeInSeconds?.value ?? 0) / stats.libraryCount
+  );
 }
 
 function getFavoriteGameImage(game: ProfileFavoriteGame | null) {
@@ -634,8 +636,8 @@ export default function Profile() {
 
           if (!isMounted) return;
 
-          setRemoteLibraryGames(response.library);
-          setRemoteLibraryTotalCount(response.totalCount);
+          setRemoteLibraryGames(response.library ?? []);
+          setRemoteLibraryTotalCount(response.totalCount ?? 0);
           return;
         }
 
@@ -649,12 +651,12 @@ export default function Profile() {
               `/users/${targetUserId}/library?take=${PROFILE_REMOTE_LIBRARY_PAGE_SIZE}&skip=${skip}`
             );
 
-          totalCount = response.totalCount;
-          remoteGames.push(...response.library);
+          totalCount = response.totalCount ?? 0;
+          remoteGames.push(...(response.library ?? []));
 
           if (
-            response.library.length < PROFILE_REMOTE_LIBRARY_PAGE_SIZE ||
-            remoteGames.length >= response.totalCount
+            (response.library ?? []).length < PROFILE_REMOTE_LIBRARY_PAGE_SIZE ||
+            remoteGames.length >= (response.totalCount ?? 0)
           ) {
             break;
           }
@@ -711,7 +713,7 @@ export default function Profile() {
         .then((response) => {
           if (!isMounted) return;
 
-          setRemoteFavoriteGame(response.library[0] ?? null);
+          setRemoteFavoriteGame((response.library ?? [])[0] ?? null);
         })
         .catch(() => {
           if (isMounted) setRemoteFavoriteGame(null);
@@ -722,7 +724,7 @@ export default function Profile() {
           `/users/${targetUserId}/library?take=3&skip=0&sortBy=playedRecently`
         )
         .then((response) => {
-          if (isMounted) setRemoteRecentActivityGames(response.library);
+          if (isMounted) setRemoteRecentActivityGames(response.library ?? []);
         })
         .catch(() => {
           if (isMounted) setRemoteRecentActivityGames([]);
@@ -823,7 +825,7 @@ export default function Profile() {
             `/users/${targetUserId}/library?${searchParams.toString()}`
           );
 
-        gamesWithAchievements = response.library.filter(
+        gamesWithAchievements = (response.library ?? []).filter(
           (game) => (game.unlockedAchievementCount ?? 0) > 0
         );
       }
