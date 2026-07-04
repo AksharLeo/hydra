@@ -36,12 +36,6 @@ export function ForkUpdateModal() {
     handleClose();
   };
 
-  const platform = window.electron.platform;
-  const instructionsKey =
-    platform === "win32"
-      ? "fork_update_instructions_windows"
-      : "fork_update_instructions_linux";
-
   return (
     <Modal
       visible={info !== null}
@@ -52,7 +46,6 @@ export function ForkUpdateModal() {
         {info?.commitMessage && (
           <p className="fork-update-modal__commit">{info.commitMessage}</p>
         )}
-        <p className="fork-update-modal__instructions">{t(instructionsKey)}</p>
       </div>
 
       <HorizontalFocusGroup regionId={CONFIRM_REGION} asChild>

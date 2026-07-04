@@ -29,12 +29,6 @@ export function ForkUpdateModal() {
     window.electron.openExternal(url);
   };
 
-  const platform = window.electron.platform;
-  const instructionsKey =
-    platform === "win32"
-      ? "fork_update_instructions_windows"
-      : "fork_update_instructions_linux";
-
   return (
     <Modal
       visible={info !== null}
@@ -49,7 +43,6 @@ export function ForkUpdateModal() {
             {info.commitMessage}
           </p>
         )}
-        <p style={{ margin: 0, fontSize: "13px" }}>{t(instructionsKey)}</p>
         <div
           style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}
         >
