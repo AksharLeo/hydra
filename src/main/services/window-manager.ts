@@ -215,8 +215,15 @@ export class WindowManager {
 
     this.mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
       (details, callback) => {
+        const isMainWindow =
+          details.webContentsId === this.mainWindow?.webContents.id;
+        const isBigPicture =
+          this.bigPicture !== null &&
+          !this.bigPicture.isDestroyed() &&
+          details.webContentsId === this.bigPicture.webContents.id;
+
         if (
-          details.webContentsId !== this.mainWindow?.webContents.id ||
+          (!isMainWindow && !isBigPicture) ||
           details.url.includes("chatwoot")
         ) {
           return callback(details);
