@@ -42,7 +42,6 @@ This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) 
 - **Dual accounts in sidebar** — if you have both a self-hosted and an official Hydra account connected, both avatars appear in the Big Picture sidebar; clicking the small official avatar switches to the official profile view
 - **Self-hosted profile in Big Picture** — your self-hosted profile loads correctly in Big Picture (all library, stats, and recent activity sections display without blank screens)
 - **Steam-owned game launch** — games with `shop = steam` that are installed in your local Steam library are launched via `steam://rungameid/<appId>` instead of spawning a process directly; play-time tracking continues normally via the process watcher
-- **File explorer** — fixed "could not open location" error that appeared on every open when the stored downloads path was invalid or missing
 
 ### Other
 
