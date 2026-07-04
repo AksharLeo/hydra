@@ -211,7 +211,9 @@ function getProfileHeroUser(
       profileImageUrl: userDetails.profileImageUrl,
       backgroundImageUrl: userDetails.backgroundImageUrl,
       badges:
-        externalProfile?.id === userDetails.id ? externalProfile.badges : [],
+        externalProfile?.id === userDetails.id
+          ? (externalProfile.badges ?? [])
+          : [],
       isOwnProfile: true,
     };
   }
@@ -224,7 +226,7 @@ function getProfileHeroUser(
     displayName: externalProfile.displayName,
     profileImageUrl: externalProfile.profileImageUrl,
     backgroundImageUrl: externalProfile.backgroundImageUrl,
-    badges: externalProfile.badges,
+    badges: externalProfile.badges ?? [],
     isOwnProfile: false,
   };
 }
@@ -972,7 +974,7 @@ export default function Profile() {
     useHeroBackgroundLayers(heroImageUrl);
   const usernameLabel = profileUser?.username || profileUser?.id || "";
   const visibleBadges = useMemo(() => {
-    if (!profileUser?.badges.length) return [];
+    if (!profileUser?.badges?.length) return [];
 
     return profileUser.badges
       .map((badgeName) => badges.find((badge) => badge.name === badgeName))
