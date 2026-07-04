@@ -10,15 +10,25 @@ import {
 } from "./utils";
 
 const SKELETON_COUNT = 6;
+
 function getErrorMessage(
   err: unknown,
   errorMessages: Record<string, string>,
   fallbackMessage: string
 ): string {
-  const code =
-    err instanceof Error && "code" in err
-      ? (err as Record<string, unknown>).code
-      : undefined;
+  let code: string | undefined;
+
+  if (err instanceof Error) {
+    // Prefer explicit .code property
+    if ("code" in err) {
+      code = (err as Record<string, unknown>).code as string;
+    } else {
+      // Electron IPC strips custom properties; parse code from the message
+      // e.g. "ENOENT: no such file or directory, scandir '/path'"
+      const match = /^([A-Z_]+):/.exec(err.message);
+      if (match) code = match[1];
+    }
+  }
 
   if (typeof code === "string") {
     return errorMessages[code] ?? fallbackMessage;
@@ -37,18 +47,7 @@ export interface FileExplorerModalProps {
   selectDirectory?: boolean;
 }
 
-function resolveStartPath(initialPath?: string): Promise<string> {
-  if (initialPath) {
-    return globalThis.window.electron
-      .getPathInfo(initialPath)
-      .then((info) =>
-        info.exists && info.isFile
-          ? (getParentPath(initialPath) ?? initialPath)
-          : initialPath
-      )
-      .catch(() => initialPath);
-  }
-
+function getDefaultPath(): Promise<string> {
   return globalThis.window.electron
     .getUserPreferences()
     .then((prefs) => prefs?.downloadsPath)
@@ -56,6 +55,21 @@ function resolveStartPath(initialPath?: string): Promise<string> {
     .then(
       (path) => path ?? globalThis.window.electron.getDefaultDownloadsPath()
     );
+}
+
+function resolveStartPath(initialPath?: string): Promise<string> {
+  if (initialPath) {
+    return globalThis.window.electron
+      .getPathInfo(initialPath)
+      .then((info) => {
+        if (!info.exists) return getDefaultPath();
+        if (info.isFile) return getParentPath(initialPath) ?? initialPath;
+        return initialPath;
+      })
+      .catch(() => getDefaultPath());
+  }
+
+  return getDefaultPath();
 }
 
 export function useFileExplorer({
