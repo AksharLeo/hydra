@@ -43,12 +43,16 @@ export function ForkUpdateModal() {
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {info?.commitMessage && (
-          <p style={{ margin: 0, color: "var(--body-color)", fontSize: "13px" }}>
+          <p
+            style={{ margin: 0, color: "var(--body-color)", fontSize: "13px" }}
+          >
             {info.commitMessage}
           </p>
         )}
         <p style={{ margin: 0, fontSize: "13px" }}>{t(instructionsKey)}</p>
-        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+        <div
+          style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}
+        >
           <button
             type="button"
             className="button theme-button"
@@ -56,11 +60,7 @@ export function ForkUpdateModal() {
           >
             {t("fork_update_open_artifacts")}
           </button>
-          <button
-            type="button"
-            className="button"
-            onClick={handleClose}
-          >
+          <button type="button" className="button" onClick={handleClose}>
             {t("fork_update_close")}
           </button>
         </div>

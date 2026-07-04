@@ -143,7 +143,10 @@ export interface ForkUpdateInfo {
   publishedAt: string;
 }
 
-export type ForkUpdaterEvent = { type: "fork-update-available"; info: ForkUpdateInfo };
+export type ForkUpdaterEvent = {
+  type: "fork-update-available";
+  info: ForkUpdateInfo;
+};
 
 /* Events */
 export interface StartGameDownloadPayload {
