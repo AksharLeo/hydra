@@ -19,7 +19,7 @@ const HYDRA_SESSION = "hydra-gamescope";
 function isCachyOSHandheld(): boolean {
   try {
     const content = fs.readFileSync(OS_RELEASE, "utf8");
-    return content.includes("ID=cachyos") && content.includes("handheld");
+    return content.includes("ID=cachyos");
   } catch {
     return false;
   }
