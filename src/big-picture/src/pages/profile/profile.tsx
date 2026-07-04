@@ -544,6 +544,8 @@ export default function Profile() {
     useState(false);
   const [isLoadingExternalProfile, setIsLoadingExternalProfile] =
     useState(false);
+  const [hasExternalProfileFetched, setHasExternalProfileFetched] =
+    useState(false);
 
   useEffect(() => {
     globalThis.window.electron.hydraApi
@@ -563,11 +565,13 @@ export default function Profile() {
   useEffect(() => {
     if (!targetUserId) {
       setExternalProfile(null);
+      setHasExternalProfileFetched(false);
       return;
     }
 
     let isMounted = true;
     setIsLoadingExternalProfile(true);
+    setHasExternalProfileFetched(false);
 
     globalThis.window.electron.hydraApi
       .get<UserProfile>(`/users/${targetUserId}`)
@@ -578,7 +582,10 @@ export default function Profile() {
         if (isMounted) setExternalProfile(null);
       })
       .finally(() => {
-        if (isMounted) setIsLoadingExternalProfile(false);
+        if (isMounted) {
+          setIsLoadingExternalProfile(false);
+          setHasExternalProfileFetched(true);
+        }
       });
 
     return () => {
@@ -957,7 +964,9 @@ export default function Profile() {
   };
 
   const isLoading =
-    isLoadingExternalProfile || (!profileUser && Boolean(targetUserId));
+    (!userId && !userDetails) ||
+    (Boolean(userId) &&
+      (!hasExternalProfileFetched || isLoadingExternalProfile));
   const heroImageUrl = profileUser?.backgroundImageUrl ?? null;
   const { backgroundLayers, getLayerEventHandlers } =
     useHeroBackgroundLayers(heroImageUrl);

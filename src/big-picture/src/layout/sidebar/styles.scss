@@ -131,7 +131,9 @@
   cursor: pointer;
   padding: 0;
   overflow: hidden;
-  transition: border-color 0.15s ease, opacity 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    opacity 0.15s ease;
   opacity: 0.85;
 
   &:hover,
