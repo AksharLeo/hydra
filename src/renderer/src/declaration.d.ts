@@ -1008,6 +1008,16 @@ declare global {
     on: (channel: string, listener: (...args) => void) => void;
     off: (channel: string, listener: (...args) => void) => void;
 
+    /* Session (CachyOS Handheld) */
+    getSddmSession: () => Promise<{
+      isSupported: boolean;
+      session: string | null;
+      isHydraSession: boolean;
+    }>;
+    setSddmSession: (
+      useHydra: boolean
+    ) => Promise<{ ok: boolean; error?: string }>;
+
     /* Performance (CachyOS Handheld) */
     getPerformanceState: () => Promise<{
       isSupported: boolean;

@@ -1416,6 +1416,11 @@ contextBridge.exposeInMainWorld("electron", {
   transferGameFiles: (shop: GameShop, objectId: string, destParent: string) =>
     ipcRenderer.invoke("transferGameFiles", shop, objectId, destParent),
 
+  /* Session (CachyOS Handheld) */
+  getSddmSession: () => ipcRenderer.invoke("getSddmSession"),
+  setSddmSession: (useHydra: boolean) =>
+    ipcRenderer.invoke("setSddmSession", useHydra),
+
   /* Performance (CachyOS Handheld) */
   getPerformanceState: () => ipcRenderer.invoke("getPerformanceState"),
   setTdp: (watts: number) => ipcRenderer.invoke("setTdp", watts),
