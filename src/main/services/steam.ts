@@ -171,6 +171,43 @@ export const composeSteamShortcut = (
   };
 };
 
+export const getSteamLibraryPaths = async (): Promise<string[]> => {
+  const steamLocation = await getSteamLocation().catch(() => null);
+  if (!steamLocation) return [];
+
+  const paths: string[] = [steamLocation];
+
+  const vdfPath = path.join(steamLocation, "steamapps", "libraryfolders.vdf");
+  try {
+    const content = fs.readFileSync(vdfPath, "utf-8");
+    for (const match of content.matchAll(/"path"\s+"([^"]+)"/g)) {
+      const libPath = match[1].replace(/\\\\/g, "\\");
+      if (libPath && !paths.includes(libPath)) paths.push(libPath);
+    }
+  } catch {
+    // VDF missing or unreadable — default Steam location is already included
+  }
+
+  return paths;
+};
+
+export const isGameInstalledOnSteam = async (
+  objectId: string
+): Promise<boolean> => {
+  const libraryPaths = await getSteamLibraryPaths().catch(() => []);
+
+  for (const libraryPath of libraryPaths) {
+    const manifestPath = path.join(
+      libraryPath,
+      "steamapps",
+      `appmanifest_${objectId}.acf`
+    );
+    if (fs.existsSync(manifestPath)) return true;
+  }
+
+  return false;
+};
+
 export const writeSteamShortcuts = async (
   steamUserId: number,
   shortcuts: SteamShortcut[]
