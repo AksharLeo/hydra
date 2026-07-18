@@ -38,6 +38,11 @@ export class SSEClient {
   static connect() {
     this.close();
 
+    if (HydraApi.isSelfHosted()) {
+      logger.info("SSE connect skipped: self-hosted mode has no stream");
+      return;
+    }
+
     this.masterAbort = new AbortController();
     void this.runLoop(this.epoch, this.masterAbort.signal);
   }

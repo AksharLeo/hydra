@@ -107,13 +107,12 @@ interface UseGameArtworkGridOptions {
   steamAppId?: string | null;
 }
 
-const SGDB_TYPE_BY_ASSET: Record<ArtworkAssetType, "icon" | "logo" | "hero"> =
-  {
-    grid: "hero",
-    hero: "hero",
-    logo: "logo",
-    icon: "icon",
-  };
+const SGDB_TYPE_BY_ASSET: Record<ArtworkAssetType, "icon" | "logo" | "hero"> = {
+  grid: "hero",
+  hero: "hero",
+  logo: "logo",
+  icon: "icon",
+};
 
 const toArtworkItems = (
   results: { id: number; url: string; thumb: string }[]
@@ -160,6 +159,24 @@ export function useGameArtworkGrid({
     setSelection(record);
   }, [shop, objectId]);
 
+  const loadFromSteamGridDb = useCallback(async (): Promise<boolean> => {
+    if (!isSelfHosted || !gameTitle) return false;
+
+    try {
+      const results = await globalThis.window.electron.searchSteamGridDb(
+        gameTitle,
+        SGDB_TYPE_BY_ASSET[assetType],
+        steamAppId
+      );
+      setItems(toArtworkItems(results));
+      setHasMore(false);
+      setHasFailed(false);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [isSelfHosted, gameTitle, assetType, steamAppId]);
+
   const loadPage = useCallback(
     async (page: number) => {
       if (loadingRef.current) return;
@@ -174,6 +191,19 @@ export function useGameArtworkGrid({
           setIsLoading(false);
         }
       };
+
+      if (isSelfHosted) {
+        const ok = await loadFromSteamGridDb();
+        if (requestId === requestIdRef.current) {
+          if (!ok) {
+            setHasFailed(true);
+            setHasMore(false);
+            onError();
+          }
+          finishLoading();
+        }
+        return;
+      }
 
       try {
         const result = await globalThis.window.electron.getGameArtwork(
@@ -204,23 +234,6 @@ export function useGameArtworkGrid({
       } catch {
         if (requestId !== requestIdRef.current) return;
 
-        if (isSelfHosted && gameTitle) {
-          try {
-            const results = await globalThis.window.electron.searchSteamGridDb(
-              gameTitle,
-              SGDB_TYPE_BY_ASSET[assetType],
-              steamAppId
-            );
-            setItems(toArtworkItems(results));
-            setHasMore(false);
-            setHasFailed(false);
-            finishLoading();
-            return;
-          } catch {
-            // fall through to error state
-          }
-        }
-
         setHasFailed(true);
         setHasMore(false);
         onError();
@@ -228,7 +241,14 @@ export function useGameArtworkGrid({
         finishLoading();
       }
     },
-    [shop, objectId, assetType, onError, isSelfHosted, gameTitle, steamAppId]
+    [
+      shop,
+      objectId,
+      assetType,
+      onError,
+      isSelfHosted,
+      loadFromSteamGridDb,
+    ]
   );
 
   const reset = useCallback(() => {
