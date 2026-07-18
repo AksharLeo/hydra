@@ -11,6 +11,7 @@ const getApiKey = async (): Promise<string | null> => {
       valueEncoding: "json",
     })
     .catch(() => null);
+  if (prefs?.steamGridDbMode !== "custom") return null;
   return prefs?.steamGridDbApiKey ?? null;
 };
 

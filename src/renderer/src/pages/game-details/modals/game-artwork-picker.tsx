@@ -411,6 +411,7 @@ export function GameArtworkPicker({
     (state) => state.userPreferences.value
   );
   const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
+  const steamGridDbMode = userPreferences?.steamGridDbMode ?? "hydra";
   const scrollId = useId();
 
   const onError = useCallback(() => {
@@ -441,6 +442,7 @@ export function GameArtworkPicker({
     onChanged,
     onError,
     onPicked,
+    steamGridDbMode,
     isSelfHosted,
     gameTitle: game.title,
     steamAppId: game.shop === "steam" ? game.objectId : null,

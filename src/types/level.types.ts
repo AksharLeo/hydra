@@ -206,6 +206,7 @@ export interface UserPreferences {
   signOutOnExit?: boolean;
   selfHostedSignOutOnExit?: boolean;
   steamGridDbApiKey?: string | null;
+  steamGridDbMode?: "hydra" | "custom";
 }
 
 export interface NetworkInterface {

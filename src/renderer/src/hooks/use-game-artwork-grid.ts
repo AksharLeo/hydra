@@ -102,6 +102,7 @@ interface UseGameArtworkGridOptions {
   onError: () => void;
   onPicked?: () => void;
   onCleared?: () => void;
+  steamGridDbMode?: "hydra" | "custom";
   isSelfHosted?: boolean;
   gameTitle?: string;
   steamAppId?: string | null;
@@ -135,6 +136,7 @@ export function useGameArtworkGrid({
   onError,
   onPicked,
   onCleared,
+  steamGridDbMode = "hydra",
   isSelfHosted = false,
   gameTitle,
   steamAppId,
@@ -159,8 +161,10 @@ export function useGameArtworkGrid({
     setSelection(record);
   }, [shop, objectId]);
 
+  const useCustomSgdb = steamGridDbMode === "custom" || isSelfHosted;
+
   const loadFromSteamGridDb = useCallback(async (): Promise<boolean> => {
-    if (!isSelfHosted || !gameTitle) return false;
+    if (!useCustomSgdb || !gameTitle) return false;
 
     try {
       const results = await globalThis.window.electron.searchSteamGridDb(
@@ -175,7 +179,7 @@ export function useGameArtworkGrid({
     } catch {
       return false;
     }
-  }, [isSelfHosted, gameTitle, assetType, steamAppId]);
+  }, [useCustomSgdb, gameTitle, assetType, steamAppId]);
 
   const loadPage = useCallback(
     async (page: number) => {
@@ -192,7 +196,7 @@ export function useGameArtworkGrid({
         }
       };
 
-      if (isSelfHosted) {
+      if (useCustomSgdb) {
         const ok = await loadFromSteamGridDb();
         if (requestId === requestIdRef.current) {
           if (!ok) {
@@ -241,14 +245,7 @@ export function useGameArtworkGrid({
         finishLoading();
       }
     },
-    [
-      shop,
-      objectId,
-      assetType,
-      onError,
-      isSelfHosted,
-      loadFromSteamGridDb,
-    ]
+    [shop, objectId, assetType, onError, useCustomSgdb, loadFromSteamGridDb]
   );
 
   const reset = useCallback(() => {

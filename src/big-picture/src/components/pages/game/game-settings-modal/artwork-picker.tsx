@@ -49,6 +49,7 @@ export function GameArtworkPicker({
   const { userDetails } = useUserDetails();
   const userPreferences = useUserPreferences();
   const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
+  const steamGridDbMode = userPreferences?.steamGridDbMode ?? "hydra";
 
   const onError = useCallback(() => {
     showErrorToast(t("steamgriddb_fetch_failed"));
@@ -75,6 +76,7 @@ export function GameArtworkPicker({
     onChanged,
     onError,
     onPicked,
+    steamGridDbMode,
     isSelfHosted,
     gameTitle: game.title,
     steamAppId: game.shop === "steam" ? game.objectId : null,
