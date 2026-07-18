@@ -17,6 +17,7 @@ import {
   getRenderableArtworkUrl,
   isAnimatedArtworkItem,
   isArtworkRowSettled,
+  useAppSelector,
   useGameArtworkGrid,
   useToast,
   useUserDetails,
@@ -406,6 +407,10 @@ export function GameArtworkPicker({
   const { t: tProfile } = useTranslation("user_profile");
   const { showErrorToast, showSuccessToast } = useToast();
   const { userDetails } = useUserDetails();
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
+  const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
   const scrollId = useId();
 
   const onError = useCallback(() => {
@@ -436,6 +441,9 @@ export function GameArtworkPicker({
     onChanged,
     onError,
     onPicked,
+    isSelfHosted,
+    gameTitle: game.title,
+    steamAppId: game.shop === "steam" ? game.objectId : null,
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);

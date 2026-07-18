@@ -201,6 +201,8 @@ src/big-picture/src/components/pages/game-achievements/user-summary/index.tsx
 src/big-picture/src/components/pages/game/achievements/index.tsx
 src/big-picture/src/components/pages/game/controller-support/index.tsx
 src/big-picture/src/components/pages/game/game-reviews/index.tsx
+src/big-picture/src/components/pages/game/game-settings-modal/artwork-picker.scss
+src/big-picture/src/components/pages/game/game-settings-modal/artwork-picker.tsx
 src/big-picture/src/components/pages/game/game-settings-modal/cloud-saves-list.tsx
 src/big-picture/src/components/pages/game/game-settings-modal/cloud-tab.scss
 src/big-picture/src/components/pages/game/game-settings-modal/cloud-tab.tsx
@@ -216,6 +218,7 @@ src/big-picture/src/components/pages/game/game-settings-modal/index.tsx
 src/big-picture/src/components/pages/game/game-settings-modal/launch-tab.scss
 src/big-picture/src/components/pages/game/game-settings-modal/launch-tab.tsx
 src/big-picture/src/components/pages/game/game-settings-modal/styles.scss
+src/big-picture/src/components/pages/game/game-settings-modal/use-artwork-grid-navigation.ts
 src/big-picture/src/components/pages/game/game-settings-modal/use-game-settings-modal-state.ts
 src/big-picture/src/components/pages/game/hero/index.tsx
 src/big-picture/src/components/pages/game/how-long-to-beat/index.tsx
@@ -360,6 +363,7 @@ src/big-picture/src/pages/library/page.tsx
 src/big-picture/src/pages/profile/navigation.ts
 src/big-picture/src/pages/profile/profile.scss
 src/big-picture/src/pages/profile/profile.tsx
+src/big-picture/src/pages/profile/use-profile-data.ts
 src/big-picture/src/pages/settings/account-privacy.scss
 src/big-picture/src/pages/settings/account-privacy.tsx
 src/big-picture/src/pages/settings/behavior-section.scss
@@ -493,6 +497,10 @@ src/main/events/autoupdater/index.ts
 src/main/events/autoupdater/restart-and-install-update.ts
 src/main/events/big-picture/index.ts
 src/main/events/big-picture/open-big-picture-window.ts
+src/main/events/catalogue/cover-poster-url.test.ts
+src/main/events/catalogue/cover-poster-url.ts
+src/main/events/catalogue/get-cover-poster.ts
+src/main/events/catalogue/get-game-artwork.ts
 src/main/events/catalogue/get-game-assets.ts
 src/main/events/catalogue/get-game-shop-details.ts
 src/main/events/catalogue/get-game-stats.ts
@@ -590,9 +598,13 @@ src/main/events/library/create-steam-shortcut.ts
 src/main/events/library/delete-archive.ts
 src/main/events/library/delete-game-folder.ts
 src/main/events/library/delete-steam-shortcut.ts
+src/main/events/library/download-game-artwork-stream.test.ts
+src/main/events/library/download-game-artwork-stream.ts
+src/main/events/library/download-game-artwork.ts
 src/main/events/library/extract-game-download.ts
 src/main/events/library/get-available-drives.ts
 src/main/events/library/get-default-wine-prefix-selection-path.ts
+src/main/events/library/get-game-artwork-selection.ts
 src/main/events/library/get-game-by-object-id.ts
 src/main/events/library/get-game-installer-action-type.ts
 src/main/events/library/get-game-launch-proton-version.ts
@@ -612,6 +624,8 @@ src/main/events/library/open-game-installer.ts
 src/main/events/library/open-game-save-folder.ts
 src/main/events/library/open-game-winetricks.ts
 src/main/events/library/open-game.ts
+src/main/events/library/reconcile-artwork-selection.test.ts
+src/main/events/library/reconcile-artwork-selection.ts
 src/main/events/library/refresh-library-assets.ts
 src/main/events/library/remove-game-from-favorites.ts
 src/main/events/library/remove-game-from-library.ts
@@ -620,6 +634,9 @@ src/main/events/library/reset-game-achievements.ts
 src/main/events/library/scan-installed-games.ts
 src/main/events/library/select-game-proton-path.ts
 src/main/events/library/select-game-wine-prefix.ts
+src/main/events/library/set-game-artwork-selection.ts
+src/main/events/library/steam-shortcut-assets.test.ts
+src/main/events/library/steam-shortcut-assets.ts
 src/main/events/library/toggle-automatic-cloud-sync.ts
 src/main/events/library/toggle-game-gamemode.ts
 src/main/events/library/toggle-game-launch-via-steam.ts
@@ -740,6 +757,7 @@ src/main/level/sublevels/game-achievements.ts
 src/main/level/sublevels/game-shop-assets.ts
 src/main/level/sublevels/game-shop-cache.ts
 src/main/level/sublevels/game-stats-cache.ts
+src/main/level/sublevels/games-artwork-selection.ts
 src/main/level/sublevels/games.ts
 src/main/level/sublevels/index.ts
 src/main/level/sublevels/keys.ts
@@ -756,6 +774,8 @@ src/main/services/download-orchestrator.ts
 src/main/services/download-sources-checker.ts
 src/main/services/extraction-path.ts
 src/main/services/fork-updater.ts
+src/main/services/game-artwork-cloud.ts
+src/main/services/game-artwork.ts
 src/main/services/game-executables.ts
 src/main/services/game-files-manager.ts
 src/main/services/hydra-api.ts
@@ -773,6 +793,8 @@ src/main/services/process-watcher.ts
 src/main/services/python-rpc.ts
 src/main/services/steam-250.ts
 src/main/services/steam-catalogue.ts
+src/main/services/steam-grid-db-cache.test.ts
+src/main/services/steam-grid-db-cache.ts
 src/main/services/steam.ts
 src/main/services/system-path.ts
 src/main/services/umu.ts
@@ -846,6 +868,8 @@ src/main/services/library-sync/clear-games-remote-id.ts
 src/main/services/library-sync/create-game.ts
 src/main/services/library-sync/index.ts
 src/main/services/library-sync/merge-with-remote-games.ts
+src/main/services/library-sync/reconcile-remote-artwork-selection.test.ts
+src/main/services/library-sync/reconcile-remote-artwork-selection.ts
 src/main/services/library-sync/update-game-playtime.ts
 src/main/services/library-sync/upload-games-batch.ts
 src/main/services/notifications/index.ts
@@ -968,6 +992,10 @@ src/renderer/src/components/header/scan-games-modal.scss
 src/renderer/src/components/header/scan-games-modal.tsx
 src/renderer/src/components/hero/hero.scss
 src/renderer/src/components/hero/hero.tsx
+src/renderer/src/components/image-crop-modal/image-crop-modal.scss
+src/renderer/src/components/image-crop-modal/image-crop-modal.tsx
+src/renderer/src/components/image-crop-modal/image-crop-utils.test.ts
+src/renderer/src/components/image-crop-modal/image-crop-utils.ts
 src/renderer/src/components/link/link.scss
 src/renderer/src/components/link/link.tsx
 src/renderer/src/components/modal/modal.scss
@@ -1020,11 +1048,13 @@ src/renderer/src/features/toast-slice.ts
 src/renderer/src/features/use-preferences-slice.ts
 src/renderer/src/features/user-details-slice.ts
 src/renderer/src/features/window-slice.ts
+src/renderer/src/hooks/game-artwork-utils.ts
 src/renderer/src/hooks/index.ts
 src/renderer/src/hooks/redux.ts
 src/renderer/src/hooks/use-catalogue.ts
 src/renderer/src/hooks/use-classics-scan.ts
 src/renderer/src/hooks/use-cloud-connector.ts
+src/renderer/src/hooks/use-cover-poster.ts
 src/renderer/src/hooks/use-date.ts
 src/renderer/src/hooks/use-download-layout.ts
 src/renderer/src/hooks/use-download-options-listener.ts
@@ -1032,6 +1062,8 @@ src/renderer/src/hooks/use-download.ts
 src/renderer/src/hooks/use-emulation-backup-progress.ts
 src/renderer/src/hooks/use-feature.ts
 src/renderer/src/hooks/use-format.ts
+src/renderer/src/hooks/use-game-artwork-grid.test.ts
+src/renderer/src/hooks/use-game-artwork-grid.ts
 src/renderer/src/hooks/use-game-card.ts
 src/renderer/src/hooks/use-game-collections.ts
 src/renderer/src/hooks/use-launchbox-filters.ts
@@ -1135,6 +1167,8 @@ src/renderer/src/pages/game-details/modals/disc-selection-modal.scss
 src/renderer/src/pages/game-details/modals/disc-selection-modal.tsx
 src/renderer/src/pages/game-details/modals/download-settings-modal.scss
 src/renderer/src/pages/game-details/modals/download-settings-modal.tsx
+src/renderer/src/pages/game-details/modals/game-artwork-picker.scss
+src/renderer/src/pages/game-details/modals/game-artwork-picker.tsx
 src/renderer/src/pages/game-details/modals/game-assets-settings.scss
 src/renderer/src/pages/game-details/modals/game-assets-settings.tsx
 src/renderer/src/pages/game-details/modals/game-options-modal.scss
@@ -1225,7 +1259,6 @@ src/renderer/src/pages/profile/profile-content/wrapped-tab.scss
 src/renderer/src/pages/profile/profile-content/wrapped-tab.tsx
 src/renderer/src/pages/profile/profile-hero/profile-hero.scss
 src/renderer/src/pages/profile/profile-hero/profile-hero.tsx
-src/renderer/src/pages/profile/profile-image-crop-modal/profile-image-crop-modal.scss
 src/renderer/src/pages/profile/profile-image-crop-modal/profile-image-crop-modal.tsx
 src/renderer/src/pages/profile/profile-section/profile-section.scss
 src/renderer/src/pages/profile/profile-section/profile-section.tsx
@@ -1323,6 +1356,7 @@ src/renderer/src/pages/theme-editor/theme-editor.scss
 src/renderer/src/pages/theme-editor/theme-editor.tsx
 src/renderer/src/scss/globals.scss
 src/renderer/src/services/leveldb.service.ts
+src/shared/artwork-resolver.ts
 src/shared/char-map.ts
 src/shared/constants.ts
 src/shared/controller-support.ts
@@ -1331,6 +1365,7 @@ src/shared/html-sanitizer.ts
 src/shared/index.ts
 src/shared/language-flags.ts
 src/shared/use-hls-video.ts
+src/types/artwork.types.ts
 src/types/download-contract.ts
 src/types/download.types.ts
 src/types/emulator.types.ts

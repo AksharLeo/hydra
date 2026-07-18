@@ -102,7 +102,30 @@ interface UseGameArtworkGridOptions {
   onError: () => void;
   onPicked?: () => void;
   onCleared?: () => void;
+  isSelfHosted?: boolean;
+  gameTitle?: string;
+  steamAppId?: string | null;
 }
+
+const SGDB_TYPE_BY_ASSET: Record<ArtworkAssetType, "icon" | "logo" | "hero"> =
+  {
+    grid: "hero",
+    hero: "hero",
+    logo: "logo",
+    icon: "icon",
+  };
+
+const toArtworkItems = (
+  results: { id: number; url: string; thumb: string }[]
+): ArtworkItem[] =>
+  results.map((item) => ({
+    id: item.id,
+    score: 0,
+    url: item.url,
+    thumb: item.thumb ?? item.url,
+    width: 0,
+    height: 0,
+  }));
 
 export function useGameArtworkGrid({
   shop,
@@ -113,6 +136,9 @@ export function useGameArtworkGrid({
   onError,
   onPicked,
   onCleared,
+  isSelfHosted = false,
+  gameTitle,
+  steamAppId,
 }: UseGameArtworkGridOptions) {
   const [items, setItems] = useState<ArtworkItem[]>([]);
   const [selection, setSelection] = useState<GameArtworkSelection | null>(null);
@@ -142,6 +168,13 @@ export function useGameArtworkGrid({
       loadingRef.current = true;
       setIsLoading(true);
 
+      const finishLoading = () => {
+        if (requestId === requestIdRef.current) {
+          loadingRef.current = false;
+          setIsLoading(false);
+        }
+      };
+
       try {
         const result = await globalThis.window.electron.getGameArtwork(
           shop,
@@ -154,6 +187,7 @@ export function useGameArtworkGrid({
 
         if (!result) {
           setHasMore(false);
+          finishLoading();
           return;
         }
 
@@ -170,17 +204,31 @@ export function useGameArtworkGrid({
       } catch {
         if (requestId !== requestIdRef.current) return;
 
+        if (isSelfHosted && gameTitle) {
+          try {
+            const results = await globalThis.window.electron.searchSteamGridDb(
+              gameTitle,
+              SGDB_TYPE_BY_ASSET[assetType],
+              steamAppId
+            );
+            setItems(toArtworkItems(results));
+            setHasMore(false);
+            setHasFailed(false);
+            finishLoading();
+            return;
+          } catch {
+            // fall through to error state
+          }
+        }
+
         setHasFailed(true);
         setHasMore(false);
         onError();
       } finally {
-        if (requestId === requestIdRef.current) {
-          loadingRef.current = false;
-          setIsLoading(false);
-        }
+        finishLoading();
       }
     },
-    [shop, objectId, assetType, onError]
+    [shop, objectId, assetType, onError, isSelfHosted, gameTitle, steamAppId]
   );
 
   const reset = useCallback(() => {

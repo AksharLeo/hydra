@@ -52,7 +52,6 @@ function GameSourceBadge({ type }: { type: "steam" | "hydra" }) {
   );
 }
 
-
 export interface VerticalLibraryGameCardProps {
   game: LibraryGame;
   navigationOverrides?: FocusOverrides;

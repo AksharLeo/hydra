@@ -8,7 +8,11 @@ import {
 } from "@renderer/hooks/use-game-artwork-grid";
 
 import { FocusItem, GridFocusGroup } from "../../../common";
-import { useBigPictureToast, useUserDetails } from "../../../../hooks";
+import {
+  useBigPictureToast,
+  useUserDetails,
+  useUserPreferences,
+} from "../../../../hooks";
 import { useArtworkGridNavigation } from "./use-artwork-grid-navigation";
 
 import "./artwork-picker.scss";
@@ -43,6 +47,8 @@ export function GameArtworkPicker({
   const { t } = useTranslation("big_picture");
   const { showErrorToast, showSuccessToast } = useBigPictureToast();
   const { userDetails } = useUserDetails();
+  const userPreferences = useUserPreferences();
+  const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
 
   const onError = useCallback(() => {
     showErrorToast(t("steamgriddb_fetch_failed"));
@@ -69,6 +75,9 @@ export function GameArtworkPicker({
     onChanged,
     onError,
     onPicked,
+    isSelfHosted,
+    gameTitle: game.title,
+    steamAppId: game.shop === "steam" ? game.objectId : null,
   });
 
   const handlePickItem = useCallback(

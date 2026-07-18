@@ -54,7 +54,12 @@ import {
 } from "../../helpers";
 import { useHeroBackgroundLayers } from "../../components/pages/library/hero/use-hero-background-layers";
 import { useFocusAnimatedCover } from "../../components/pages/library/card-presentation";
-import { useFormat, useLibrary, useUserDetails, useUserPreferences } from "../../hooks";
+import {
+  useFormat,
+  useLibrary,
+  useUserDetails,
+  useUserPreferences,
+} from "../../hooks";
 import { BIG_PICTURE_SIDEBAR_PROFILE_ID } from "../../layout";
 import type { FocusOverrides } from "../../services";
 import { useNavigationIsFocused } from "../../stores";

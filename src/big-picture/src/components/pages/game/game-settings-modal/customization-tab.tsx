@@ -637,7 +637,7 @@ export function GameCustomizationSettingsTab({
               </button>
             </FocusItem>
 
-             {sgdbPickerOpen ? (
+            {sgdbPickerOpen ? (
               <Modal
                 visible={sgdbPickerOpen}
                 onClose={() => setSgdbPickerOpen(false)}
@@ -654,8 +654,7 @@ export function GameCustomizationSettingsTab({
                     id="sgdb-search-btn"
                     asChild
                     actions={{
-                      primary: () =>
-                        searchSgdb(sgdbQuery, selectedAssetTab),
+                      primary: () => searchSgdb(sgdbQuery, selectedAssetTab),
                     }}
                   >
                     <button
@@ -683,10 +682,7 @@ export function GameCustomizationSettingsTab({
                           asChild
                           actions={{
                             primary: () =>
-                              handleSgdbSelect(
-                                selectedAssetTab,
-                                item.url
-                              ),
+                              handleSgdbSelect(selectedAssetTab, item.url),
                           }}
                         >
                           <button

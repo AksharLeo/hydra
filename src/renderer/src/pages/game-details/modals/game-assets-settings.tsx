@@ -31,11 +31,11 @@ import { GameArtworkPicker } from "./game-artwork-picker";
 
 import "./game-assets-settings.scss";
 
-  type AssetType = "icon" | "logo" | "hero" | "grid";
+type AssetType = "icon" | "logo" | "hero" | "grid";
 
-  const capitalizeAssetType = (assetType: AssetType): string => {
-    return assetType.charAt(0).toUpperCase() + assetType.slice(1);
-  };
+const capitalizeAssetType = (assetType: AssetType): string => {
+  return assetType.charAt(0).toUpperCase() + assetType.slice(1);
+};
 
 const ASSET_OUTPUT_SIZE: Record<AssetType, { width: number; height: number }> =
   {

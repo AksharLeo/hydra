@@ -18,7 +18,7 @@ const getGameArtwork = async (
     if (error instanceof UserNotLoggedInError) return null;
 
     logger.error("Failed to fetch game artwork", { shop, objectId, kind });
-    throw error;
+    return null;
   }
 };
 
