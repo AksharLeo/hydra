@@ -785,7 +785,11 @@
     "self_hosted_use_protondb": "Bruk self-hosted server for ProtonDB",
     "self_hosted_change_password": "Endre passord / administrer konto",
     "self_hosted_import_hydra_cloud": "Importer fra Hydra Cloud",
-    "self_hosted_importing": "Importerer..."
+    "self_hosted_importing": "Importerer...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Nedlasting ferdig",

@@ -1209,7 +1209,11 @@
     "big_picture_enable_sounds": "Включи звуци за Big Picture",
     "big_picture_enable_virtual_keyboard": "Включи виртуална клавиатура за Big Picture",
     "big_picture_enable_diagnostics": "Включи диагностика на навигацията",
-    "big_picture_diagnostics_position": "Позиция на диагностиката"
+    "big_picture_diagnostics_position": "Позиция на диагностиката",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Изтеглянето завърши",

@@ -785,7 +785,11 @@
     "self_hosted_use_protondb": "Kasuta self-hosted serverit ProtonDB jaoks",
     "self_hosted_change_password": "Muuda parooli / halda kontot",
     "self_hosted_import_hydra_cloud": "Impordi Hydra Cloud'ist",
-    "self_hosted_importing": "Importimine..."
+    "self_hosted_importing": "Importimine...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Allalaadimine lõpetatud",

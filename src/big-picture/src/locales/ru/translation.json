@@ -790,5 +790,14 @@
   "fork_update_instructions_linux": "Скачайте AppImage, .deb или .rpm со страницы артефактов. Для AppImage: chmod +x и запустите. Для .deb: sudo dpkg -i file.deb. Для .rpm: sudo rpm -i file.rpm.",
   "fork_update_instructions_windows": "Скачайте и запустите установщик (-setup.exe) со страницы артефактов.",
   "fork_update_open_artifacts": "Открыть артефакты",
-  "fork_update_close": "Закрыть"
+  "fork_update_close": "Закрыть",
+  "settings": {
+    "steamgriddb_source": "Источник обложек",
+    "steamgriddb_source_hydra": "Hydra API (рекомендуется)",
+    "steamgriddb_source_custom": "Свой SteamGridDB API-ключ",
+    "steamgriddb_key_required": "Укажите SteamGridDB API-ключ для этого режима.",
+    "steamgriddb_save": "Настройки SteamGridDB сохранены",
+    "steamgriddb_description": "Выберите источник обложек для иконок, логотипов и героев игр."
+  },
+  "save": "Сохранить"
 }

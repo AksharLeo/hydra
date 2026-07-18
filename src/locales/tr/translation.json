@@ -785,7 +785,11 @@
     "self_hosted_use_protondb": "ProtonDB için self-hosted sunucu kullan",
     "self_hosted_change_password": "Şifreyi değiştir / hesabı yönet",
     "self_hosted_import_hydra_cloud": "Hydra Cloud'dan içe aktar",
-    "self_hosted_importing": "İçe aktarılıyor..."
+    "self_hosted_importing": "İçe aktarılıyor...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "İndirme tamamlandı",

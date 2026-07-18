@@ -769,5 +769,14 @@
   "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
   "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
   "fork_update_open_artifacts": "Open artifacts",
-  "fork_update_close": "Close"
+  "fork_update_close": "Close",
+  "settings": {
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode.",
+    "steamgriddb_save": "SteamGridDB settings saved",
+    "steamgriddb_description": "Choose the artwork source for game icons, logos and heroes."
+  },
+  "save": "Save"
 }

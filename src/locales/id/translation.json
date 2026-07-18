@@ -1285,7 +1285,11 @@
     "self_hosted_use_protondb": "Gunakan server self-hosted untuk ProtonDB",
     "self_hosted_change_password": "Ubah kata sandi / kelola akun",
     "self_hosted_import_hydra_cloud": "Impor dari Hydra Cloud",
-    "self_hosted_importing": "Mengimpor..."
+    "self_hosted_importing": "Mengimpor...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Unduhan selesai!",

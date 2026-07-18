@@ -1023,7 +1023,11 @@
     "self_hosted_use_protondb": "Uporabi self-hosted strežnik za ProtonDB",
     "self_hosted_change_password": "Spremeni geslo / upravljaj račun",
     "self_hosted_import_hydra_cloud": "Uvozi iz Hydra Cloud",
-    "self_hosted_importing": "Uvažanje..."
+    "self_hosted_importing": "Uvažanje...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Download complete",

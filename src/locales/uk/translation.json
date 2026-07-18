@@ -794,7 +794,11 @@
     "self_hosted_use_protondb": "Використовувати self-hosted сервер для ProtonDB",
     "self_hosted_change_password": "Змінити пароль / управління акаунтом",
     "self_hosted_import_hydra_cloud": "Імпортувати з Hydra Cloud",
-    "self_hosted_importing": "Імпорт..."
+    "self_hosted_importing": "Імпорт...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Завантаження завершено",

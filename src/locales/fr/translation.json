@@ -1316,7 +1316,11 @@
     "setup_match_wrong_platform": "mauvaise plateforme",
     "setup_run_in_background": "Exécuter en arrière-plan",
     "scanning_system_label": "Analyse de {{system}}…",
-    "setup_skip_later": "Je le ferai plus tard"
+    "setup_skip_later": "Je le ferai plus tard",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "classics_onboarding": {
     "title": "Bienvenue dans Hydra Classics",

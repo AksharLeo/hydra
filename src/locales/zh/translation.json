@@ -785,7 +785,11 @@
     "self_hosted_use_protondb": "使用 self-hosted 服务器获取 ProtonDB 数据",
     "self_hosted_change_password": "更改密码 / 管理账户",
     "self_hosted_import_hydra_cloud": "从 Hydra Cloud 导入",
-    "self_hosted_importing": "导入中..."
+    "self_hosted_importing": "导入中...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "下载完成",

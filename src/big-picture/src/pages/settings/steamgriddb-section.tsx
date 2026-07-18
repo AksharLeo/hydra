@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Button,
-  FocusItem,
-  Input,
-  VerticalFocusGroup,
-} from "../../components";
+import { useTranslation } from "react-i18next";
+import { Button, FocusItem, Input, VerticalFocusGroup } from "../../components";
 import { useBigPictureToast, useUserPreferences } from "../../hooks";
 import { SettingsSection } from "./settings-section";
 import type { FocusOverrideTarget, FocusOverrides } from "../../services";
@@ -21,6 +17,7 @@ interface Props {
 }
 
 export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
+  const { t } = useTranslation("settings");
   const userPreferences = useUserPreferences();
   const { showSuccessToast } = useBigPictureToast();
   const [mode, setMode] = useState<"hydra" | "custom">("hydra");
@@ -39,7 +36,7 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
       steamGridDbMode: mode,
       steamGridDbApiKey: isCustom ? apiKey.trim() || null : null,
     });
-    showSuccessToast("SteamGridDB settings saved", {
+    showSuccessToast(t("steamgriddb_save"), {
       fallbackVisual: "settings",
     });
   };
@@ -55,9 +52,7 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
   const customNav = useMemo<FocusOverrides>(
     () => ({
       up: { type: "item", itemId: FOCUS_HYDRA },
-      down: isCustom
-        ? { type: "item", itemId: FOCUS_INPUT }
-        : downTarget,
+      down: isCustom ? { type: "item", itemId: FOCUS_INPUT } : downTarget,
     }),
     [isCustom, downTarget]
   );
@@ -81,9 +76,9 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
   );
 
   return (
-    <SettingsSection
+          <SettingsSection
       title="SteamGridDB"
-      description="Choose the artwork source for game icons, logos and heroes."
+      description={t("steamgriddb_description")}
       className="integration-provider-section"
     >
       <VerticalFocusGroup regionId={REGION} asChild>
@@ -101,11 +96,13 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
             >
               <span
                 className={`integration-provider-section__radio-dot ${
-                  !isCustom ? "integration-provider-section__radio-dot--active" : ""
+                  !isCustom
+                    ? "integration-provider-section__radio-dot--active"
+                    : ""
                 }`}
                 aria-hidden="true"
               />
-              Hydra API (recommended)
+              {t("steamgriddb_source_hydra")}
             </button>
           </FocusItem>
 
@@ -122,11 +119,13 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
             >
               <span
                 className={`integration-provider-section__radio-dot ${
-                  isCustom ? "integration-provider-section__radio-dot--active" : ""
+                  isCustom
+                    ? "integration-provider-section__radio-dot--active"
+                    : ""
                 }`}
                 aria-hidden="true"
               />
-              Own SteamGridDB API key
+              {t("steamgriddb_source_custom")}
             </button>
           </FocusItem>
 
@@ -136,7 +135,7 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
                 id="steamgriddb-key"
                 label="API Key"
                 type="password"
-                placeholder="SteamGridDB API key"
+                placeholder={t("steamgriddb_source_custom")}
                 value={apiKey}
                 focusId={FOCUS_INPUT}
                 focusNavigationOverrides={inputNav}
@@ -150,7 +149,7 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
                 focusNavigationOverrides={saveNav}
                 onClick={handleSave}
               >
-                Save
+                {t("save")}
               </Button>
             </div>
           ) : (
@@ -162,14 +161,14 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
                 focusNavigationOverrides={saveNav}
                 onClick={handleSave}
               >
-                Save
+                {t("save")}
               </Button>
             </div>
           )}
 
           {showKeyWarning ? (
             <p className="integration-provider-section__helper integration-provider-section__helper--idle">
-              Set your SteamGridDB API key to use this mode.
+              {t("steamgriddb_key_required")}
             </p>
           ) : null}
 

@@ -782,7 +782,11 @@
     "self_hosted_use_protondb": "Self-hosted server gebruiken voor ProtonDB",
     "self_hosted_change_password": "Wachtwoord wijzigen / account beheren",
     "self_hosted_import_hydra_cloud": "Importeren vanuit Hydra Cloud",
-    "self_hosted_importing": "Importeren..."
+    "self_hosted_importing": "Importeren...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Download compleet",

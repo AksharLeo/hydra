@@ -920,7 +920,11 @@
     "self_hosted_use_protondb": "Usar servidor self-hosted para ProtonDB",
     "self_hosted_change_password": "Alterar palavra-passe / gerir conta",
     "self_hosted_import_hydra_cloud": "Importar do Hydra Cloud",
-    "self_hosted_importing": "A importar..."
+    "self_hosted_importing": "A importar...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Transferência concluída",

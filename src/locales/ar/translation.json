@@ -785,7 +785,11 @@
     "self_hosted_use_protondb": "استخدام الخادم المستضاف ذاتياً لـ ProtonDB",
     "self_hosted_change_password": "تغيير كلمة المرور / إدارة الحساب",
     "self_hosted_import_hydra_cloud": "استيراد من Hydra Cloud",
-    "self_hosted_importing": "جاري الاستيراد..."
+    "self_hosted_importing": "جاري الاستيراد...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "اكتمل التنزيل",

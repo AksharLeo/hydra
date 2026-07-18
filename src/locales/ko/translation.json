@@ -782,7 +782,11 @@
     "self_hosted_use_protondb": "ProtonDB에 self-hosted 서버 사용",
     "self_hosted_change_password": "비밀번호 변경 / 계정 관리",
     "self_hosted_import_hydra_cloud": "Hydra Cloud에서 가져오기",
-    "self_hosted_importing": "가져오는 중..."
+    "self_hosted_importing": "가져오는 중...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "다운로드 완료",

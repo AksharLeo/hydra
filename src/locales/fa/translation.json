@@ -782,7 +782,11 @@
     "self_hosted_use_protondb": "استفاده از سرور خودمیزبان برای ProtonDB",
     "self_hosted_change_password": "تغییر رمز عبور / مدیریت حساب",
     "self_hosted_import_hydra_cloud": "وارد کردن از Hydra Cloud",
-    "self_hosted_importing": "در حال وارد کردن..."
+    "self_hosted_importing": "در حال وارد کردن...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "دانلود تمام شد",

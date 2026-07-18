@@ -782,7 +782,11 @@
     "self_hosted_use_protondb": "Folosiți serverul self-hosted pentru ProtonDB",
     "self_hosted_change_password": "Schimbați parola / gestionați contul",
     "self_hosted_import_hydra_cloud": "Importați din Hydra Cloud",
-    "self_hosted_importing": "Se importă..."
+    "self_hosted_importing": "Se importă...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Descărcare completă",

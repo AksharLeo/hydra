@@ -785,7 +785,11 @@
     "self_hosted_use_protondb": "ProtonDB uchun self-hosted serverdan foydalanish",
     "self_hosted_change_password": "Parolni o'zgartirish / hisobni boshqarish",
     "self_hosted_import_hydra_cloud": "Hydra Cloud dan import qilish",
-    "self_hosted_importing": "Import qilinmoqda..."
+    "self_hosted_importing": "Import qilinmoqda...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Yuklab olish yakunlandi",

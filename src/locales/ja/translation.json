@@ -810,7 +810,11 @@
     "self_hosted_use_protondb": "ProtonDBにself-hostedサーバーを使用する",
     "self_hosted_change_password": "パスワードを変更 / アカウントを管理",
     "self_hosted_import_hydra_cloud": "Hydra Cloudからインポート",
-    "self_hosted_importing": "インポート中..."
+    "self_hosted_importing": "インポート中...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "ダウンロード完了",

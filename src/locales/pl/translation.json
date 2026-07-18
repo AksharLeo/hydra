@@ -887,7 +887,11 @@
     "self_hosted_use_protondb": "Użyj serwera self-hosted dla ProtonDB",
     "self_hosted_change_password": "Zmień hasło / zarządzaj kontem",
     "self_hosted_import_hydra_cloud": "Importuj z Hydra Cloud",
-    "self_hosted_importing": "Importowanie..."
+    "self_hosted_importing": "Importowanie...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "new_update_available": "Dostępna wersja {{version}}",

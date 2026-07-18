@@ -785,7 +785,11 @@
     "self_hosted_use_protondb": "ProtonDB үшін self-hosted серверді пайдалану",
     "self_hosted_change_password": "Құпия сөзді өзгерту / аккаунтты басқару",
     "self_hosted_import_hydra_cloud": "Hydra Cloud-тан импорттау",
-    "self_hosted_importing": "Импорттауда..."
+    "self_hosted_importing": "Импорттауда...",
+    "steamgriddb_source": "Artwork source",
+    "steamgriddb_source_hydra": "Hydra API (recommended)",
+    "steamgriddb_source_custom": "Own SteamGridDB API key",
+    "steamgriddb_key_required": "Set your SteamGridDB API key to use this mode."
   },
   "notifications": {
     "download_complete": "Жүктеу аяқталды",
