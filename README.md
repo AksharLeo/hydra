@@ -33,9 +33,10 @@ This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) 
 
 ### SteamGridDB integration
 
-- **Custom game art** — browse and apply icons, logos, and hero banners directly from SteamGridDB in **Game Settings → Assets**
+- **Custom game art** — browse and apply icons, logos, heroes, and covers directly from SteamGridDB in **Game Settings → Assets** (and in Big Picture under a game's **Customization** tab)
+- Artwork is served through the official Hydra API out of the box — no key required
+- **Optional API key** — set your own SteamGridDB API key in **Settings → Integrations → SteamGridDB** (or Big Picture → Integrations) to use the direct SteamGridDB search instead of the server-backed picker; leave it empty to fall back to Hydra's servers
 - Searches by game title automatically; Steam games are matched by App ID for accurate results
-- Set your SteamGridDB API key once in **Settings → Integrations → SteamGridDB**
 
 ### Big Picture
 

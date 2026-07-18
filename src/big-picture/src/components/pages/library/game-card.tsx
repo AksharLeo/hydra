@@ -21,10 +21,12 @@ import {
 import {
   ClassicsCoverBadges,
   ClassicsVerticalCoverMedia,
+  useFocusAnimatedCover,
   useLibraryGameCardPresentation,
 } from "./card-presentation";
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
 import HydraIcon from "../../../assets/hydra-icon.svg?react";
+import { useNavigationIsFocused } from "../../../stores";
 
 function GameSourceBadge({ type }: { type: "steam" | "hydra" }) {
   const style: CSSProperties = {
@@ -49,6 +51,7 @@ function GameSourceBadge({ type }: { type: "steam" | "hydra" }) {
     </div>
   );
 }
+
 
 export interface VerticalLibraryGameCardProps {
   game: LibraryGame;
@@ -113,6 +116,7 @@ export function VerticalLibraryGameCard({
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const {
     activeImageSource,
+    isChosenCoverActive,
     achievementProgress,
     classicsEmulatorIcon,
     classicsPlatformLabel,
@@ -121,14 +125,16 @@ export function VerticalLibraryGameCard({
     playtimeLabel,
   } = useLibraryGameCardPresentation(game, "vertical");
   const focusId = getLibraryFocusGridItemId(game.id);
+  const isFocused = useNavigationIsFocused(focusId);
+  const displayCover = useFocusAnimatedCover(activeImageSource, isFocused);
   const gameDetailsPath = getBigPictureGameDetailsPath(game);
   const isSteamSynced =
     game.shop === "steam" && !game.download && !game.executablePath;
   const isPirated = Boolean(game.download);
   const coverMedia =
-    game.shop === "launchbox" && activeImageSource ? (
+    game.shop === "launchbox" && activeImageSource && !isChosenCoverActive ? (
       <ClassicsVerticalCoverMedia
-        imageUrl={activeImageSource}
+        imageUrl={displayCover}
         gameTitle={game.title}
         onImageError={handleCoverImageError}
       />
@@ -187,7 +193,7 @@ export function VerticalLibraryGameCard({
             ? "library-focus-grid__card library-focus-grid__card--classics"
             : "library-focus-grid__card"
         }
-        coverImageUrl={activeImageSource}
+        coverImageUrl={displayCover}
         coverMedia={coverMedia}
         coverOverlay={coverOverlay}
         gameTitle={game.title}

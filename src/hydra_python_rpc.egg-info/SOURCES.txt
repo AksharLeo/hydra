@@ -948,6 +948,11 @@ src/renderer/src/components/create-collection-modal/create-collection-modal.scss
 src/renderer/src/components/create-collection-modal/create-collection-modal.tsx
 src/renderer/src/components/dropdown-menu/dropdown-menu.scss
 src/renderer/src/components/dropdown-menu/dropdown-menu.tsx
+src/renderer/src/components/error-boundary/error-boundary.tsx
+src/renderer/src/components/error-boundary/error-fallback.scss
+src/renderer/src/components/error-boundary/error-fallback.tsx
+src/renderer/src/components/error-boundary/format-error.ts
+src/renderer/src/components/error-boundary/parse-stack.ts
 src/renderer/src/components/fork-update-modal/fork-update-modal.tsx
 src/renderer/src/components/fullscreen-media-modal/fullscreen-media-modal.scss
 src/renderer/src/components/fullscreen-media-modal/fullscreen-media-modal.tsx
