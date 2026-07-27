@@ -16,6 +16,7 @@ import { getGameAssets } from "../catalogue/get-game-assets";
 import { WindowManager } from "@main/services";
 
 const PREFETCH_CONCURRENCY = 5;
+const LOCAL_CACHE_EXPIRATION = 1000 * 60 * 60 * 8;
 
 const lookupCachedPlatform = async (
   gameKey: string
@@ -48,10 +49,16 @@ const batchPrefetchAssets = async (
   const worker = async () => {
     while (index < entries.length) {
       const entry = entries[index++];
-      try {
-        await getGameAssets(entry.objectId, entry.shop);
-      } catch {
-        // individual fetch failure is non-fatal
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const assets = await getGameAssets(entry.objectId, entry.shop);
+          if (assets) break;
+          await new Promise((r) => setTimeout(r, 1000));
+        } catch {
+          if (attempt < 2) {
+            await new Promise((r) => setTimeout(r, 2000));
+          }
+        }
       }
     }
   };
@@ -73,8 +80,7 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
       .map(async ([key, game]) => {
         const download = await downloadsSublevel.get(key);
         const gameAssets = await gamesShopAssetsSublevel.get(key);
-        const artworkSelection =
-          await gamesArtworkSelectionSublevel.get(key);
+        const artworkSelection = await gamesArtworkSelectionSublevel.get(key);
         const composedAssets = composeAssetsWithArtwork(
           gameAssets ?? null,
           artworkSelection
@@ -92,9 +98,8 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
         const unlockedAchievementCount =
           achievements?.unlockedAchievements?.filter(
             (unlocked) =>
-              validAchievementNames.has(
-                (unlocked.name ?? "").toUpperCase()
-              ) && unlocked.unlockTime > 0
+              validAchievementNames.has((unlocked.name ?? "").toUpperCase()) &&
+              unlocked.unlockTime > 0
           ).length ??
           game.unlockedAchievementCount ??
           0;
@@ -139,7 +144,11 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
           }
         }
 
-        if (game.shop !== "custom" && gameAssets == null) {
+        if (
+          game.shop !== "custom" &&
+          (gameAssets == null ||
+            gameAssets.updatedAt + LOCAL_CACHE_EXPIRATION < Date.now())
+        ) {
           pendingFetch.push({
             key,
             shop: game.shop,
