@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 
-import type { LibraryGame } from "@types";
+import type { GameShop, LibraryGame } from "@types";
 import { registerEvent } from "../register-event";
 import {
   downloadsSublevel,
@@ -12,6 +12,10 @@ import {
   gamesSublevel,
 } from "@main/level";
 import { composeAssetsWithArtwork } from "@shared";
+import { getGameAssets } from "../catalogue/get-game-assets";
+import { WindowManager } from "@main/services";
+
+const PREFETCH_CONCURRENCY = 5;
 
 const lookupCachedPlatform = async (
   gameKey: string
@@ -34,103 +38,138 @@ const lookupCachedPlatform = async (
   return null;
 };
 
+const batchPrefetchAssets = async (
+  entries: { key: string; shop: GameShop; objectId: string }[]
+) => {
+  if (entries.length === 0) return;
+
+  let index = 0;
+
+  const worker = async () => {
+    while (index < entries.length) {
+      const entry = entries[index++];
+      try {
+        await getGameAssets(entry.objectId, entry.shop);
+      } catch {
+        // individual fetch failure is non-fatal
+      }
+    }
+  };
+
+  await Promise.all(
+    Array.from({ length: PREFETCH_CONCURRENCY }, () => worker())
+  );
+
+  WindowManager.sendToAppWindows("on-library-batch-complete");
+};
+
 const getLibrary = async (): Promise<LibraryGame[]> => {
-  return gamesSublevel
-    .iterator()
-    .all()
-    .then((results) => {
-      return Promise.all(
-        results
-          .filter(([_key, game]) => game.isDeleted === false)
-          .map(async ([key, game]) => {
-            const download = await downloadsSublevel.get(key);
-            const gameAssets = await gamesShopAssetsSublevel.get(key);
-            const artworkSelection =
-              await gamesArtworkSelectionSublevel.get(key);
-            const composedAssets = composeAssetsWithArtwork(
-              gameAssets ?? null,
-              artworkSelection
-            );
-            const achievements = await gameAchievementsSublevel
-              .get(key)
-              .catch(() => null);
+  const results = await gamesSublevel.iterator().all();
+  const pendingFetch: { key: string; shop: GameShop; objectId: string }[] = [];
 
-            const validAchievementNames = new Set(
-              achievements?.achievements?.map((a) =>
-                (a.name ?? "").toUpperCase()
-              ) || []
-            );
+  const library = await Promise.all(
+    results
+      .filter(([_key, game]) => game.isDeleted === false)
+      .map(async ([key, game]) => {
+        const download = await downloadsSublevel.get(key);
+        const gameAssets = await gamesShopAssetsSublevel.get(key);
+        const artworkSelection =
+          await gamesArtworkSelectionSublevel.get(key);
+        const composedAssets = composeAssetsWithArtwork(
+          gameAssets ?? null,
+          artworkSelection
+        );
+        const achievements = await gameAchievementsSublevel
+          .get(key)
+          .catch(() => null);
 
-            const unlockedAchievementCount =
-              achievements?.unlockedAchievements?.filter(
-                (unlocked) =>
-                  validAchievementNames.has(
-                    (unlocked.name ?? "").toUpperCase()
-                  ) && unlocked.unlockTime > 0
-              ).length ??
-              game.unlockedAchievementCount ??
-              0;
+        const validAchievementNames = new Set(
+          achievements?.achievements?.map((a) =>
+            (a.name ?? "").toUpperCase()
+          ) || []
+        );
 
-            // Verify installer still exists, clear if deleted externally
-            let installerSizeInBytes = game.installerSizeInBytes;
-            if (installerSizeInBytes && download?.folderName) {
-              const installerPath = path.join(
-                download.downloadPath,
-                download.folderName
-              );
+        const unlockedAchievementCount =
+          achievements?.unlockedAchievements?.filter(
+            (unlocked) =>
+              validAchievementNames.has(
+                (unlocked.name ?? "").toUpperCase()
+              ) && unlocked.unlockTime > 0
+          ).length ??
+          game.unlockedAchievementCount ??
+          0;
 
-              if (!fs.existsSync(installerPath)) {
-                installerSizeInBytes = null;
-                gamesSublevel.put(key, { ...game, installerSizeInBytes: null });
-              }
-            }
+        // Verify installer still exists, clear if deleted externally
+        let installerSizeInBytes = game.installerSizeInBytes;
+        if (installerSizeInBytes && download?.folderName) {
+          const installerPath = path.join(
+            download.downloadPath,
+            download.folderName
+          );
 
-            if (
-              game.shop === "launchbox" &&
-              (!game.platform || game.platform === null)
-            ) {
-              const cachedPlatform = await lookupCachedPlatform(key);
-              if (cachedPlatform) {
-                game.platform = cachedPlatform;
-                gamesSublevel.put(key, game).catch(() => {});
-              }
-            }
+          if (!fs.existsSync(installerPath)) {
+            installerSizeInBytes = null;
+            gamesSublevel.put(key, { ...game, installerSizeInBytes: null });
+          }
+        }
 
-            // Verify installed folder still exists, clear if deleted externally
-            let installedSizeInBytes = game.installedSizeInBytes;
-            if (installedSizeInBytes && game.executablePath) {
-              const executableDir = path.dirname(game.executablePath);
+        if (
+          game.shop === "launchbox" &&
+          (!game.platform || game.platform === null)
+        ) {
+          const cachedPlatform = await lookupCachedPlatform(key);
+          if (cachedPlatform) {
+            game.platform = cachedPlatform;
+            gamesSublevel.put(key, game).catch(() => {});
+          }
+        }
 
-              if (!fs.existsSync(executableDir)) {
-                installedSizeInBytes = null;
-                gamesSublevel.put(key, {
-                  ...game,
-                  installerSizeInBytes,
-                  installedSizeInBytes: null,
-                });
-              }
-            }
+        // Verify installed folder still exists, clear if deleted externally
+        let installedSizeInBytes = game.installedSizeInBytes;
+        if (installedSizeInBytes && game.executablePath) {
+          const executableDir = path.dirname(game.executablePath);
 
-            return {
-              id: key,
+          if (!fs.existsSync(executableDir)) {
+            installedSizeInBytes = null;
+            gamesSublevel.put(key, {
               ...game,
               installerSizeInBytes,
-              installedSizeInBytes,
-              download: download ?? null,
-              unlockedAchievementCount,
-              achievementCount: game.achievementCount ?? 0,
-              // Spread composed assets last to ensure all image URLs are properly set
-              ...composedAssets,
-              title: composedAssets?.title || game.title,
-              // Preserve custom image URLs from game if they exist
-              customIconUrl: game.customIconUrl,
-              customLogoImageUrl: game.customLogoImageUrl,
-              customHeroImageUrl: game.customHeroImageUrl,
-              customCoverImageUrl: game.customCoverImageUrl,
-            };
-          })
-      );
-    });
+              installedSizeInBytes: null,
+            });
+          }
+        }
+
+        if (game.shop !== "custom" && gameAssets == null) {
+          pendingFetch.push({
+            key,
+            shop: game.shop,
+            objectId: game.objectId,
+          });
+        }
+
+        return {
+          id: key,
+          ...game,
+          installerSizeInBytes,
+          installedSizeInBytes,
+          download: download ?? null,
+          unlockedAchievementCount,
+          achievementCount: game.achievementCount ?? 0,
+          // Spread composed assets last to ensure all image URLs are properly set
+          ...composedAssets,
+          title: composedAssets?.title || game.title,
+          // Preserve custom image URLs from game if they exist
+          customIconUrl: game.customIconUrl,
+          customLogoImageUrl: game.customLogoImageUrl,
+          customHeroImageUrl: game.customHeroImageUrl,
+          customCoverImageUrl: game.customCoverImageUrl,
+        };
+      })
+  );
+
+  batchPrefetchAssets(pendingFetch);
+
+  return library;
 };
 
 registerEvent("getLibrary", getLibrary);
