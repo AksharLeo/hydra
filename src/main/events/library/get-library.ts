@@ -147,7 +147,8 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
         if (
           game.shop !== "custom" &&
           (gameAssets == null ||
-            gameAssets.updatedAt + LOCAL_CACHE_EXPIRATION < Date.now())
+            gameAssets.updatedAt + LOCAL_CACHE_EXPIRATION < Date.now() ||
+            !gameAssets.iconUrl)
         ) {
           pendingFetch.push({
             key,
