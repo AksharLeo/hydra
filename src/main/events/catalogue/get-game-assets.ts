@@ -1,6 +1,6 @@
 import type { GameShop, ShopAssets } from "@types";
 import { registerEvent } from "../register-event";
-import { HydraApi } from "@main/services";
+import { fetchGameArtwork, HydraApi } from "@main/services";
 import {
   gamesArtworkSelectionSublevel,
   gamesShopAssetsSublevel,
@@ -21,6 +21,48 @@ const applyArtworkSelection = async <T extends ShopAssets | null>(
   return composeAssetsWithArtwork(assets, selection);
 };
 
+const fallbackArtworkUrl = async (
+  shop: GameShop,
+  objectId: string,
+  kind: "icons" | "logos" | "heroes"
+): Promise<string | null> => {
+  try {
+    const page = await fetchGameArtwork(shop, objectId, kind);
+    if (page.items.length > 0) {
+      const item = page.items[0];
+      return kind === "heroes" ? item.url : item.thumb;
+    }
+  } catch {
+    /* non-fatal */
+  }
+  return null;
+};
+
+const buildMinimalAssets = async (
+  shop: GameShop,
+  objectId: string,
+  title: string
+): Promise<ShopAssets | null> => {
+  const iconUrl = await fallbackArtworkUrl(shop, objectId, "icons");
+  const logoImageUrl = await fallbackArtworkUrl(shop, objectId, "logos");
+  const libraryHeroImageUrl = await fallbackArtworkUrl(shop, objectId, "heroes");
+
+  if (!iconUrl && !logoImageUrl && !libraryHeroImageUrl) return null;
+
+  return {
+    objectId,
+    shop,
+    title,
+    iconUrl,
+    libraryHeroImageUrl,
+    libraryImageUrl: null,
+    logoImageUrl,
+    logoPosition: null,
+    coverImageUrl: null,
+    downloadSources: [],
+  };
+};
+
 export const getGameAssets = async (
   objectId: string,
   shop: GameShop,
@@ -36,35 +78,56 @@ export const getGameAssets = async (
   if (
     !options?.forceFresh &&
     cachedAssets &&
-    cachedAssets.updatedAt + LOCAL_CACHE_EXPIRATION > Date.now()
+    cachedAssets.updatedAt + LOCAL_CACHE_EXPIRATION > Date.now() &&
+    cachedAssets.iconUrl
   ) {
     return applyArtworkSelection(gameKey, cachedAssets);
   }
 
-  return HydraApi.get<ShopAssets | null>(
+  const assets = await HydraApi.get<ShopAssets | null>(
     `/games/${shop}/${objectId}/assets`,
     null,
     {
       needsAuth: false,
     }
-  )
-    .then(async (assets) => {
-      if (!assets) return null;
+  ).catch(() => null);
 
-      const shouldPreserveTitle =
-        !options?.forceFresh &&
-        cachedAssets?.title &&
-        cachedAssets.title !== assets.title;
+  const title =
+    assets?.title ??
+    cachedAssets?.title ??
+    "";
 
-      await gamesShopAssetsSublevel.put(gameKey, {
-        ...assets,
-        title: shouldPreserveTitle ? cachedAssets.title : assets.title,
-        updatedAt: Date.now(),
-      });
+  if (assets) {
+    const iconUrl =
+      assets.iconUrl ?? (await fallbackArtworkUrl(shop, objectId, "icons"));
+    const logoImageUrl =
+      assets.logoImageUrl ?? (await fallbackArtworkUrl(shop, objectId, "logos"));
+    const libraryHeroImageUrl =
+      assets.libraryHeroImageUrl ??
+      (await fallbackArtworkUrl(shop, objectId, "heroes"));
 
-      return applyArtworkSelection(gameKey, assets);
-    })
-    .catch(() => null);
+    const enrichedAssets: ShopAssets & { updatedAt: number } = {
+      ...assets,
+      iconUrl,
+      logoImageUrl,
+      libraryHeroImageUrl,
+      updatedAt: Date.now(),
+    };
+
+    await gamesShopAssetsSublevel.put(gameKey, enrichedAssets);
+
+    return applyArtworkSelection(gameKey, enrichedAssets);
+  }
+
+  const minimalAssets = await buildMinimalAssets(shop, objectId, title);
+  if (!minimalAssets) return null;
+
+  await gamesShopAssetsSublevel.put(gameKey, {
+    ...minimalAssets,
+    updatedAt: Date.now(),
+  });
+
+  return applyArtworkSelection(gameKey, minimalAssets);
 };
 
 const getGameAssetsEvent = async (
