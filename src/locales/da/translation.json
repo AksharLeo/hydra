@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API-nøgle",
     "self_hosted_use_steam_catalogue": "[Eksperimentel] Brug Steam API til spilkatalog (søgning, detaljer, genrer — ingen server nødvendig)",
     "self_hosted_use_reviews": "Brug self-hosted server til anmeldelser",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Brug self-hosted server til HowLongToBeat",
     "self_hosted_use_protondb": "Brug self-hosted server til ProtonDB",
     "self_hosted_change_password": "Skift adgangskode / administrer konto",

@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API anahtarı",
     "self_hosted_use_steam_catalogue": "[Deneysel] Oyun kataloğu için Steam API kullan (arama, ayrıntılar, türler — sunucu gerekmez)",
     "self_hosted_use_reviews": "İncelemeler için self-hosted sunucu kullan",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "HowLongToBeat için self-hosted sunucu kullan",
     "self_hosted_use_protondb": "ProtonDB için self-hosted sunucu kullan",
     "self_hosted_change_password": "Şifreyi değiştir / hesabı yönet",

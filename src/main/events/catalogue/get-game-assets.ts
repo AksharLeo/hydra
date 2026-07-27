@@ -45,7 +45,11 @@ const buildMinimalAssets = async (
 ): Promise<ShopAssets | null> => {
   const iconUrl = await fallbackArtworkUrl(shop, objectId, "icons");
   const logoImageUrl = await fallbackArtworkUrl(shop, objectId, "logos");
-  const libraryHeroImageUrl = await fallbackArtworkUrl(shop, objectId, "heroes");
+  const libraryHeroImageUrl = await fallbackArtworkUrl(
+    shop,
+    objectId,
+    "heroes"
+  );
 
   if (!iconUrl && !logoImageUrl && !libraryHeroImageUrl) return null;
 
@@ -92,16 +96,14 @@ export const getGameAssets = async (
     }
   ).catch(() => null);
 
-  const title =
-    assets?.title ??
-    cachedAssets?.title ??
-    "";
+  const title = assets?.title ?? cachedAssets?.title ?? "";
 
   if (assets) {
     const iconUrl =
       assets.iconUrl ?? (await fallbackArtworkUrl(shop, objectId, "icons"));
     const logoImageUrl =
-      assets.logoImageUrl ?? (await fallbackArtworkUrl(shop, objectId, "logos"));
+      assets.logoImageUrl ??
+      (await fallbackArtworkUrl(shop, objectId, "logos"));
     const libraryHeroImageUrl =
       assets.libraryHeroImageUrl ??
       (await fallbackArtworkUrl(shop, objectId, "heroes"));

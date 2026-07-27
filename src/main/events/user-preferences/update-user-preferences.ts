@@ -123,6 +123,8 @@ const updateUserPreferences = async (
   }
   for (const [key, prop] of [
     ["useSelfHostedReviews", "useSelfHostedReviews"],
+    ["useSelfHostedSocial", "useSelfHostedSocial"],
+    ["useSelfHostedDownloadSources", "useSelfHostedDownloadSources"],
     ["useSelfHostedHltb", "useSelfHostedHltb"],
     ["useSelfHostedProtondb", "useSelfHostedProtondb"],
   ] as const) {

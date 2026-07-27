@@ -778,6 +778,8 @@
     "steamgriddb_api_key_placeholder": "Ключ API SteamGridDB",
     "self_hosted_use_steam_catalogue": "[Эксперыментальна] Выкарыстоўваць Steam API для каталога гульняў (пошук, дэталі, жанры — сервер не патрэбны)",
     "self_hosted_use_reviews": "Выкарыстоўваць self-hosted сервер для водгукаў",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Выкарыстоўваць self-hosted сервер для HowLongToBeat",
     "self_hosted_use_protondb": "Выкарыстоўваць self-hosted сервер для ProtonDB",
     "self_hosted_change_password": "Змяніць пароль / кіраванне акаўнтам",

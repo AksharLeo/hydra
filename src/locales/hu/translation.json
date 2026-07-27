@@ -804,6 +804,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API-kulcs",
     "self_hosted_use_steam_catalogue": "[Kísérleti] Steam API használata játékkatalógushoz (keresés, részletek, műfajok — nincs szükség szerverre)",
     "self_hosted_use_reviews": "Self-hosted szerver használata értékelésekhez",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Self-hosted szerver használata HowLongToBeat-hez",
     "self_hosted_use_protondb": "Self-hosted szerver használata ProtonDB-hez",
     "self_hosted_change_password": "Jelszó módosítása / fiók kezelése",

@@ -141,6 +141,26 @@ export function SettingsSelfHosted() {
                 })
               }
             />
+
+            <CheckboxField
+              label={t("self_hosted_use_social")}
+              checked={Boolean(userPreferences?.useSelfHostedSocial)}
+              onChange={(e) =>
+                updateUserPreferences({
+                  useSelfHostedSocial: e.target.checked,
+                })
+              }
+            />
+
+            <CheckboxField
+              label={t("self_hosted_use_download_sources")}
+              checked={Boolean(userPreferences?.useSelfHostedDownloadSources)}
+              onChange={(e) =>
+                updateUserPreferences({
+                  useSelfHostedDownloadSources: e.target.checked,
+                })
+              }
+            />
           </div>
 
           <Button

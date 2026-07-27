@@ -1311,6 +1311,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API key",
     "self_hosted_use_steam_catalogue": "[Experimental] Use Steam API for game catalogue (search, details, genres — no server needed)",
     "self_hosted_use_reviews": "Use self-hosted server for reviews",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Use self-hosted server for HowLongToBeat",
     "self_hosted_use_protondb": "Use self-hosted server for ProtonDB",
     "self_hosted_change_password": "Change password / manage account",

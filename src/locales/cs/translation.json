@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "API klíč SteamGridDB",
     "self_hosted_use_steam_catalogue": "[Experimentální] Použít Steam API pro katalog her (vyhledávání, detaily, žánry — bez serveru)",
     "self_hosted_use_reviews": "Použít self-hosted server pro recenze",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Použít self-hosted server pro HowLongToBeat",
     "self_hosted_use_protondb": "Použít self-hosted server pro ProtonDB",
     "self_hosted_change_password": "Změnit heslo / spravovat účet",

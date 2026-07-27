@@ -778,6 +778,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API 키",
     "self_hosted_use_steam_catalogue": "[실험적] 게임 카탈로그에 Steam API 사용 (검색, 세부 정보, 장르 — 서버 불필요)",
     "self_hosted_use_reviews": "리뷰에 self-hosted 서버 사용",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "HowLongToBeat에 self-hosted 서버 사용",
     "self_hosted_use_protondb": "ProtonDB에 self-hosted 서버 사용",
     "self_hosted_change_password": "비밀번호 변경 / 계정 관리",

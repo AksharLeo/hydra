@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API-avain",
     "self_hosted_use_steam_catalogue": "[Kokeellinen] Käytä Steam API:a peliluetteloon (haku, tiedot, genret — ei palvelinta tarvita)",
     "self_hosted_use_reviews": "Käytä self-hosted palvelinta arvosteluihin",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Käytä self-hosted palvelinta HowLongToBeat-palveluun",
     "self_hosted_use_protondb": "Käytä self-hosted palvelinta ProtonDB-palveluun",
     "self_hosted_change_password": "Vaihda salasana / hallitse tiliä",

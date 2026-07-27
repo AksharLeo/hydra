@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API kaliti",
     "self_hosted_use_steam_catalogue": "[Eksperimental] O'yin katalogi uchun Steam API dan foydalanish (qidirish, tafsilotlar, janrlar — server kerak emas)",
     "self_hosted_use_reviews": "Sharhlar uchun self-hosted serverdan foydalanish",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "HowLongToBeat uchun self-hosted serverdan foydalanish",
     "self_hosted_use_protondb": "ProtonDB uchun self-hosted serverdan foydalanish",
     "self_hosted_change_password": "Parolni o'zgartirish / hisobni boshqarish",

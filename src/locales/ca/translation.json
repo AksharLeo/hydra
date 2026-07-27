@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "Clau API de SteamGridDB",
     "self_hosted_use_steam_catalogue": "[Experimental] Utilitza Steam API per al catàleg de jocs (cerca, detalls, gèneres — no cal servidor)",
     "self_hosted_use_reviews": "Utilitza el servidor auto-allotjat per a les ressenyes",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Utilitza el servidor auto-allotjat per a HowLongToBeat",
     "self_hosted_use_protondb": "Utilitza el servidor auto-allotjat per a ProtonDB",
     "self_hosted_change_password": "Canviar contrasenya / gestionar compte",

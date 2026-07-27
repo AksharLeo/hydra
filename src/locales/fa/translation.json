@@ -778,6 +778,8 @@
     "steamgriddb_api_key_placeholder": "کلید API SteamGridDB",
     "self_hosted_use_steam_catalogue": "[آزمایشی] استفاده از Steam API برای کاتالوگ بازی‌ها (جستجو، جزئیات، ژانرها — بدون نیاز به سرور)",
     "self_hosted_use_reviews": "استفاده از سرور خودمیزبان برای نظرات",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "استفاده از سرور خودمیزبان برای HowLongToBeat",
     "self_hosted_use_protondb": "استفاده از سرور خودمیزبان برای ProtonDB",
     "self_hosted_change_password": "تغییر رمز عبور / مدیریت حساب",

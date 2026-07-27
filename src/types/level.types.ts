@@ -201,6 +201,8 @@ export interface UserPreferences {
   selfHostedSessionDurationDays?: number;
   useSelfHostedCatalogue?: boolean;
   useSelfHostedReviews?: boolean;
+  useSelfHostedSocial?: boolean;
+  useSelfHostedDownloadSources?: boolean;
   useSelfHostedHltb?: boolean;
   useSelfHostedProtondb?: boolean;
   signOutOnExit?: boolean;

@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API 密钥",
     "self_hosted_use_steam_catalogue": "[实验性] 使用 Steam API 获取游戏目录（搜索、详情、类型 — 无需服务器）",
     "self_hosted_use_reviews": "使用 self-hosted 服务器获取评测",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "使用 self-hosted 服务器获取 HowLongToBeat 数据",
     "self_hosted_use_protondb": "使用 self-hosted 服务器获取 ProtonDB 数据",
     "self_hosted_change_password": "更改密码 / 管理账户",

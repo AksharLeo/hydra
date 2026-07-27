@@ -781,6 +781,8 @@
     "steamgriddb_api_key_placeholder": "SteamGridDB API atslēga",
     "self_hosted_use_steam_catalogue": "[Eksperimentāls] Izmantot Steam API spēļu katalogam (meklēšana, detaļas, žanri — serveris nav nepieciešams)",
     "self_hosted_use_reviews": "Izmantot self-hosted serveri atsauksmēm",
+    "self_hosted_use_social": "Use self-hosted server for social features (profiles, blocks, badges, notifications)",
+    "self_hosted_use_download_sources": "Use self-hosted server for download sources",
     "self_hosted_use_hltb": "Izmantot self-hosted serveri HowLongToBeat",
     "self_hosted_use_protondb": "Izmantot self-hosted serveri ProtonDB",
     "self_hosted_change_password": "Mainīt paroli / pārvaldīt kontu",
