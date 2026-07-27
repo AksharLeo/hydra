@@ -17,6 +17,7 @@ import { WindowManager } from "@main/services";
 
 const PREFETCH_CONCURRENCY = 5;
 const LOCAL_CACHE_EXPIRATION = 1000 * 60 * 60 * 8;
+const prefetchAttempted = new Set<string>();
 
 const lookupCachedPlatform = async (
   gameKey: string
@@ -148,8 +149,9 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
           game.shop !== "custom" &&
           (gameAssets == null ||
             gameAssets.updatedAt + LOCAL_CACHE_EXPIRATION < Date.now() ||
-            !gameAssets.iconUrl)
+            (!gameAssets.iconUrl && !prefetchAttempted.has(key)))
         ) {
+          prefetchAttempted.add(key);
           pendingFetch.push({
             key,
             shop: game.shop,

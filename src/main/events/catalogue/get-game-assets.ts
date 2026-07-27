@@ -120,14 +120,31 @@ export const getGameAssets = async (
   }
 
   const minimalAssets = await buildMinimalAssets(shop, objectId, title);
-  if (!minimalAssets) return null;
+
+  if (minimalAssets) {
+    await gamesShopAssetsSublevel.put(gameKey, {
+      ...minimalAssets,
+      updatedAt: Date.now(),
+    });
+
+    return applyArtworkSelection(gameKey, minimalAssets);
+  }
 
   await gamesShopAssetsSublevel.put(gameKey, {
-    ...minimalAssets,
+    objectId,
+    shop,
+    title,
+    iconUrl: null,
+    libraryHeroImageUrl: null,
+    libraryImageUrl: null,
+    logoImageUrl: null,
+    logoPosition: null,
+    coverImageUrl: null,
+    downloadSources: [],
     updatedAt: Date.now(),
   });
 
-  return applyArtworkSelection(gameKey, minimalAssets);
+  return null;
 };
 
 const getGameAssetsEvent = async (

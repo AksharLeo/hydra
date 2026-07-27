@@ -76,7 +76,7 @@ export function SteamGridDbSection({ upTarget, downTarget }: Readonly<Props>) {
   );
 
   return (
-          <SettingsSection
+    <SettingsSection
       title="SteamGridDB"
       description={t("steamgriddb_description")}
       className="integration-provider-section"

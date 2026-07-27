@@ -174,7 +174,7 @@ const hydraApiCall = async (
 
     const hltbMatch = url.match(/^\/games\/([^/]+)\/([^/]+)\/how-long-to-beat/);
     const protondbMatch = url.match(/^\/games\/([^/]+)\/([^/]+)\/protondb/);
-    const isReviewsUrl = url.match(/^\/games\/[^/]+\/[^/]+\/reviews/) !== null;
+    const isReviewsUrl = url.match(/^\/(games\/[^/]+\/[^/]+\/reviews|users\/[^/]+\/reviews)/) !== null;
 
     if (hltbMatch) {
       return fetchHltbDirect(hltbMatch[1], hltbMatch[2]);
