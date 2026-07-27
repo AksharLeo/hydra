@@ -47,22 +47,24 @@ export const getGameAssets = async (
     {
       needsAuth: false,
     }
-  ).then(async (assets) => {
-    if (!assets) return null;
+  )
+    .then(async (assets) => {
+      if (!assets) return null;
 
-    const shouldPreserveTitle =
-      !options?.forceFresh &&
-      cachedAssets?.title &&
-      cachedAssets.title !== assets.title;
+      const shouldPreserveTitle =
+        !options?.forceFresh &&
+        cachedAssets?.title &&
+        cachedAssets.title !== assets.title;
 
-    await gamesShopAssetsSublevel.put(gameKey, {
-      ...assets,
-      title: shouldPreserveTitle ? cachedAssets.title : assets.title,
-      updatedAt: Date.now(),
-    });
+      await gamesShopAssetsSublevel.put(gameKey, {
+        ...assets,
+        title: shouldPreserveTitle ? cachedAssets.title : assets.title,
+        updatedAt: Date.now(),
+      });
 
-    return applyArtworkSelection(gameKey, assets);
-  });
+      return applyArtworkSelection(gameKey, assets);
+    })
+    .catch(() => null);
 };
 
 const getGameAssetsEvent = async (
