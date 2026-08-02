@@ -14,7 +14,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-2022, ubuntu-latest]
+        os: [windows-2022, ubuntu-latest, macos-latest]
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -79,6 +79,22 @@ jobs:
           RENDERER_VITE_REAL_DEBRID_REFERRAL_ID: ${{ vars.RENDERER_VITE_REAL_DEBRID_REFERRAL_ID }}
           RENDERER_VITE_TORBOX_REFERRAL_CODE: ${{ vars.RENDERER_VITE_TORBOX_REFERRAL_CODE }}
 
+      - name: Build macOS
+        if: matrix.os == 'macos-latest'
+        run: yarn build:mac
+        env:
+          MAIN_VITE_API_URL: ${{ vars.MAIN_VITE_STAGING_API_URL }}
+          MAIN_VITE_AUTH_URL: ${{ vars.MAIN_VITE_STAGING_AUTH_URL }}
+          MAIN_VITE_CHECKOUT_URL: ${{ vars.MAIN_VITE_STAGING_CHECKOUT_URL }}
+          MAIN_VITE_NIMBUS_API_URL: ${{ vars.MAIN_VITE_NIMBUS_API_URL }}
+          RENDERER_VITE_EXTERNAL_RESOURCES_URL: ${{ vars.EXTERNAL_RESOURCES_URL }}
+          MAIN_VITE_EXTERNAL_RESOURCES_URL: ${{ vars.EXTERNAL_RESOURCES_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          RENDERER_VITE_SENTRY_DSN: ${{ vars.SENTRY_DSN }}
+          RENDERER_VITE_REAL_DEBRID_REFERRAL_ID: ${{ vars.RENDERER_VITE_REAL_DEBRID_REFERRAL_ID }}
+          RENDERER_VITE_TORBOX_REFERRAL_CODE: ${{ vars.RENDERER_VITE_TORBOX_REFERRAL_CODE }}
+
       - name: Upload build
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -113,7 +129,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-2022, ubuntu-latest]
+        os: [windows-2022, ubuntu-latest, macos-latest]
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -166,6 +182,23 @@ jobs:
       - name: Build Windows
         if: matrix.os == 'windows-2022'
         run: yarn build:win
+        env:
+          MAIN_VITE_API_URL: ${{ vars.MAIN_VITE_API_URL }}
+          MAIN_VITE_AUTH_URL: ${{ vars.MAIN_VITE_AUTH_URL }}
+          MAIN_VITE_CHECKOUT_URL: ${{ vars.MAIN_VITE_CHECKOUT_URL }}
+          MAIN_VITE_NIMBUS_API_URL: ${{ vars.MAIN_VITE_NIMBUS_API_URL }}
+          RENDERER_VITE_EXTERNAL_RESOURCES_URL: ${{ vars.EXTERNAL_RESOURCES_URL }}
+          MAIN_VITE_EXTERNAL_RESOURCES_URL: ${{ vars.EXTERNAL_RESOURCES_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          RENDERER_VITE_SENTRY_DSN: ${{ vars.SENTRY_DSN }}
+          RENDERER_VITE_REAL_DEBRID_REFERRAL_ID: ${{ vars.RENDERER_VITE_REAL_DEBRID_REFERRAL_ID }}
+          RENDERER_VITE_TORBOX_REFERRAL_CODE: ${{ vars.RENDERER_VITE_TORBOX_REFERRAL_CODE }}
+          MAIN_VITE_GITHUB_RUN_ID: ${{ github.run_id }}
+
+      - name: Build macOS
+        if: matrix.os == 'macos-latest'
+        run: yarn build:mac
         env:
           MAIN_VITE_API_URL: ${{ vars.MAIN_VITE_API_URL }}
           MAIN_VITE_AUTH_URL: ${{ vars.MAIN_VITE_AUTH_URL }}

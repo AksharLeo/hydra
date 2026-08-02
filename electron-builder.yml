@@ -62,6 +62,7 @@ linux:
     - snap
     - deb
     - rpm
+    - tar.gz
   maintainer: electronjs.org
   category: Game
   mimeTypes:
