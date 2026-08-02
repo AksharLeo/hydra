@@ -62,6 +62,7 @@ function steamAsset(
       `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`,
     coverImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900_2x.jpg`,
     downloadSources: [],
+    tier: undefined as string | null | undefined,
   };
 }
 
