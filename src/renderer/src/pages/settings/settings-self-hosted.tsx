@@ -79,6 +79,18 @@ export function SettingsSelfHosted() {
   return (
     <form onSubmit={handleSave}>
       <CheckboxField
+        label={t("self_hosted_use_steam_catalogue")}
+        checked={Boolean(userPreferences?.useSelfHostedCatalogue)}
+        onChange={(e) =>
+          updateUserPreferences({
+            useSelfHostedCatalogue: e.target.checked,
+          })
+        }
+      />
+
+      <div style={{ marginTop: "16px", marginBottom: "16px" }} />
+
+      <CheckboxField
         label={t("enable_self_hosted_api")}
         checked={enabled}
         onChange={handleToggle}
@@ -122,16 +134,6 @@ export function SettingsSelfHosted() {
               marginTop: "8px",
             }}
           >
-            <CheckboxField
-              label={t("self_hosted_use_steam_catalogue")}
-              checked={Boolean(userPreferences?.useSelfHostedCatalogue)}
-              onChange={(e) =>
-                updateUserPreferences({
-                  useSelfHostedCatalogue: e.target.checked,
-                })
-              }
-            />
-
             <CheckboxField
               label={t("self_hosted_use_reviews")}
               checked={Boolean(userPreferences?.useSelfHostedReviews)}

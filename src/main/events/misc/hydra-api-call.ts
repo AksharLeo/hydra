@@ -33,23 +33,36 @@ async function fetchHltbDirect(
   const cacheKey = `${shop}:${objectId}`;
   if (hltbCache.has(cacheKey)) return hltbCache.get(cacheKey)!;
 
+  const log = (msg: string) => {
+    require("fs").appendFileSync(
+      "/tmp/hltb.log",
+      `[${shop}:${objectId}] ${msg}\n`
+    );
+  };
+
   const steamRes = await axios
     .get("https://store.steampowered.com/api/appdetails", {
       params: { appids: objectId, l: "english", cc: "us" },
       timeout: 8000,
     })
-    .catch(() => null);
+    .catch((e) => {
+      log(`steam error: ${e.message}`);
+      return null;
+    });
   const appData = steamRes?.data?.[objectId];
   if (!appData?.success) {
+    log(`steam success false`);
     hltbCache.set(cacheKey, null);
     return null;
   }
 
-  const name = appData.data?.name;
+  const name = appData.data?.name?.replace(/[^\w\s-]/g, "").trim();
   if (!name) {
+    log(`no name`);
     hltbCache.set(cacheKey, null);
     return null;
   }
+  log(`name: ${name}`);
 
   const initHeaders = {
     "User-Agent": HLTB_UA,
@@ -60,9 +73,13 @@ async function fetchHltbDirect(
       headers: initHeaders,
       timeout: 8000,
     })
-    .catch(() => null);
+    .catch((e) => {
+      log(`auth error: ${e.message}`);
+      return null;
+    });
 
   if (!auth?.data?.token) {
+    log(`no token`);
     hltbCache.set(cacheKey, null);
     return null;
   }
@@ -105,10 +122,14 @@ async function fetchHltbDirect(
         timeout: 10000,
       }
     )
-    .catch(() => null);
+    .catch((e) => {
+      log(`post error: ${e.message}`);
+      return null;
+    });
 
   const game = res?.data?.data?.[0];
   if (!game) {
+    log(`no game found for ${name}`);
     hltbCache.set(cacheKey, null);
     return null;
   }
@@ -138,6 +159,7 @@ async function fetchHltbDirect(
     });
 
   hltbCache.set(cacheKey, categories.length ? categories : null);
+  log(`success, found ${categories.length} categories`);
   return categories.length ? categories : null;
 }
 
@@ -190,24 +212,31 @@ const hydraApiCall = async (
     const steamIdMatch = url.match(/^\/games\/steam\/(\d+)$/);
     const categoryMatch = url.match(/^\/catalogue\/(hot|weekly|achievements)$/);
 
-    if (HydraApi.useSelfHostedCatalogue) {
-      if (url === "/catalogue/search" && method === "post") {
-        request = steamCatalogueSearch(data);
-      } else if (url === "/games/shop-details" && method === "post") {
-        request = steamShopDetails(data);
-      } else if (steamIdMatch) {
-        const lang = (params as any)?.l ?? "english";
-        request = steamGameBasic(steamIdMatch[1], lang);
-      } else if (categoryMatch) {
-        const take = parseInt((params as any)?.take ?? "12");
-        request = steamCatalogueCategory(categoryMatch[1], take);
-      } else if (url === "/catalogue/search/suggestions") {
-        const q = (params as any)?.query ?? "";
-        const limit = parseInt((params as any)?.limit ?? "5");
-        request = steamSearchSuggestions(q, limit);
-      } else {
-        request = HydraApi.get(url, params, options);
-      }
+    if (
+      HydraApi.useSelfHostedCatalogue &&
+      url === "/catalogue/search" &&
+      method === "post"
+    ) {
+      request = steamCatalogueSearch(data);
+    } else if (
+      HydraApi.useSelfHostedCatalogue &&
+      url === "/games/shop-details" &&
+      method === "post"
+    ) {
+      request = steamShopDetails(data);
+    } else if (HydraApi.useSelfHostedCatalogue && steamIdMatch) {
+      const lang = (params as any)?.l ?? "english";
+      request = steamGameBasic(steamIdMatch[1], lang);
+    } else if (HydraApi.useSelfHostedCatalogue && categoryMatch) {
+      const take = parseInt((params as any)?.take ?? "12");
+      request = steamCatalogueCategory(categoryMatch[1], take);
+    } else if (
+      HydraApi.useSelfHostedCatalogue &&
+      url === "/catalogue/search/suggestions"
+    ) {
+      const q = (params as any)?.query ?? "";
+      const limit = parseInt((params as any)?.limit ?? "5");
+      request = steamSearchSuggestions(q, limit);
     } else if (isReviewsUrl && HydraApi.useSelfHostedReviews) {
       switch (method) {
         case "get":

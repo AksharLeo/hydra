@@ -72,10 +72,14 @@ export class HydraApi {
     this.selfHostedConfig = { url, masterToken, userToken: userToken ?? null };
     if (this.instance) this.instance.defaults.baseURL = url;
     if (flags) {
-      if (flags.useSelfHostedCatalogue !== undefined) this.useSelfHostedCatalogue = flags.useSelfHostedCatalogue;
-      if (flags.useSelfHostedReviews !== undefined) this.useSelfHostedReviews = flags.useSelfHostedReviews;
-      if (flags.useSelfHostedSocial !== undefined) this.useSelfHostedSocial = flags.useSelfHostedSocial;
-      if (flags.useSelfHostedDownloadSources !== undefined) this.useSelfHostedDownloadSources = flags.useSelfHostedDownloadSources;
+      if (flags.useSelfHostedCatalogue !== undefined)
+        this.useSelfHostedCatalogue = flags.useSelfHostedCatalogue;
+      if (flags.useSelfHostedReviews !== undefined)
+        this.useSelfHostedReviews = flags.useSelfHostedReviews;
+      if (flags.useSelfHostedSocial !== undefined)
+        this.useSelfHostedSocial = flags.useSelfHostedSocial;
+      if (flags.useSelfHostedDownloadSources !== undefined)
+        this.useSelfHostedDownloadSources = flags.useSelfHostedDownloadSources;
     }
   }
 
@@ -86,7 +90,9 @@ export class HydraApi {
   public static clearSelfHostedConfig() {
     this.selfHostedConfig = null;
     if (this.instance)
-      this.instance.defaults.baseURL = import.meta.env.MAIN_VITE_API_URL;
+      this.instance.defaults.baseURL =
+        import.meta.env.MAIN_VITE_API_URL ||
+        "https://hydra-api-us-east-1.losbroxas.org";
   }
 
   public static isSelfHosted() {
@@ -251,12 +257,17 @@ export class HydraApi {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
   private static isSocialUrl(url: string): boolean {
-    return /^\/(profile\/blocks|features|badges|profile\/notifications)/.test(url);
+    return /^\/(profile\/blocks|features|badges|profile\/notifications)/.test(
+      url
+    );
   }
 
   private static isOfficialOnlyUrl(url: string) {
     // Download sources: route to self-hosted if toggle is on
-    if (this.useSelfHostedDownloadSources && url.startsWith("/download-sources")) {
+    if (
+      this.useSelfHostedDownloadSources &&
+      url.startsWith("/download-sources")
+    ) {
       return false;
     }
     if (this.OFFICIAL_ONLY_PREFIXES.some((prefix) => url.startsWith(prefix)))
@@ -380,13 +391,16 @@ export class HydraApi {
   }
 
   static async setupApi() {
+    const defaultApiUrl =
+      import.meta.env.MAIN_VITE_API_URL ||
+      "https://hydra-api-us-east-1.losbroxas.org";
     this.instance = axios.create({
-      baseURL: import.meta.env.MAIN_VITE_API_URL,
+      baseURL: defaultApiUrl,
       headers: { "User-Agent": `Hydra Launcher v${appVersion}` },
     });
 
     this.officialInstance = axios.create({
-      baseURL: import.meta.env.MAIN_VITE_API_URL,
+      baseURL: defaultApiUrl,
       headers: { "User-Agent": `Hydra Launcher v${appVersion}` },
     });
 
@@ -577,9 +591,13 @@ export class HydraApi {
   }
 
   private static getAxiosConfig(url?: string) {
-    const isSocialOverride = url && this.isSocialUrl(url) && !this.useSelfHostedSocial;
+    const isSocialOverride =
+      url && this.isSocialUrl(url) && !this.useSelfHostedSocial;
     const useSelfHosted =
-      this.selfHostedConfig && url && !this.isOfficialOnlyUrl(url) && !isSocialOverride;
+      this.selfHostedConfig &&
+      url &&
+      !this.isOfficialOnlyUrl(url) &&
+      !isSocialOverride;
     if (useSelfHosted) {
       const token =
         this.selfHostedConfig!.userToken ?? this.selfHostedConfig!.masterToken;

@@ -15,9 +15,21 @@ export const requestSteam250 = async (path: string) => {
           const steamGameUrl = ($title as HTMLAnchorElement).href;
           if (!steamGameUrl) return null;
 
+          const img = $title.querySelector("img");
+          let imageUrl =
+            img?.getAttribute("data-src") ||
+            img?.getAttribute("src") ||
+            undefined;
+          if (imageUrl && imageUrl.startsWith("//")) {
+            imageUrl = "https:" + imageUrl;
+          }
+          // We pass imageUrl directly. It might be a small hashed thumbnail, but it loads.
+          // We don't try to replace it with header.jpg because that would 404.
+
           return {
             title: $title.getAttribute("data-title") || "",
             objectId: steamGameUrl.split("/").pop(),
+            imageUrl,
           } as Steam250Game;
         })
         .filter((game) => game != null);

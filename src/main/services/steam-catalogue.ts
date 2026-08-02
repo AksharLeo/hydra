@@ -12,6 +12,19 @@ async function fetchJson(url: string): Promise<any> {
   return res.json();
 }
 
+const protondbCache = new Map<string, { tier: string | null; ts: number }>();
+
+async function fetchProtondbTier(appId: string): Promise<string | null> {
+  const cached = protondbCache.get(appId);
+  if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.tier;
+  const json = await fetchJson(
+    `https://www.protondb.com/api/v1/reports/summaries/${appId}.json`
+  ).catch(() => null);
+  const tier = json?.tier || null;
+  protondbCache.set(appId, { tier, ts: Date.now() });
+  return tier;
+}
+
 async function fetchSteamDetails(
   appId: string,
   lang = "english"
@@ -29,7 +42,12 @@ async function fetchSteamDetails(
   return null;
 }
 
-function steamAsset(id: string, name: string, d?: any) {
+function steamAsset(
+  id: string,
+  name: string,
+  d?: any,
+  headerOverride?: string
+) {
   return {
     id: String(id),
     objectId: String(id),
@@ -39,7 +57,9 @@ function steamAsset(id: string, name: string, d?: any) {
     releaseYear: d?.release_date?.date
       ? parseInt(d.release_date.date.split(",").pop()?.trim() ?? "0")
       : null,
-    libraryImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`,
+    libraryImageUrl:
+      headerOverride ||
+      `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`,
     coverImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900_2x.jpg`,
     downloadSources: [],
   };
@@ -51,51 +71,170 @@ export async function steamCatalogueSearch(body: any): Promise<any> {
     take = 20,
     skip = 0,
     genres: filterGenres = [],
+    protondbSupportBadges = [],
+    sortBy = "popularity",
+    sortOrder = "desc",
   } = body ?? {};
 
-  const pagesNeeded = Math.ceil((skip + take) / 10);
-  const pages = Array.from(
-    { length: Math.min(pagesNeeded, 5) },
-    (_, i) => i + 1
-  );
+  let allEdges: any[] = [];
+  let totalCount = 0;
 
-  const pageResults = await Promise.all(
-    pages.map((page) =>
-      fetchJson(
-        `${STEAM_SEARCH}?term=${encodeURIComponent(title || "a")}&l=english&cc=us&json=1&page=${page}`
-      )
-        .then((r: any) => r?.items ?? [])
-        .catch(() => [] as any[])
-    )
-  );
+  const needsFullDetails = filterGenres.length > 0 || sortBy === "releaseDate";
+  const needsProtonDb = protondbSupportBadges.length > 0;
 
-  const seen = new Set<string>();
-  const items: any[] = [];
-  for (const page of pageResults) {
-    for (const item of page) {
-      if (!seen.has(String(item.id))) {
-        seen.add(String(item.id));
-        items.push(item);
+  if (!title) {
+    // If there is no search title, use Steam250 to get a large pool of popular games
+    const { getSteam250List } = await import("./steam-250");
+    const gamesList = await getSteam250List();
+
+    if (needsFullDetails || needsProtonDb) {
+      const filteredEdges: any[] = [];
+      // Lazy evaluation to prevent IP bans (Steam allows ~200 requests/5min)
+      for (const game of gamesList) {
+        // If we have enough for the requested page, stop!
+        if (filteredEdges.length >= skip + take) break;
+
+        let d = null;
+        if (needsFullDetails) {
+          d = await fetchSteamDetails(game.objectId).catch(() => null);
+        }
+        const edge = steamAsset(game.objectId, game.title, d, game.imageUrl);
+        if (needsProtonDb) {
+          edge.tier = await fetchProtondbTier(game.objectId);
+        }
+
+        let include = true;
+        if (filterGenres.length > 0) {
+          include = filterGenres.some((g: string) => edge.genres.includes(g));
+        }
+        if (include && protondbSupportBadges.length > 0) {
+          include = !!(edge.tier && protondbSupportBadges.includes(edge.tier));
+        }
+
+        if (include) {
+          filteredEdges.push(edge);
+        }
       }
+      allEdges = filteredEdges;
+      totalCount = gamesList.length; // Approximate total since we didn't filter all
+    } else {
+      allEdges = gamesList.map((game) =>
+        steamAsset(game.objectId, game.title, undefined, game.imageUrl)
+      );
+      totalCount = allEdges.length;
     }
+
+    // Sort Steam250 games if requested (popularity is the default order they come in)
+    if (
+      sortBy &&
+      sortBy !== "popularity" &&
+      sortBy !== "reviewScore" &&
+      sortBy !== "hydraScore"
+    ) {
+      allEdges.sort((a, b) => {
+        if (sortBy === "releaseDate") {
+          return (a.releaseYear ?? 0) - (b.releaseYear ?? 0);
+        }
+        if (sortBy === "alphabetical") {
+          return a.title.localeCompare(b.title);
+        }
+        return 0;
+      });
+      if (sortOrder === "desc") {
+        allEdges.reverse();
+      }
+    } else if (sortBy === "popularity" && sortOrder === "asc") {
+      allEdges.reverse();
+    }
+  } else {
+    // If title is provided, use Steam storesearch which acts as an autocomplete
+    const seen = new Set<string>();
+    let page = 1;
+    let hasMore = true;
+    const maxPages = 5;
+
+    while (allEdges.length < skip + take && page <= maxPages && hasMore) {
+      const json = await fetchJson(
+        `${STEAM_SEARCH}?term=${encodeURIComponent(title)}&l=english&cc=us&json=1&page=${page}`
+      ).catch(() => null);
+
+      const items: any[] = json?.items ?? [];
+      if (items.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      const newItems = items.filter((item) => {
+        const id = String(item.id);
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+
+      // Steam's storesearch ignores pagination, so if it returns items we've already seen, break
+      if (newItems.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      for (const item of newItems) {
+        if (allEdges.length >= skip + take) break;
+
+        let d = null;
+        if (needsFullDetails) {
+          d = await fetchSteamDetails(String(item.id)).catch(() => null);
+        }
+        const overrideUrl =
+          item.header_image || item.large_capsule_image || item.tiny_image;
+        const edge = steamAsset(item.id, item.name, d, overrideUrl);
+
+        if (needsProtonDb) {
+          edge.tier = await fetchProtondbTier(item.id);
+        }
+
+        let include = true;
+        if (filterGenres.length > 0) {
+          include = filterGenres.some((g: string) => edge.genres.includes(g));
+        }
+        if (include && protondbSupportBadges.length > 0) {
+          include = !!(edge.tier && protondbSupportBadges.includes(edge.tier));
+        }
+
+        if (include) {
+          allEdges.push(edge);
+        }
+      }
+      page++;
+    }
+
+    if (
+      sortBy &&
+      sortBy !== "popularity" &&
+      sortBy !== "reviewScore" &&
+      sortBy !== "hydraScore"
+    ) {
+      allEdges.sort((a, b) => {
+        if (sortBy === "releaseDate") {
+          return (a.releaseYear ?? 0) - (b.releaseYear ?? 0);
+        }
+        if (sortBy === "alphabetical") {
+          return a.title.localeCompare(b.title);
+        }
+        return 0;
+      });
+      if (sortOrder === "desc") {
+        allEdges.reverse();
+      }
+    } else if (sortBy === "popularity" && sortOrder === "asc") {
+      allEdges.reverse();
+    }
+
+    totalCount = hasMore ? allEdges.length + 10 : allEdges.length;
   }
 
-  const sliced = items.slice(skip, skip + take);
-  const edges = await Promise.all(
-    sliced.map(async (item: any) => {
-      const d = await fetchSteamDetails(String(item.id)).catch(() => null);
-      const asset = steamAsset(item.id, item.name, d);
-      return asset;
-    })
-  );
+  const sliced = allEdges.slice(skip, skip + take);
 
-  const filtered = filterGenres.length
-    ? edges.filter((e) =>
-        filterGenres.some((g: string) => e.genres.includes(g))
-      )
-    : edges;
-
-  return { edges: filtered, count: items.length };
+  return { edges: sliced, count: totalCount };
 }
 
 export async function steamShopDetails(body: any): Promise<any[]> {
@@ -124,8 +263,12 @@ export async function steamShopDetails(body: any): Promise<any[]> {
             shop: "steam",
             title: d.name,
             iconUrl: null,
-            libraryHeroImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/library_hero.jpg`,
-            libraryImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`,
+            libraryHeroImageUrl:
+              d.background ??
+              `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/library_hero.jpg`,
+            libraryImageUrl:
+              d.header_image ??
+              `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`,
             logoImageUrl: null,
           },
         },
@@ -146,8 +289,12 @@ export async function steamGameBasic(
     objectId: id,
     title: d.name,
     iconUrl: null,
-    libraryHeroImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/library_hero.jpg`,
-    libraryImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`,
+    libraryHeroImageUrl:
+      d.background ??
+      `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/library_hero.jpg`,
+    libraryImageUrl:
+      d.header_image ??
+      `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`,
     logoImageUrl: null,
     logoPosition: null,
     coverImageUrl: `https://shared.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900_2x.jpg`,
@@ -162,19 +309,29 @@ export async function steamCatalogueCategory(
   category: string,
   take = 12
 ): Promise<any[]> {
-  const key =
+  const { requestSteam250 } = await import("./steam-250");
+  const path =
     category === "hot"
-      ? "top_sellers"
+      ? "/most_played"
       : category === "weekly"
-        ? "new_releases"
-        : "specials";
-  const json = await fetchJson(
-    "https://store.steampowered.com/api/featured"
-  ).catch(() => null);
-  const items: any[] = json?.[key]?.items ?? json?.featured_win ?? [];
+        ? "/7day"
+        : "/top250"; // Fallback for achievements/specials
+
+  const items = await requestSteam250(path);
+
+  // Fallback to steamAsset for each item. We don't fetch full details
+  // immediately to save API calls and make it fast.
+  // Users will see header image which Steam250 items always have on Steam.
   return items
     .slice(0, take)
-    .map((item: any) => steamAsset(item.id ?? item.appid, item.name));
+    .map((item: any) =>
+      steamAsset(
+        item.objectId,
+        item.title,
+        undefined,
+        `https://shared.steamstatic.com/store_item_assets/steam/apps/${item.objectId}/header.jpg`
+      )
+    );
 }
 
 export async function steamSearchSuggestions(

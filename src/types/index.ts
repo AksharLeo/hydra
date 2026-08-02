@@ -129,6 +129,7 @@ export interface GameRunning {
 export interface Steam250Game {
   title: string;
   objectId: string;
+  imageUrl?: string;
 }
 
 export interface SteamGame {
