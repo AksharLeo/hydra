@@ -3,11 +3,18 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  NODE_OPTIONS: --max-old-space-size=8192 --max-semi-space-size=128
 
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-2022, ubuntu-latest]
     runs-on: ${{ matrix.os }}
