@@ -26,7 +26,7 @@
 
 ## What this fork adds
 
-This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) with a self-hosted backend via [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted).
+This is a fork of [entitybtw/hydra](https://github.com/entitybtw/hydra)'s fork of hydralauncher, created to support my own custom fork of the [hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted) backend, which I also forked from him.
 
 ### Self-hosted backend
 
@@ -46,8 +46,8 @@ This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) 
 ## Dependencies
 
 ```bash
-npm install
-npm run build:linux   # or build:win / build:mac
+yarn install
+NODE_OPTIONS="--max-old-space-size=8192 --max-semi-space-size=128" yarn build:linux   # or build:win / build:mac
 ```
 
 ## Contributors
