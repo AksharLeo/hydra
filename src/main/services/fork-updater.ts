@@ -1,40 +1,37 @@
 import https from "node:https";
+import { app } from "electron";
 import { logger } from "./logger";
 import { WindowManager } from "./window-manager";
 import type { ForkUpdateInfo } from "@types";
 
-const OWNER = "entitybtw";
+const OWNER = "AksharLeo";
 const REPO = "hydra";
-const WORKFLOW_FILE = "build.yml";
-const BRANCH = "main";
-
-const CURRENT_RUN_ID: number = Number(
-  import.meta.env.MAIN_VITE_GITHUB_RUN_ID ?? 0
-);
 
 export class ForkUpdater {
-  static getCurrentRunId(): number {
-    return CURRENT_RUN_ID;
-  }
-
-  static getRunUrl(runId: number): string {
-    return `https://github.com/${OWNER}/${REPO}/actions/runs/${runId}`;
-  }
-
   static async checkForUpdate(): Promise<ForkUpdateInfo | null> {
     try {
-      const url = `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${BRANCH}&status=success&event=push&per_page=1`;
-      const data = await fetchJson(url);
+      const url = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
+      const release = await fetchJson(url);
+      
+      if (!release || !release.tag_name) return null;
 
-      const run = data?.workflow_runs?.[0] as
-        | Record<string, unknown>
-        | undefined;
-      if (!run) return null;
+      const latestVersion = (release.tag_name as string).replace(/^v/, "");
+      const currentVersion = app.getVersion();
 
-      const runId = run.id as number;
-      if (CURRENT_RUN_ID > 0 && runId <= CURRENT_RUN_ID) return null;
+      // Basic version compare (assumes semver or similar format)
+      if (latestVersion === currentVersion) return null;
 
-      return buildInfo(run);
+      // Ensure latest is actually newer, not just different (simple check)
+      // A more robust check would use a semver library, but for simplicity:
+      if (latestVersion < currentVersion) return null;
+
+      return {
+        version: latestVersion,
+        releaseName: (release.name as string) || latestVersion,
+        releaseNotes: (release.body as string) || "",
+        publishedAt: (release.published_at as string) || "",
+        url: (release.html_url as string) || `https://github.com/${OWNER}/${REPO}/releases/latest`,
+      };
     } catch (err) {
       logger.error("[ForkUpdater] checkForUpdate failed", { err });
       return null;
@@ -44,24 +41,13 @@ export class ForkUpdater {
   static async checkAndNotify(): Promise<void> {
     const info = await this.checkForUpdate();
     if (info) {
-      logger.info("[ForkUpdater] update available", { runId: info.runId });
+      logger.info("[ForkUpdater] update available", { version: info.version });
       WindowManager.mainWindow?.webContents.send("forkUpdaterEvent", {
         type: "fork-update-available",
         info,
       });
     }
   }
-}
-
-function buildInfo(run: Record<string, unknown>): ForkUpdateInfo {
-  const commit = run.head_commit as Record<string, string> | undefined;
-  return {
-    runId: run.id as number,
-    runNumber: run.run_number as number,
-    commitMessage: commit?.message ?? "",
-    commitSha: run.head_sha as string,
-    publishedAt: run.created_at as string,
-  };
 }
 
 function fetchJson(url: string): Promise<Record<string, unknown>> {

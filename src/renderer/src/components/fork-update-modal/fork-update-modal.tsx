@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Modal } from "@renderer/components/modal/modal";
 import type { ForkUpdateInfo } from "@types";
 
-const DISMISSED_KEY = "fork-update-dismissed-run";
+const DISMISSED_KEY = "fork-update-dismissed-version";
 
 export function ForkUpdateModal() {
   const [info, setInfo] = useState<ForkUpdateInfo | null>(null);
@@ -13,34 +13,34 @@ export function ForkUpdateModal() {
     const unsubscribe = window.electron.onForkUpdaterEvent((event) => {
       if (event.type !== "fork-update-available") return;
       const dismissed = localStorage.getItem(DISMISSED_KEY);
-      if (dismissed === String(event.info.runId)) return;
+      if (dismissed === event.info.version) return;
       setInfo(event.info);
     });
     return () => unsubscribe();
   }, []);
 
   const handleClose = () => {
-    if (info) localStorage.setItem(DISMISSED_KEY, String(info.runId));
+    if (info) localStorage.setItem(DISMISSED_KEY, info.version);
     setInfo(null);
   };
 
   const handleOpenArtifacts = () => {
-    const url = `https://github.com/entitybtw/hydra/actions/runs/${info!.runId}`;
+    const url = info!.url;
     window.electron.openExternal(url);
   };
 
   return (
     <Modal
       visible={info !== null}
-      title={t("fork_update_title", { buildNumber: info?.runNumber ?? "" })}
+      title={t("fork_update_title", { buildNumber: info?.version ?? "" })}
       onClose={handleClose}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {info?.commitMessage && (
+        {info?.releaseNotes && (
           <p
             style={{ margin: 0, color: "var(--body-color)", fontSize: "13px" }}
           >
-            {info.commitMessage}
+            {info.releaseNotes}
           </p>
         )}
         <div

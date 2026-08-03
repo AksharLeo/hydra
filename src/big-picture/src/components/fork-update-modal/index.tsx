@@ -5,7 +5,7 @@ import type { ForkUpdateInfo } from "@types";
 
 import "./styles.scss";
 
-const DISMISSED_KEY = "fork-update-dismissed-run";
+const DISMISSED_KEY = "fork-update-dismissed-version";
 
 const CONFIRM_REGION = "fork-update-modal-actions";
 const OPEN_BUTTON_ID = "fork-update-open-btn";
@@ -19,19 +19,19 @@ export function ForkUpdateModal() {
     const unsubscribe = window.electron.onForkUpdaterEvent((event) => {
       if (event.type !== "fork-update-available") return;
       const dismissed = localStorage.getItem(DISMISSED_KEY);
-      if (dismissed === String(event.info.runId)) return;
+      if (dismissed === event.info.version) return;
       setInfo(event.info);
     });
     return () => unsubscribe();
   }, []);
 
   const handleClose = () => {
-    if (info) localStorage.setItem(DISMISSED_KEY, String(info.runId));
+    if (info) localStorage.setItem(DISMISSED_KEY, info.version);
     setInfo(null);
   };
 
   const handleOpenArtifacts = () => {
-    const url = `https://github.com/entitybtw/hydra/actions/runs/${info!.runId}`;
+    const url = info!.url;
     window.electron.openExternal(url);
     handleClose();
   };
@@ -39,12 +39,12 @@ export function ForkUpdateModal() {
   return (
     <Modal
       visible={info !== null}
-      title={t("fork_update_title", { buildNumber: info?.runNumber ?? "" })}
+      title={t("fork_update_title", { buildNumber: info?.version ?? "" })}
       onClose={handleClose}
     >
       <div className="fork-update-modal__body">
-        {info?.commitMessage && (
-          <p className="fork-update-modal__commit">{info.commitMessage}</p>
+        {info?.releaseNotes && (
+          <p className="fork-update-modal__commit">{info.releaseNotes}</p>
         )}
       </div>
 

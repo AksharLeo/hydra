@@ -151,11 +151,11 @@ export type AppUpdaterEvent =
   | { type: "update-downloaded" };
 
 export interface ForkUpdateInfo {
-  runId: number;
-  runNumber: number;
-  commitMessage: string;
-  commitSha: string;
+  version: string;
+  releaseName: string;
+  releaseNotes: string;
   publishedAt: string;
+  url: string;
 }
 
 export type ForkUpdaterEvent = {

@@ -38,7 +38,7 @@ export const startMainLoop = async () => {
     INTERVALS.seedStatusWatcher
   );
   wrapInLoop(() => UpdateManager.checkForUpdates(), INTERVALS.updateChecker);
-
+  ForkUpdater.checkAndNotify();
 
   wrapInLoop(() => {
     PowerSaveBlockerManager.syncState({
