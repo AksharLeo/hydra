@@ -64,12 +64,21 @@ export function HeroPanelActions() {
 
   const navigate = useNavigate();
 
+  const [isOwnedOnSteam, setIsOwnedOnSteam] = useState(false);
   const [showDiscSelectionModal, setShowDiscSelectionModal] = useState(false);
   const [pendingClassicsLaunch, setPendingClassicsLaunch] = useState<{
     discPath: string | undefined;
   } | null>(null);
 
   const { t } = useTranslation("game_details");
+
+  useEffect(() => {
+    if (game?.shop !== "steam") return;
+    window.electron
+      .checkGameOnSteam(game.shop, game.objectId)
+      .then(setIsOwnedOnSteam)
+      .catch(() => setIsOwnedOnSteam(false));
+  }, [game?.shop, game?.objectId]);
 
   useEffect(() => {
     const onOpenDiscSelection = (event: Event) => {
@@ -287,6 +296,21 @@ export function HeroPanelActions() {
       return;
     }
 
+    const steamLaunch =
+      game.shop === "steam" &&
+      (game.launchViaSteam === true ||
+        (game.launchViaSteam == null && isOwnedOnSteam));
+
+    if (steamLaunch) {
+      window.electron.openGame(
+        game.shop,
+        game.objectId,
+        game.executablePath ?? "",
+        game.launchOptions
+      );
+      return;
+    }
+
     if (game.executablePath) {
       window.electron.openGame(
         game.shop,
@@ -370,7 +394,12 @@ export function HeroPanelActions() {
     const isPlayableClassics =
       game?.shop === "launchbox" && (game?.discs?.length ?? 0) > 0;
 
-    if (game?.executablePath || isPlayableClassics) {
+    const canLaunchViaSteam =
+      game?.shop === "steam" &&
+      (game?.launchViaSteam === true ||
+        (game?.launchViaSteam == null && isOwnedOnSteam));
+
+    if (game?.executablePath || isPlayableClassics || canLaunchViaSteam) {
       return (
         <Button
           onClick={openGame}

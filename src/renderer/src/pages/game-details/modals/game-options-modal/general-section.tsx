@@ -269,6 +269,8 @@ interface GeneralSettingsSectionProps {
   onResetGameTitle?: () => void;
   onChangeLaunchOptions: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClearLaunchOptions: () => Promise<void>;
+  launchViaSteam?: boolean;
+  onToggleLaunchViaSteam?: (value: boolean) => Promise<void>;
   isTransferring: boolean;
   transferProgress: number;
   drives: DriveInfo[];
@@ -340,6 +342,8 @@ export function GeneralSettingsSection({
   onResetGameTitle,
   onChangeLaunchOptions,
   onClearLaunchOptions,
+  launchViaSteam = true,
+  onToggleLaunchViaSteam,
   isTransferring,
   transferProgress,
   drives,
@@ -491,6 +495,17 @@ export function GeneralSettingsSection({
       {/* Classics disc selector (replaces executable for launchbox games) */}
       {showExecutableSection && game.shop === "launchbox" && (
         <ClassicsDiscSection game={game} />
+      )}
+
+      {/* Steam launch toggle */}
+      {game.shop === "steam" && onToggleLaunchViaSteam && (
+        <div className="game-options-modal__section">
+          <CheckboxField
+            label={t("launch_via_steam")}
+            checked={launchViaSteam}
+            onChange={(e) => void onToggleLaunchViaSteam(e.target.checked)}
+          />
+        </div>
       )}
 
       {/* Executable */}

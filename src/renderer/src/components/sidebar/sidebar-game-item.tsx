@@ -1,12 +1,13 @@
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
 import PlayLogo from "@renderer/assets/play-logo.svg?react";
+import HydraIcon from "@renderer/assets/hydra-icon.svg?react";
 import { LibraryGame } from "@types";
 import cn from "classnames";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ConfirmationModal, GameContextMenu, useGameActions } from "..";
-import { HeartFillIcon } from "@primer/octicons-react";
+import { HeartFillIcon, PinIcon } from "@primer/octicons-react";
 import { useAppSelector, useToast } from "@renderer/hooks";
 import { useCollectionContextMenu } from "@renderer/context";
 
@@ -59,6 +60,10 @@ export function SidebarGameItem({
     ? game.libraryImageUrl || game.iconUrl
     : game.customIconUrl || game.iconUrl;
 
+  const isSteamSynced =
+    game.shop === "steam" && !game.download && !game.executablePath;
+  const isPirated = Boolean(game.download);
+
   // Determine fallback icon based on game type
   const getFallbackIcon = () => {
     if (isCustomGame) {
@@ -94,16 +99,25 @@ export function SidebarGameItem({
           }}
           onContextMenu={handleContextMenu}
         >
-          {sidebarIcon ? (
-            <img
-              className="sidebar__game-icon"
-              src={sidebarIcon}
-              alt={game.title}
-              loading="lazy"
-            />
-          ) : (
-            getFallbackIcon()
-          )}
+          <div className="sidebar__game-icon-wrapper">
+            {sidebarIcon ? (
+              <img
+                className="sidebar__game-icon"
+                src={sidebarIcon}
+                alt={game.title}
+                loading="lazy"
+              />
+            ) : (
+              getFallbackIcon()
+            )}
+
+            {isSteamSynced && (
+              <SteamLogo className="sidebar__game-source-badge sidebar__game-source-badge--steam" />
+            )}
+            {isPirated && !isSteamSynced && (
+              <HydraIcon className="sidebar__game-source-badge sidebar__game-source-badge--hydra" />
+            )}
+          </div>
 
           <span className="sidebar__menu-item-button-label">
             {getGameTitle(game)}
@@ -115,6 +129,10 @@ export function SidebarGameItem({
                 +{game.newDownloadOptionsCount}
               </span>
             )}
+
+          {game.isPinned && (
+            <PinIcon size={12} className="sidebar__game-favorite-icon" />
+          )}
 
           {game.favorite && (
             <HeartFillIcon size={12} className="sidebar__game-favorite-icon" />

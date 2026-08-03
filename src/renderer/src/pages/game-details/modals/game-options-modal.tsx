@@ -125,6 +125,10 @@ export function GameOptionsModal({
   const [autoRunGamemode, setAutoRunGamemode] = useState<boolean>(
     game.autoRunGamemode === true
   );
+  const [launchViaSteam, setLaunchViaSteam] = useState<boolean | null>(
+    game.launchViaSteam ?? null
+  );
+  const [isOwnedOnSteam, setIsOwnedOnSteam] = useState(false);
   const [gamemodeAvailable, setGamemodeAvailable] = useState(false);
   const [mangohudAvailable, setMangohudAvailable] = useState(false);
   const [winetricksAvailable, setWinetricksAvailable] = useState(false);
@@ -194,6 +198,17 @@ export function GameOptionsModal({
   useEffect(() => {
     setAutoRunGamemode(game.autoRunGamemode === true);
   }, [game.autoRunGamemode]);
+  useEffect(() => {
+    setLaunchViaSteam(game.launchViaSteam ?? null);
+  }, [game.launchViaSteam]);
+
+  useEffect(() => {
+    if (game.shop !== "steam") return;
+    globalThis.window.electron
+      .checkGameOnSteam(game.shop, game.objectId)
+      .then(setIsOwnedOnSteam)
+      .catch(() => setIsOwnedOnSteam(false));
+  }, [game.shop, game.objectId]);
 
   useEffect(() => {
     if (!visible || globalThis.window.electron.platform !== "linux") return;
@@ -633,6 +648,16 @@ export function GameOptionsModal({
   const handleChangeGameTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
     setGameTitle(event.target.value);
 
+  const handleChangeLaunchViaSteam = async (value: boolean) => {
+    setLaunchViaSteam(value);
+    await globalThis.window.electron.toggleGameLaunchViaSteam(
+      game.shop,
+      game.objectId,
+      value
+    );
+    updateGame();
+  };
+
   const handleBlurGameTitle = async () => {
     if (updatingGameTitle) return;
     const trimmed = gameTitle.trim();
@@ -893,6 +918,8 @@ export function GameOptionsModal({
       onResetGameTitle: handleResetGameTitle,
       onChangeLaunchOptions: handleChangeLaunchOptions,
       onClearLaunchOptions: handleClearLaunchOptions,
+      launchViaSteam: launchViaSteam ?? isOwnedOnSteam,
+      onToggleLaunchViaSteam: handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
       drives,
@@ -927,6 +954,9 @@ export function GameOptionsModal({
       handleResetGameTitle,
       handleChangeLaunchOptions,
       handleClearLaunchOptions,
+      launchViaSteam,
+      isOwnedOnSteam,
+      handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
       drives,

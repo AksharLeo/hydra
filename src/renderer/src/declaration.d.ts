@@ -867,6 +867,11 @@ declare global {
     ) => Promise<void>;
     deleteInstallerFolder: (folderPath: string) => Promise<void>;
     checkGameOnSteam: (shop: GameShop, objectId: string) => Promise<boolean>;
+    toggleGameLaunchViaSteam: (
+      shop: GameShop,
+      objectId: string,
+      value: boolean
+    ) => Promise<void>;
 
     /* Fork updater */
     onForkUpdaterEvent: (cb: (event: ForkUpdaterEvent) => void) => () => void;

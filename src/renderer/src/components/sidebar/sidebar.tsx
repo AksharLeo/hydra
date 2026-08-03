@@ -20,17 +20,22 @@ import type { LibraryCategory } from "@renderer/pages/library/category-filter";
 import type { SortOption } from "@renderer/pages/library/filter-options";
 
 import { PlayIcon, VideoIcon } from "@primer/octicons-react";
+import { HeartFillIcon, FileDirectoryIcon } from "@primer/octicons-react";
 import { Tooltip } from "react-tooltip";
 import deckyIcon from "@renderer/assets/icons/decky.png";
+import SteamLogo from "@renderer/assets/steam-logo.svg?react";
 import cn from "classnames";
 import { SidebarFilterMenu } from "./sidebar-filter-menu";
 import { SidebarGameItem } from "./sidebar-game-item";
 import { SidebarProfile } from "./sidebar-profile";
+import { useGameCollections } from "@renderer/hooks/use-game-collections";
+import { getGameCollectionIds } from "@renderer/helpers";
 
 const SIDEBAR_MIN_WIDTH = 200;
 const SIDEBAR_INITIAL_WIDTH = 250;
 const SIDEBAR_MAX_WIDTH = 450;
 const SIDEBAR_GAME_ITEM_HEIGHT = 42;
+const FAVORITES_COLLECTION_ID = "__favorites__";
 
 const SIDEBAR_CATEGORIES = new Set<LibraryCategory>(["all", "pc", "classics"]);
 const SIDEBAR_SORT_OPTIONS = new Set<SortOption>([
@@ -91,6 +96,13 @@ export function Sidebar() {
 
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [showPlayableOnly, setShowPlayableOnly] = useState(false);
+  const [hideSteamGames, setHideSteamGames] = useState(false);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<
+    string | null
+  >(null);
+
+  const { collections, hasLoaded: hasCollectionsLoaded, loadCollections } =
+    useGameCollections();
 
   const uniquePlatforms = useMemo(() => {
     const set = new Set<string>();
@@ -156,10 +168,30 @@ export function Sidebar() {
   const visibleGames = useMemo(
     () =>
       filteredLibrary.filter(
-        (game) => !showPlayableOnly || isGamePlayable(game)
+        (game) =>
+          (!showPlayableOnly || isGamePlayable(game)) &&
+          (!hideSteamGames ||
+            !(
+              game.shop === "steam" &&
+              !game.download &&
+              !game.executablePath
+            )) &&
+          (!selectedCollectionId ||
+            (selectedCollectionId === FAVORITES_COLLECTION_ID
+              ? Boolean(game.favorite)
+              : getGameCollectionIds(game).includes(selectedCollectionId)))
       ),
-    [filteredLibrary, showPlayableOnly]
+    [
+      filteredLibrary,
+      showPlayableOnly,
+      hideSteamGames,
+      selectedCollectionId,
+    ]
   );
+
+  useEffect(() => {
+    if (!hasCollectionsLoaded) loadCollections();
+  }, [hasCollectionsLoaded, loadCollections]);
 
   const hasActiveFilter =
     library.length > 0 &&
@@ -466,6 +498,21 @@ export function Sidebar() {
 
               <Tooltip id="sidebar-show-playable-only-tooltip" place="top" />
 
+              <button
+                type="button"
+                className={cn("sidebar__play-button", {
+                  "sidebar__play-button--active": hideSteamGames,
+                })}
+                onClick={() => setHideSteamGames((prev) => !prev)}
+                data-tooltip-id="sidebar-hide-steam-games-tooltip"
+                data-tooltip-content={t("hide_steam_games_tooltip")}
+                data-tooltip-place="top"
+              >
+                <SteamLogo style={{ width: 16, height: 16 }} />
+              </button>
+
+              <Tooltip id="sidebar-hide-steam-games-tooltip" place="top" />
+
               <SidebarFilterMenu
                 category={sidebarCategory}
                 onCategoryChange={handleSidebarCategoryChange}
@@ -478,6 +525,48 @@ export function Sidebar() {
                 onPlatformsChange={setSelectedPlatforms}
               />
             </div>
+
+            {collections.length > 0 && (
+              <div className="sidebar__collections">
+                <button
+                  type="button"
+                  className={cn("sidebar__collection-tab", {
+                    "sidebar__collection-tab--active":
+                      selectedCollectionId === FAVORITES_COLLECTION_ID,
+                  })}
+                  onClick={() =>
+                    setSelectedCollectionId(
+                      selectedCollectionId === FAVORITES_COLLECTION_ID
+                        ? null
+                        : FAVORITES_COLLECTION_ID
+                    )
+                  }
+                >
+                  <HeartFillIcon size={10} />
+                  <span>{t("favorites")}</span>
+                </button>
+                {collections.map((collection) => (
+                  <button
+                    key={collection.id}
+                    type="button"
+                    className={cn("sidebar__collection-tab", {
+                      "sidebar__collection-tab--active":
+                        selectedCollectionId === collection.id,
+                    })}
+                    onClick={() =>
+                      setSelectedCollectionId(
+                        selectedCollectionId === collection.id
+                          ? null
+                          : collection.id
+                      )
+                    }
+                  >
+                    <FileDirectoryIcon size={10} />
+                    <span>{collection.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
 
             <div
               className={`sidebar__game-list${isGameListScrolled ? " sidebar__game-list--scrolled" : ""}`}
