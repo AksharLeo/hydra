@@ -101,8 +101,11 @@ export function Sidebar() {
     string | null
   >(null);
 
-  const { collections, hasLoaded: hasCollectionsLoaded, loadCollections } =
-    useGameCollections();
+  const {
+    collections,
+    hasLoaded: hasCollectionsLoaded,
+    loadCollections,
+  } = useGameCollections();
 
   const uniquePlatforms = useMemo(() => {
     const set = new Set<string>();
@@ -181,12 +184,7 @@ export function Sidebar() {
               ? Boolean(game.favorite)
               : getGameCollectionIds(game).includes(selectedCollectionId)))
       ),
-    [
-      filteredLibrary,
-      showPlayableOnly,
-      hideSteamGames,
-      selectedCollectionId,
-    ]
+    [filteredLibrary, showPlayableOnly, hideSteamGames, selectedCollectionId]
   );
 
   useEffect(() => {
