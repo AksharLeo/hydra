@@ -39,10 +39,6 @@ export const startMainLoop = async () => {
   );
   wrapInLoop(() => UpdateManager.checkForUpdates(), INTERVALS.updateChecker);
 
-  // Delay first check so the renderer has time to mount its listener
-  sleep(15_000).then(() =>
-    wrapInLoop(() => ForkUpdater.checkAndNotify(), INTERVALS.updateChecker)
-  );
 
   wrapInLoop(() => {
     PowerSaveBlockerManager.syncState({

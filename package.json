@@ -3,10 +3,10 @@
   "version": "4.0.6-rev1",
   "description": "Hydra",
   "main": "./out/main/index.js",
-  "author": "Los Broxas",
+  "author": "AksharLeo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hydralauncher/hydra.git"
+    "url": "https://github.com/AksharLeo/hydra.git"
   },
   "type": "module",
   "engines": {
