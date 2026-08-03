@@ -10,9 +10,10 @@ const REPO = "hydra";
 export class ForkUpdater {
   static async checkForUpdate(): Promise<ForkUpdateInfo | null> {
     try {
-      const url = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
-      const release = await fetchJson(url);
-      
+      const url = `https://api.github.com/repos/${OWNER}/${REPO}/releases`;
+      const releases = await fetchJson(url);
+      const release = Array.isArray(releases) ? releases[0] : null;
+
       if (!release || !release.tag_name) return null;
 
       const latestVersion = (release.tag_name as string).replace(/^v/, "");
@@ -30,7 +31,9 @@ export class ForkUpdater {
         releaseName: (release.name as string) || latestVersion,
         releaseNotes: (release.body as string) || "",
         publishedAt: (release.published_at as string) || "",
-        url: (release.html_url as string) || `https://github.com/${OWNER}/${REPO}/releases/latest`,
+        url:
+          (release.html_url as string) ||
+          `https://github.com/${OWNER}/${REPO}/releases/latest`,
       };
     } catch (err) {
       logger.error("[ForkUpdater] checkForUpdate failed", { err });
