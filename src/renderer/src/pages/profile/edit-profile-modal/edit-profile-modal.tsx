@@ -28,11 +28,8 @@ interface FormValues {
 }
 
 export function EditProfileModal(
-  props: Omit<ModalProps, "children" | "title"> & {
-    isOfficialProfile?: boolean;
-  }
+  props: Omit<ModalProps, "children" | "title">
 ) {
-  const { isOfficialProfile, ...modalProps } = props;
   const { t } = useTranslation("user_profile");
 
   const schema = yup.object({
@@ -53,47 +50,30 @@ export function EditProfileModal(
     resolver: yupResolver(schema),
   });
 
-  const { getUserProfile, userProfile } = useContext(userProfileContext);
+  const { getUserProfile } = useContext(userProfileContext);
   const [profileImageToCrop, setProfileImageToCrop] = useState<string | null>(
     null
   );
   const [cropIsAnimated, setCropIsAnimated] = useState(false);
 
-  const { userDetails, fetchUserDetails, hasActiveSubscription, patchUser } =
+  const { userDetails, fetchUserDetails, hasActiveSubscription } =
     useUserDetails();
 
-  const effectiveDetails = isOfficialProfile
-    ? {
-        displayName: userProfile?.displayName ?? "",
-        profileImageUrl: userProfile?.profileImageUrl ?? null,
-      }
-    : userDetails;
-
   useEffect(() => {
-    if (effectiveDetails) {
-      setValue("displayName", effectiveDetails.displayName);
+    if (userDetails) {
+      setValue("displayName", userDetails.displayName);
     }
-  }, [setValue, effectiveDetails?.displayName]);
+  }, [setValue, userDetails]);
+
+  const { patchUser } = useUserDetails();
 
   const { showSuccessToast, showErrorToast } = useToast();
 
   const onSubmit = async (values: FormValues) => {
-    if (isOfficialProfile) {
-      return window.electron
-        .updateProfile(values)
-        .then(async () => {
-          await getUserProfile();
-          modalProps.onClose();
-          showSuccessToast(t("saved_successfully"));
-        })
-        .catch(() => {
-          showErrorToast(t("try_again"));
-        });
-    }
     return patchUser(values)
       .then(async () => {
         await Promise.allSettled([fetchUserDetails(), getUserProfile()]);
-        modalProps.onClose();
+        props.onClose();
         showSuccessToast(t("saved_successfully"));
       })
       .catch(() => {
@@ -102,11 +82,7 @@ export function EditProfileModal(
   };
 
   return (
-    <Modal
-      {...modalProps}
-      title={t("edit_profile")}
-      clickOutsideToClose={false}
-    >
+    <Modal {...props} title={t("edit_profile")} clickOutsideToClose={false}>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="edit-profile-modal__form"
@@ -120,6 +96,7 @@ export function EditProfileModal(
                 const metadata = await getProfileImageMetadata(path);
 
                 if (metadata.isAnimated && hasActiveSubscription) {
+                  // Crop while preserving animation (handled in main/sharp).
                   setCropIsAnimated(true);
                   setProfileImageToCrop(path);
                   return;
@@ -163,8 +140,8 @@ export function EditProfileModal(
 
               const getImageUrl = () => {
                 if (value) return `local:${value}`;
-                if (effectiveDetails?.profileImageUrl)
-                  return effectiveDetails.profileImageUrl;
+                if (userDetails?.profileImageUrl)
+                  return userDetails.profileImageUrl;
 
                 return null;
               };
@@ -182,7 +159,7 @@ export function EditProfileModal(
                     <Avatar
                       size={128}
                       src={imageUrl}
-                      alt={effectiveDetails?.displayName}
+                      alt={userDetails?.displayName}
                     />
 
                     <div className="edit-profile-modal__avatar-overlay">

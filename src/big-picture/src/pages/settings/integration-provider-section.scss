@@ -64,33 +64,4 @@
       opacity: 0.45;
     }
   }
-
-  &__radio {
-    display: flex;
-    align-items: center;
-    gap: calc(var(--spacing-unit) * 2);
-    padding: calc(var(--spacing-unit) * 2) 0;
-    border: 0;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.92);
-    font-family: var(--font-space-grotesk), sans-serif;
-    font-size: 16px;
-    text-align: left;
-    cursor: pointer;
-  }
-
-  &__radio-dot {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.45);
-    flex: 0 0 auto;
-
-    &--active {
-      border-color: var(--color-primary, #2dd4bf);
-      background: var(--color-primary, #2dd4bf);
-      box-shadow: inset 0 0 0 3px #0e0f12;
-    }
-  }
 }

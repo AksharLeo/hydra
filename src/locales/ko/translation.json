@@ -95,8 +95,6 @@
     "edit_game_modal_drop_to_replace_icon": "Drop to replace icon",
     "edit_game_modal_drop_to_replace_logo": "Drop to replace logo",
     "edit_game_modal_drop_to_replace_hero": "Drop to replace hero",
-    "edit_game_modal_sgdb_search": "SteamGridDB 검색…",
-    "edit_game_modal_sgdb_no_results": "결과를 찾을 수 없습니다",
     "install_decky_plugin": "Install Decky Plugin",
     "update_decky_plugin": "Update Decky Plugin",
     "decky_plugin_installed_version": "Decky Plugin (v{{version}})",
@@ -109,7 +107,9 @@
     "decky_plugin_installation_error": "Error installing Decky plugin: {{error}}",
     "custom_assets_not_sync": "사용자 지정 아트워크는 계정과 동기화되지 않습니다.",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "edit_game_modal_sgdb_search": "SteamGridDB 검색…",
+    "edit_game_modal_sgdb_no_results": "결과를 찾을 수 없습니다"
   },
   "header": {
     "search": "게임 검색하기",

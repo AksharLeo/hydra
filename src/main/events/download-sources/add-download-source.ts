@@ -18,13 +18,17 @@ const addDownloadSource = async (
 
     const downloadSource = await HydraApi.post<DownloadSource>(
       "/download-sources",
-      { url },
+      {
+        url,
+      },
       { needsAuth: false }
     );
 
     if (HydraApi.isLoggedIn() && HydraApi.hasActiveSubscription()) {
       try {
-        await HydraApi.post("/profile/download-sources", { urls: [url] });
+        await HydraApi.post("/profile/download-sources", {
+          urls: [url],
+        });
       } catch (error) {
         logger.error("Failed to add download source to profile:", error);
       }

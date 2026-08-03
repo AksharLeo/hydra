@@ -20,6 +20,7 @@ import { Cracker } from "@shared";
 import { publishCombinedNewAchievementNotification } from "../notifications";
 import { db, gamesSublevel, levelKeys } from "@main/level";
 import { WindowManager } from "../window-manager";
+import { AchievementMemoryStore } from "./achievement-memory-store";
 import { setTimeout } from "node:timers/promises";
 import { Wine } from "../wine";
 
@@ -189,6 +190,11 @@ export class AchievementWatcherManager {
   }
 
   public static readonly alreadySyncedGames: Map<string, boolean> = new Map();
+
+  public static resetSessionState() {
+    this.alreadySyncedGames.clear();
+    AchievementMemoryStore.clear();
+  }
 
   public static async firstSyncWithRemoteIfNeeded(
     shop: GameShop,

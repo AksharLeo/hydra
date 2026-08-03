@@ -21,6 +21,7 @@ import type {
   CreateSteamShortcutOptions,
   AchievementCustomNotificationPosition,
   AchievementNotificationInfo,
+  AchievementNotificationRequest,
   ProtonVersion,
   TorrentFilesResponse,
   DownloadLayoutState,
@@ -55,6 +56,19 @@ contextBridge.exposeInMainWorld("electron", {
   /* Torrenting */
   startGameDownload: (payload: StartGameDownloadPayload) =>
     ipcRenderer.invoke("startGameDownload", payload),
+  saveGlobalTrackers: (
+    manual: string[],
+    url: string | null,
+    appendManual: boolean,
+    appendUrl: boolean
+  ) =>
+    ipcRenderer.invoke(
+      "saveGlobalTrackers",
+      manual,
+      url,
+      appendManual,
+      appendUrl
+    ) as Promise<void>,
   addGameToQueue: (payload: StartGameDownloadPayload) =>
     ipcRenderer.invoke("addGameToQueue", payload),
   cancelGameDownload: (shop: GameShop, objectId: string) =>
@@ -573,9 +587,11 @@ contextBridge.exposeInMainWorld("electron", {
     iconUrl?: string;
     logoImageUrl?: string;
     libraryHeroImageUrl?: string;
+    customCoverImageUrl?: string | null;
     originalIconPath?: string;
     originalLogoPath?: string;
     originalHeroPath?: string;
+    customOriginalCoverPath?: string;
   }) => ipcRenderer.invoke("updateCustomGame", params),
   updateGameCustomAssets: (params: {
     shop: GameShop;
@@ -756,6 +772,8 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("resetGameAchievements", shop, objectId),
   changeGamePlayTime: (shop: GameShop, objectId: string, playtime: number) =>
     ipcRenderer.invoke("changeGamePlayTime", shop, objectId, playtime),
+  resetGamePlayTime: (shop: GameShop, objectId: string) =>
+    ipcRenderer.invoke("resetGamePlayTime", shop, objectId),
   extractGameDownload: (shop: GameShop, objectId: string) =>
     ipcRenderer.invoke("extractGameDownload", shop, objectId),
   scanInstalledGames: (
@@ -836,6 +854,12 @@ contextBridge.exposeInMainWorld("electron", {
     ) => cb(shop, objectId);
     ipcRenderer.on("on-extraction-failed", listener);
     return () => ipcRenderer.removeListener("on-extraction-failed", listener);
+  },
+  onDownloadHalted: (cb: (gameTitle: string) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, gameTitle: string) =>
+      cb(gameTitle);
+    ipcRenderer.on("on-download-halted", listener);
+    return () => ipcRenderer.removeListener("on-download-halted", listener);
   },
   onArchiveDeletionPrompt: (cb: (archivePaths: string[]) => void) => {
     const listener = (
@@ -1294,6 +1318,32 @@ contextBridge.exposeInMainWorld("electron", {
     return () =>
       ipcRenderer.removeListener("on-combined-achievements-unlocked", listener);
   },
+  onPrepareAchievementNotification: (
+    cb: (request: AchievementNotificationRequest) => void
+  ) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      request: AchievementNotificationRequest
+    ) => cb(request);
+    ipcRenderer.on("prepare-achievement-notification", listener);
+    return () =>
+      ipcRenderer.removeListener("prepare-achievement-notification", listener);
+  },
+  onStartAchievementNotification: (cb: (requestId: string) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, requestId: string) =>
+      cb(requestId);
+    ipcRenderer.on("start-achievement-notification", listener);
+    return () =>
+      ipcRenderer.removeListener("start-achievement-notification", listener);
+  },
+  achievementNotificationHostReady: () =>
+    ipcRenderer.invoke("achievementNotificationHostReady"),
+  achievementNotificationContentReady: (requestId: string) =>
+    ipcRenderer.invoke("achievementNotificationContentReady", requestId),
+  achievementNotificationFinished: (requestId: string) =>
+    ipcRenderer.invoke("achievementNotificationFinished", requestId),
+  achievementNotificationFailed: (requestId?: string, reason?: string) =>
+    ipcRenderer.invoke("achievementNotificationFailed", requestId, reason),
   updateAchievementCustomNotificationWindow: () =>
     ipcRenderer.invoke("updateAchievementCustomNotificationWindow"),
   showAchievementTestNotification: () =>

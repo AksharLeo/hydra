@@ -12,6 +12,7 @@ export enum Downloader {
   Rootz = 11,
   Premiumize = 12,
   AllDebrid = 13,
+  ArchiveOrg = 14,
 }
 
 export enum DownloadSourceStatus {
@@ -74,7 +75,11 @@ export enum DownloadError {
   AllDebridRateLimitExceeded = "download_error_alldebrid_rate_limit_exceeded",
   PremiumizeUnavailable = "download_error_premiumize_unavailable",
   AllDebridUnavailable = "download_error_alldebrid_unavailable",
-  VikingFileNimbusQuotaExceeded = "download_error_vikingfile_nimbus_quota_exceeded",
+  VikingFileQuotaExceeded = "download_error_vikingfile_quota_exceeded",
+  VikingFileSubscriptionRequired = "download_error_vikingfile_subscription_required",
+  HosterUnlockLoginRequired = "download_error_hoster_unlock_login_required",
+  HosterUnlockFileNotFound = "download_error_hoster_unlock_file_not_found",
+  HosterUnlockUnavailable = "download_error_hoster_unlock_unavailable",
   InvalidMagnet = "download_error_invalid_magnet",
   TorrentMetadataTimeout = "download_error_torrent_metadata_timeout",
   TorrentMetadataIncomplete = "download_error_torrent_metadata_incomplete",
@@ -82,7 +87,11 @@ export enum DownloadError {
   TorrentInvalidFileSelection = "download_error_torrent_invalid_file_selection",
   TorrentTooManyFiles = "download_error_torrent_too_many_files",
   TorrentFilesUnavailable = "download_error_torrent_files_unavailable",
+  TorrentInvalidTrackers = "download_error_torrent_invalid_trackers",
+  ArchiveOrgInvalidFileUrl = "download_error_archive_org_invalid_file_url",
 }
+
+export const MINIMUM_FREE_DISK_SPACE_BYTES = 512 * 1024 * 1024;
 
 export const FILE_EXTENSIONS_TO_EXTRACT = [".rar", ".zip", ".7z"];
 

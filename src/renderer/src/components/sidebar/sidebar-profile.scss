@@ -65,6 +65,46 @@
     border-radius: 4px;
   }
 
+  &__classic-disc {
+    position: relative;
+    display: block;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    overflow: hidden;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 20deg,
+      #676a73,
+      #c6cad2,
+      #6c7079,
+      #e1e4e9,
+      #676a73
+    );
+    box-shadow:
+      0 2px 5px rgba(0, 0, 0, 0.45),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    transform-origin: center;
+    animation: sidebar-profile-classic-disc-spin 4s linear infinite;
+    will-change: transform;
+  }
+
+  &__classic-disc-artwork,
+  &__classic-disc-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__classic-disc-artwork {
+    object-fit: cover;
+  }
+
+  &__classic-disc-overlay {
+    pointer-events: none;
+  }
+
   &__button-game-running-title {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -172,27 +212,14 @@
   }
 }
 
-.sidebar-profile__official-avatar {
-  position: relative;
-  margin-right: 4px;
-}
-
-.sidebar-profile__official-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px;
-  border-radius: 50%;
-  display: flex;
-  opacity: 0.8;
-  transition: opacity 0.15s;
-
-  &:hover {
-    opacity: 1;
+@keyframes sidebar-profile-classic-disc-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-.sidebar-profile__dropdown--official {
-  left: 0;
-  min-width: 180px;
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-profile__classic-disc {
+    animation: none;
+  }
 }

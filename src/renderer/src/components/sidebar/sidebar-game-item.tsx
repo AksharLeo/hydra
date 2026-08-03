@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { ConfirmationModal, GameContextMenu, useGameActions } from "..";
 import { HeartFillIcon, PinIcon } from "@primer/octicons-react";
 import { useAppSelector, useToast } from "@renderer/hooks";
+import { useCollectionContextMenu } from "@renderer/context";
 
 interface SidebarGameItemProps {
   game: LibraryGame;
@@ -34,6 +35,7 @@ export function SidebarGameItem({
   const userPreferences = useAppSelector(
     (state) => state.userPreferences.value
   );
+  const { openCollectionContextMenu } = useCollectionContextMenu();
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     position: { x: number; y: number };
@@ -62,6 +64,7 @@ export function SidebarGameItem({
     game.shop === "steam" && !game.download && !game.executablePath;
   const isPirated = Boolean(game.download);
 
+  // Determine fallback icon based on game type
   const getFallbackIcon = () => {
     if (isCustomGame) {
       return <PlayLogo className="sidebar__game-icon" />;
@@ -107,6 +110,7 @@ export function SidebarGameItem({
             ) : (
               getFallbackIcon()
             )}
+
             {isSteamSynced && (
               <SteamLogo className="sidebar__game-source-badge sidebar__game-source-badge--steam" />
             )}
@@ -141,6 +145,7 @@ export function SidebarGameItem({
         visible={contextMenu.visible}
         position={contextMenu.position}
         onClose={handleCloseContextMenu}
+        onCollectionContextMenu={openCollectionContextMenu}
       />
 
       <ConfirmationModal

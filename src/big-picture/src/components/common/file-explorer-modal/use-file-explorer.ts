@@ -10,26 +10,15 @@ import {
 } from "./utils";
 
 const SKELETON_COUNT = 6;
-
 function getErrorMessage(
   err: unknown,
   errorMessages: Record<string, string>,
   fallbackMessage: string
 ): string {
-  let code: string | undefined;
-
-  if (err instanceof Error) {
-    const errWithCode = err as unknown as Record<string, unknown>;
-    if (typeof errWithCode.code === "string") {
-      code = errWithCode.code;
-    }
-    if (!code) {
-      // Electron IPC may strip .code or leave it as undefined; parse from message
-      // e.g. "ENOENT: no such file or directory, scandir '/path'"
-      const match = /^([A-Z_]+):/.exec(err.message);
-      if (match) code = match[1];
-    }
-  }
+  const code =
+    err instanceof Error && "code" in err
+      ? (err as Record<string, unknown>).code
+      : undefined;
 
   if (typeof code === "string") {
     return errorMessages[code] ?? fallbackMessage;
@@ -48,35 +37,25 @@ export interface FileExplorerModalProps {
   selectDirectory?: boolean;
 }
 
-async function getDefaultPath(): Promise<string> {
-  const prefsPath = await globalThis.window.electron
-    .getUserPreferences()
-    .then((prefs) => prefs?.downloadsPath)
-    .catch(() => null);
-
-  if (prefsPath) {
-    const info = await globalThis.window.electron
-      .getPathInfo(prefsPath)
-      .catch(() => null);
-    if (info?.exists && !info.isFile) return prefsPath;
-  }
-
-  return globalThis.window.electron.getDefaultDownloadsPath();
-}
-
 function resolveStartPath(initialPath?: string): Promise<string> {
   if (initialPath) {
     return globalThis.window.electron
       .getPathInfo(initialPath)
-      .then((info) => {
-        if (!info.exists) return getDefaultPath();
-        if (info.isFile) return getParentPath(initialPath) ?? initialPath;
-        return initialPath;
-      })
-      .catch(() => getDefaultPath());
+      .then((info) =>
+        info.exists && info.isFile
+          ? (getParentPath(initialPath) ?? initialPath)
+          : initialPath
+      )
+      .catch(() => initialPath);
   }
 
-  return getDefaultPath();
+  return globalThis.window.electron
+    .getUserPreferences()
+    .then((prefs) => prefs?.downloadsPath)
+    .catch(() => null)
+    .then(
+      (path) => path ?? globalThis.window.electron.getDefaultDownloadsPath()
+    );
 }
 
 export function useFileExplorer({

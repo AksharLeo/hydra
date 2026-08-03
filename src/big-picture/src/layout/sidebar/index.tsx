@@ -54,7 +54,7 @@ import {
 } from "../../stores/downloads.store";
 import type { DownloadProgress, LibraryGame } from "@types";
 import type { FocusNode, FocusOverrides, FocusRegion } from "../../services";
-import { useNavigationSnapshot } from "../../stores";
+import { useNavigationSnapshot, useVirtualKeyboardStore } from "../../stores";
 import {
   BIG_PICTURE_SIDEBAR_EXIT_ID,
   BIG_PICTURE_SIDEBAR_ITEM_IDS,
@@ -1023,11 +1023,17 @@ function Sidebar() {
       ),
     [currentFocusId, nodes, regions]
   );
+  const virtualKeyboardTarget = useVirtualKeyboardStore(
+    (state) => state.target
+  );
+  const virtualKeyboardOnSidebarSearch =
+    virtualKeyboardTarget?.dataset.sidebarLibrarySearch === "true";
   const sidebarForcedOpen =
     notificationsOpen ||
     restoringNotificationsFocus ||
     sidebarHasNavigationFocus ||
-    contextMenuState.visible;
+    contextMenuState.visible ||
+    virtualKeyboardOnSidebarSearch;
   const sidebarExpanded =
     sidebarHovered || sidebarFocusWithin || sidebarForcedOpen;
 

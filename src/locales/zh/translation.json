@@ -58,8 +58,6 @@
     "edit_game_modal_drop_icon_image_here": "拖放图标到此处",
     "edit_game_modal_drop_logo_image_here": "拖放Logo到此处",
     "edit_game_modal_drop_to_replace_hero": "拖放以替换主图像",
-    "edit_game_modal_sgdb_search": "搜索 SteamGridDB…",
-    "edit_game_modal_sgdb_no_results": "未找到结果",
     "edit_game_modal_drop_to_replace_icon": "拖放以替换图标",
     "edit_game_modal_drop_to_replace_logo": "拖放以替换Logo",
     "edit_game_modal_enter_title": "输入标题",
@@ -112,7 +110,9 @@
     "expand_collections": "Expand collections",
     "collapse_collections": "Collapse collections",
     "expand_games": "Expand games",
-    "collapse_games": "Collapse games"
+    "collapse_games": "Collapse games",
+    "edit_game_modal_sgdb_search": "搜索 SteamGridDB…",
+    "edit_game_modal_sgdb_no_results": "未找到结果"
   },
   "header": {
     "search": "搜索游戏",

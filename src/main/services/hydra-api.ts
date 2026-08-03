@@ -19,6 +19,7 @@ export interface HydraApiOptions {
   ifModifiedSince?: Date;
   ifNoneMatch?: string;
   validateStatus?: (status: number) => boolean;
+  signal?: AbortSignal;
 }
 
 interface HydraApiUserAuth {
@@ -312,6 +313,14 @@ export class HydraApi {
     return expiresAt > new Date();
   }
 
+  public static updateUserSubscription(
+    subscription?: { expiresAt: Date | string | null } | null
+  ) {
+    this.userAuth.subscription = subscription
+      ? { expiresAt: subscription.expiresAt }
+      : null;
+  }
+
   static async handleExternalAuth(uri: string) {
     const { payload } = url.parse(uri, true).query;
 
@@ -334,6 +343,11 @@ export class HydraApi {
       subscription: null,
     };
 
+    const { AchievementWatcherManager } = await import(
+      "./achievements/achievement-watcher-manager"
+    );
+    AchievementWatcherManager.resetSessionState();
+
     logger.log(
       "Sign in received. Token expiration timestamp:",
       tokenExpirationTimestamp
@@ -352,11 +366,11 @@ export class HydraApi {
 
     await getUserData().then((userDetails) => {
       if (userDetails?.subscription) {
-        this.userAuth.subscription = {
+        this.updateUserSubscription({
           expiresAt: userDetails.subscription.expiresAt
             ? new Date(userDetails.subscription.expiresAt)
             : null,
-        };
+        });
       }
     });
 
@@ -378,13 +392,18 @@ export class HydraApi {
     }
   }
 
-  static handleSignOut() {
+  static async handleSignOut() {
     this.userAuth = {
       authToken: "",
       refreshToken: "",
       expirationTimestamp: 0,
       subscription: null,
     };
+
+    const { AchievementWatcherManager } = await import(
+      "./achievements/achievement-watcher-manager"
+    );
+    AchievementWatcherManager.resetSessionState();
 
     this.sendSignOutEvent();
     this.post("/auth/logout", {}, { needsAuth: false }).catch(() => {});
@@ -664,7 +683,22 @@ export class HydraApi {
     }
 
     if (needsSubscription && !this.hasActiveSubscription()) {
-      throw new SubscriptionRequiredError();
+      await this.refreshUserSubscription();
+
+      if (!this.hasActiveSubscription()) {
+        throw new SubscriptionRequiredError();
+      }
+    }
+  }
+
+  private static async refreshUserSubscription() {
+    if (!this.isLoggedIn()) return;
+
+    try {
+      const userDetails = await getUserData();
+      if (userDetails) this.updateUserSubscription(userDetails.subscription);
+    } catch (err) {
+      logger.error("Failed to refresh subscription state", err);
     }
   }
 
@@ -687,6 +721,7 @@ export class HydraApi {
         ...this.getAxiosConfig(url),
         headers,
         validateStatus: options?.validateStatus,
+        signal: options?.signal,
       })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
@@ -711,6 +746,7 @@ export class HydraApi {
         ...this.getAxiosConfig(url),
         headers,
         validateStatus: options?.validateStatus,
+        signal: options?.signal,
       })
       .then((response) => ({
         status: response.status,
@@ -728,7 +764,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .post<T>(url, data, this.getAxiosConfig(url))
+      .post<T>(url, data, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }
@@ -741,7 +780,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .put<T>(url, data, this.getAxiosConfig(url))
+      .put<T>(url, data, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }
@@ -754,7 +796,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .patch<T>(url, data, this.getAxiosConfig(url))
+      .patch<T>(url, data, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }
@@ -763,7 +808,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .delete<T>(url, this.getAxiosConfig(url))
+      .delete<T>(url, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }

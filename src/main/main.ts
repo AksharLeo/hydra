@@ -2,6 +2,7 @@ import { downloadsSublevel } from "./level/sublevels/downloads";
 import { orderBy } from "lodash-es";
 import { Downloader } from "@shared";
 import { levelKeys, db } from "./level";
+import { refreshGlobalTrackersUrlCache } from "@main/helpers";
 import { type Download, type UserPreferences } from "../types";
 import path from "node:path";
 import fs from "node:fs";
@@ -29,6 +30,7 @@ import {
 import { migrateDownloadSources } from "./helpers/migrate-download-sources";
 import { getDirSize } from "./services/download/helpers";
 import { GofileApi } from "./services/hosters";
+import { clearLegacyAchievementPersistence } from "./level/clear-legacy-achievements";
 
 const hasMissingSeedFiles = async (download: Download): Promise<boolean> => {
   if (!download.folderName) return false;
@@ -54,6 +56,7 @@ const hasMissingSeedFiles = async (download: Download): Promise<boolean> => {
 
 export const loadState = async () => {
   await Lock.acquireLock();
+  await clearLegacyAchievementPersistence();
 
   const userPreferences = await db.get<string, UserPreferences | null>(
     levelKeys.userPreferences,
@@ -83,6 +86,15 @@ export const loadState = async () => {
   }
 
   GofileApi.initialize();
+
+  if (
+    userPreferences?.appendGlobalTrackersUrl &&
+    userPreferences?.globalTrackersUrl
+  ) {
+    refreshGlobalTrackersUrlCache().catch((err) =>
+      logger.warn("Failed to refresh global tracker URL cache on startup", err)
+    );
+  }
 
   Ludusavi.copyConfigFileToUserData();
   Ludusavi.copyBinaryToUserData();
@@ -183,7 +195,9 @@ export const loadState = async () => {
 
   startMainLoop();
 
-  CommonRedistManager.downloadCommonRedist();
+  if (process.platform === "win32") {
+    CommonRedistManager.downloadCommonRedist();
+  }
 
   SystemPath.checkIfPathsAreAvailable();
 };

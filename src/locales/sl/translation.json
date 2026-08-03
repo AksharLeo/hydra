@@ -79,8 +79,6 @@
     "edit_game_modal_drop_to_replace_icon": "Spustite za zamenjavo ikone",
     "edit_game_modal_drop_to_replace_logo": "Spustite za zamenjavo logotipa",
     "edit_game_modal_drop_to_replace_hero": "Spustite za zamenjavo hero slike",
-    "edit_game_modal_sgdb_search": "Iskanje na SteamGridDB…",
-    "edit_game_modal_sgdb_no_results": "Ni rezultatov",
     "install_decky_plugin": "Namesti Decky vtičnik",
     "update_decky_plugin": "Posodobi Decky vtičnik",
     "decky_plugin_installed_version": "Decky vtičnik (v{{version}})",
@@ -112,7 +110,9 @@
     "expand_collections": "Expand collections",
     "collapse_collections": "Collapse collections",
     "expand_games": "Expand games",
-    "collapse_games": "Collapse games"
+    "collapse_games": "Collapse games",
+    "edit_game_modal_sgdb_search": "Iskanje na SteamGridDB…",
+    "edit_game_modal_sgdb_no_results": "Ni rezultatov"
   },
   "header": {
     "search": "Išči igre",

@@ -1,5 +1,4 @@
 import { BottomPanel, Header, Sidebar, Toast } from "@renderer/components";
-import { ForkUpdateModal } from "@renderer/components/fork-update-modal/fork-update-modal";
 import { VideoIcon } from "@primer/octicons-react";
 import {
   DashIcon,
@@ -38,8 +37,6 @@ import { useTranslation } from "react-i18next";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useSubscription } from "./hooks/use-subscription";
 import { ArchiveDeletionModal } from "./pages/downloads/archive-deletion-error-modal";
-import { InstallerFoundModal } from "./pages/downloads/installer-found-modal";
-import { PostInstallerModal } from "./pages/downloads/post-installer-modal";
 import { CloudSubscriptionModal } from "./pages/shared-modals/hydra-cloud/cloud-subscription-modal";
 import { AddFriendModal } from "./pages/profile/profile-content/add-friend-modal";
 import { ClassicsScanModal } from "./pages/settings/emulation/classics-scan-modal";
@@ -106,17 +103,6 @@ export function App() {
     useState(false);
   const [archivePaths, setArchivePaths] = useState<string[]>([]);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
-  const [installerFoundInfo, setInstallerFoundInfo] = useState<{
-    shop: string;
-    objectId: string;
-    exePath: string;
-    folderPath: string;
-  } | null>(null);
-  const [postInstallerInfo, setPostInstallerInfo] = useState<{
-    shop: string;
-    objectId: string;
-    folderPath: string;
-  } | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -347,6 +333,7 @@ export function App() {
           dispatch(
             setGameRunning({
               ...libraryGame,
+              coverImageUrl: libraryGame.coverImageUrl ?? null,
               sessionDurationInMillis: lastGame.sessionDurationInMillis,
             })
           );
@@ -421,16 +408,19 @@ export function App() {
           t("extraction_failed_description", { ns: "downloads" })
         );
       }),
+      window.electron.onDownloadHalted((gameTitle) => {
+        updateLibrary();
+        showErrorToast(
+          t("download_halted_title", { ns: "downloads" }),
+          t("download_halted_description", {
+            ns: "downloads",
+            title: gameTitle,
+          })
+        );
+      }),
       window.electron.onArchiveDeletionPrompt((paths) => {
         setArchivePaths(paths);
         setShowArchiveDeletionModal(true);
-      }),
-      window.electron.onInstallerFound((info) => {
-        setInstallerFoundInfo(info);
-      }),
-      window.electron.onInstallerClosed((info) => {
-        setInstallerFoundInfo(null);
-        setPostInstallerInfo(info);
       }),
     ];
 
@@ -552,7 +542,6 @@ export function App() {
 
   return (
     <>
-      <ForkUpdateModal />
       {(window.electron.platform === "win32" ||
         window.electron.platform === "linux") && (
         <div
@@ -637,30 +626,6 @@ export function App() {
         visible={showArchiveDeletionModal}
         archivePaths={archivePaths}
         onClose={() => setShowArchiveDeletionModal(false)}
-      />
-
-      <InstallerFoundModal
-        visible={installerFoundInfo !== null}
-        exePath={installerFoundInfo?.exePath ?? ""}
-        onConfirm={() => {
-          if (!installerFoundInfo) return;
-          window.electron.launchInstallerAndWatch(
-            installerFoundInfo.shop,
-            installerFoundInfo.objectId,
-            installerFoundInfo.exePath,
-            installerFoundInfo.folderPath
-          );
-          setInstallerFoundInfo(null);
-        }}
-        onClose={() => setInstallerFoundInfo(null)}
-      />
-
-      <PostInstallerModal
-        visible={postInstallerInfo !== null}
-        shop={postInstallerInfo?.shop ?? ""}
-        objectId={postInstallerInfo?.objectId ?? ""}
-        folderPath={postInstallerInfo?.folderPath ?? ""}
-        onClose={() => setPostInstallerInfo(null)}
       />
 
       <AddFriendModal

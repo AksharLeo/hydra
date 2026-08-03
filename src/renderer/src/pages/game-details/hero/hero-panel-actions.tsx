@@ -16,7 +16,7 @@ import {
   useToast,
   useUserDetails,
 } from "@renderer/hooks";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { gameDetailsContext } from "@renderer/context";
@@ -27,6 +27,7 @@ import {
 import { DiscSelectionModal } from "../modals/disc-selection-modal";
 
 import "./hero-panel-actions.scss";
+import { useEffect } from "react";
 
 export function HeroPanelActions() {
   const [toggleLibraryGameDisabled, setToggleLibraryGameDisabled] =
@@ -72,6 +73,14 @@ export function HeroPanelActions() {
   const { t } = useTranslation("game_details");
 
   useEffect(() => {
+    if (game?.shop !== "steam") return;
+    window.electron
+      .checkGameOnSteam(game.shop, game.objectId)
+      .then(setIsOwnedOnSteam)
+      .catch(() => setIsOwnedOnSteam(false));
+  }, [game?.shop, game?.objectId]);
+
+  useEffect(() => {
     const onOpenDiscSelection = (event: Event) => {
       const detail = (event as CustomEvent<{ objectId?: string }>).detail;
       if (!detail?.objectId || detail.objectId === game?.objectId) {
@@ -91,14 +100,6 @@ export function HeroPanelActions() {
       );
     };
   }, [game?.objectId, game?.shop, game?.discs?.length]);
-
-  useEffect(() => {
-    if (game?.shop !== "steam") return;
-    window.electron
-      .checkGameOnSteam(game.shop, game.objectId)
-      .then(setIsOwnedOnSteam)
-      .catch(() => setIsOwnedOnSteam(false));
-  }, [game?.shop, game?.objectId]);
 
   useEffect(() => {
     const onFavoriteToggled = () => {

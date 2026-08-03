@@ -17,6 +17,7 @@ import {
 
 const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
   const isSelfHostedActive = HydraApi.isSelfHostedAuthenticated();
+  SSEClient.close();
 
   const databaseOperations = db
     .batch([
@@ -42,10 +43,12 @@ const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
       ]);
     });
 
+  /* Cancels any ongoing downloads */
   DownloadManager.cancelDownload();
 
-  HydraApi.handleSignOut();
+  await HydraApi.handleSignOut();
 
+  /* The friends window is only meaningful while signed in */
   WindowManager.closeFriendsWindow();
 
   await Promise.all([

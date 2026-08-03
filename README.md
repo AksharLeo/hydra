@@ -5,12 +5,24 @@
   <h1 align="center">Hydra Launcher</h1>
 
   <p align="center">
-    <strong>Fork with self-hosted backend support — your own cloud saves, accounts and profiles.</strong>
+    <strong>Hydra Launcher is an open-source gaming platform created to be the single tool that you need in order to manage your gaming library. Hydra is written in Node.js (Electron, React, Typescript), Python, and Rust.</strong>
   </p>
+
+[![build](https://img.shields.io/github/actions/workflow/status/hydralauncher/hydra/build.yml)](https://github.com/hydralauncher/hydra/actions)
+[![release](https://img.shields.io/github/package-json/v/hydralauncher/hydra)](https://github.com/hydralauncher/hydra/releases)
 
 ![Hydra Launcher Home Page](./docs/screenshot.png)
 
 </div>
+
+## Features
+
+- Add games that you own to your library
+- Have a nice profile that shows what you are playing to your friends
+- Save your game progress in the cloud with Hydra Cloud
+- Unlock achievements
+- Navigate through a rich catalogue with a powerful suggestion algorithm
+- Discover new games that you haven't played before
 
 ## What this fork adds
 
@@ -20,47 +32,18 @@ This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) 
 
 - **Your own cloud saves** — save backups stored on your server, not Hydra Cloud
 - **Your own account** — register with a username and password on your server
-- **Public profile** — shareable profile page at `your-server/u/username` with playtime and game library
+- **Public profile** — shareable profile page at your-server/u/username with play time and game library
 - **Web dashboard** — manage your profile, banner, avatar, accent color, and custom CSS from a browser
 - **No subscription** — everything works without a Hydra Cloud subscription; all cloud save slots are unlimited
 - **Session control** — configure session duration and auto sign-out behavior
 
-### Profile
-
-- **Pin & favorite games** — mark games as pinned or favorited; pinned games float to the top of the sidebar and your public profile
-- **Pin/favorite badges** — pinned and favorited games show icons in the library card view
-- **Recent activity** — public profile shows recently played games per tab (Hydra / Steam) with toggle and reorderable sections
-
 ### SteamGridDB integration
 
-- **Custom game art** — browse and apply icons, logos, heroes, and covers directly from SteamGridDB in **Game Settings → Assets** (and in Big Picture under a game's **Customization** tab)
+- **Custom game art** — browse and apply icons, logos, heroes, and covers directly from SteamGridDB in Game Settings → Assets
 - Artwork is served through the official Hydra API out of the box — no key required
-- **Optional API key** — set your own SteamGridDB API key in **Settings → Integrations → SteamGridDB** (or Big Picture → Integrations) to use the direct SteamGridDB search instead of the server-backed picker; leave it empty to fall back to Hydra's servers
-- Searches by game title automatically; Steam games are matched by App ID for accurate results
+- **Optional API key** — set your own SteamGridDB API key in Settings → Integrations → SteamGridDB to use the direct SteamGridDB search
 
-### Big Picture
-
-- **Dual accounts in sidebar** — if you have both a self-hosted and an official Hydra account connected, both avatars appear in the Big Picture sidebar; clicking the small official avatar switches to the official profile view
-- **Self-hosted profile in Big Picture** — your self-hosted profile loads correctly in Big Picture (all library, stats, and recent activity sections display without blank screens)
-- **Steam-owned game launch** — games with `shop = steam` that are installed in your local Steam library are launched via `steam://rungameid/<appId>` instead of spawning a process directly; play-time tracking continues normally via the process watcher
-
-### Other
-
-- Download sources always route through the official Hydra API (self-hosted instances do not interfere)
-- Sidebar sorts pinned games to the top
-- Steam-owned games (detected by local `appmanifest_<appId>.acf` file in any Steam library) launch via Steam by default
-
-## Self-hosted setup
-
-1. Deploy [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted) on your server
-2. In Hydra: **Settings → Integrations → Self-Hosted API**
-3. Enter your server URL and API token, click **Save**
-4. A login window opens — register or sign in
-5. Cloud saves and library sync to your server automatically
-
-## Build from source
-
-Requirements: Node.js, Python 3.9+, Rust toolchain
+## Dependencies
 
 ```bash
 npm install
@@ -75,4 +58,4 @@ npm run build:linux   # or build:win / build:mac
 
 ## License
 
-[MIT License](LICENSE)
+The project is licensed under the [MIT License](LICENSE).
