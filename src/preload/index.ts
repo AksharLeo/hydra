@@ -166,7 +166,7 @@ contextBridge.exposeInMainWorld("electron", {
     shop: GameShop,
     options?: { forceFresh?: boolean }
   ) => ipcRenderer.invoke("getGameAssets", objectId, shop, options),
-searchSteamGridDb: (
+  searchSteamGridDb: (
     query: string,
     assetType: "icon" | "logo" | "hero",
     steamAppId?: string | null

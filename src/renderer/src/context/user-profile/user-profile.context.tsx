@@ -69,7 +69,7 @@ export function UserProfileContextProvider({
   userId,
 }: Readonly<UserProfileContextProviderProps>) {
   const { userDetails } = useAppSelector((state) => state.userDetails);
-const userPreferences = useAppSelector(
+  const userPreferences = useAppSelector(
     (state) => state.userPreferences.value
   );
   const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
@@ -101,7 +101,7 @@ const userPreferences = useAppSelector(
   const [isLoadingLibraryGames, setIsLoadingLibraryGames] = useState(false);
   const previousUserIdRef = useRef(userId);
 
-const isMe =
+  const isMe =
     userProfile?.id === authUserId ||
     (isSelfHosted && userProfile?.id === officialUserId);
   const isMyOfficialProfile =
