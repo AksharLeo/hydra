@@ -109,8 +109,6 @@
     "edit_game_modal_drop_to_replace_icon": "Jatuhkan untuk mengganti ikon",
     "edit_game_modal_drop_to_replace_logo": "Jatuhkan untuk mengganti logo",
     "edit_game_modal_drop_to_replace_hero": "Jatuhkan untuk mengganti hero",
-    "edit_game_modal_sgdb_search": "Cari di SteamGridDB…",
-    "edit_game_modal_sgdb_no_results": "Tidak ada hasil ditemukan",
     "install_decky_plugin": "Instal Decky Plugin",
     "update_decky_plugin": "Perbarui Decky Plugin",
     "decky_plugin_installed_version": "Decky Plugin (v{{version}})",
@@ -123,7 +121,9 @@
     "decky_plugin_installation_error": "Terjadi error saat menginstal Decky plugin: {{error}}",
     "custom_assets_not_sync": "Artwork kustom kamu tidak akan disinkronkan dengan akunmu.",
     "confirm": "Konfirmasi",
-    "cancel": "Batal"
+    "cancel": "Batal",
+    "edit_game_modal_sgdb_search": "Cari di SteamGridDB…",
+    "edit_game_modal_sgdb_no_results": "Tidak ada hasil ditemukan"
   },
   "header": {
     "minimize": "Minimalkan",
@@ -158,18 +158,18 @@
     "scan_games_hide": "Sembunyikan",
     "scan_games_close": "Tutup",
     "scan_games_scan_again": "Pindai Lagi",
-    "fork_update_title": "New build available — #{{buildNumber}}",
-    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
-    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
-    "fork_update_open_artifacts": "Open artifacts",
-    "fork_update_close": "Close",
     "scan_games_mode_automatic": "Otomatis",
     "scan_games_mode_manual": "Manual",
     "scan_games_folders_title": "Folder yang akan dipindai",
     "scan_games_add_folder": "Tambah folder",
     "scan_games_remove_folder": "Hapus folder",
     "scan_games_folders_hint_manual": "Tambahkan setidaknya satu folder untuk dapat dipindai.",
-    "scan_games_detection_warning": "Pendeteksian mengandalkan daftar game yang dikelola oleh komunitas dan mungkin sudah tidak terkini, sehingga beberapa game mungkin tidak ditemukan."
+    "scan_games_detection_warning": "Pendeteksian mengandalkan daftar game yang dikelola oleh komunitas dan mungkin sudah tidak terkini, sehingga beberapa game mungkin tidak ditemukan.",
+    "fork_update_title": "New build available — #{{buildNumber}}",
+    "fork_update_instructions_linux": "Download the AppImage, .deb, or .rpm from the artifacts page. For AppImage: chmod +x and run it. For .deb: sudo dpkg -i file.deb. For .rpm: sudo rpm -i file.rpm.",
+    "fork_update_instructions_windows": "Download and run the setup installer (-setup.exe) from the artifacts page.",
+    "fork_update_open_artifacts": "Open artifacts",
+    "fork_update_close": "Close"
   },
   "bottom_panel": {
     "reconnecting": "Menghubungkan kembali ke {{title}}…",
@@ -564,7 +564,6 @@
     "download_error_alldebrid_rate_limit_exceeded": "Batas kecepatan AllDebrid terlampaui. Harap tunggu dan coba lagi.",
     "download_error_premiumize_unavailable": "Premiumize sedang tidak tersedia untuk sementara. Silakan coba lagi nanti.",
     "download_error_alldebrid_unavailable": "AllDebrid sedang tidak tersedia untuk sementara. Silakan coba lagi nanti.",
-    "download_error_vikingfile_nimbus_quota_exceeded": "Kuota Nimbus untuk VikingFile hari ini telah habis. Silakan coba lagi besok.",
     "download_error_invalid_magnet": "Link magnet tidak valid.",
     "download_error_torrent_metadata_timeout": "Waktu habis saat mengambil metadata torrent. Silakan coba lagi.",
     "download_error_torrent_metadata_incomplete": "Metadata torrent tidak lengkap dan tidak dapat diproses saat ini.",
@@ -693,7 +692,8 @@
     "create_steam_shortcut_modal_cancel_button": "Batal",
     "delete_shortcut_success": "Pintasan Steam berhasil dihapus",
     "delete_shortcut_error": "Gagal menghapus pintasan Steam",
-    "delete_steam_shortcut": "Hapus pintasan Steam"
+    "delete_steam_shortcut": "Hapus pintasan Steam",
+    "download_error_vikingfile_nimbus_quota_exceeded": "Kuota Nimbus untuk VikingFile hari ini telah habis. Silakan coba lagi besok."
   },
   "activation": {
     "title": "Aktifkan Hydra",

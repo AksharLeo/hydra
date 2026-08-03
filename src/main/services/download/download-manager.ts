@@ -1,6 +1,14 @@
-import { Downloader, DownloadError, FILE_EXTENSIONS_TO_EXTRACT } from "@shared";
+import {
+  Downloader,
+  DownloadError,
+  FILE_EXTENSIONS_TO_EXTRACT,
+  resolveArchiveOrgFile,
+} from "@shared";
 import { WindowManager } from "../window-manager";
-import { publishDownloadCompleteNotification } from "../notifications";
+import {
+  publishDownloadCompleteNotification,
+  publishDownloadHaltedNotification,
+} from "../notifications";
 import type { Download, DownloadProgress, Game, UserPreferences } from "@types";
 import {
   GofileApi,
@@ -43,6 +51,10 @@ import {
   setDownloadLayoutQueues,
 } from "../download-layout-state";
 import { shouldFinalizeDownload } from "./download-completion";
+import {
+  DISK_SPACE_CHECK_INTERVAL_MS,
+  getDownloadDiskSpace,
+} from "./disk-space";
 
 interface AllDebridBatchEntry {
   url: string;
@@ -71,6 +83,16 @@ export class DownloadManager {
   private static allDebridBatch: AllDebridBatchState | null = null;
   private static maxDownloadSpeedBytesPerSecond: number | null = null;
   private static startGeneration = 0;
+  private static orphanedDownloadCandidate: {
+    downloadKey: string;
+    generation: number;
+  } | null = null;
+  private static lastDiskSpaceCheck: {
+    downloadKey: string;
+    timestamp: number;
+  } | null = null;
+  private static queueHeldForDiskSpace = false;
+  private static lastQueueRetry = 0;
 
   public static hasActiveDownload() {
     return this.downloadingGameId !== null;
@@ -149,6 +171,7 @@ export class DownloadManager {
   private static sanitizeRelativePath(pathValue: string): string {
     return pathValue
       .split(/[\\/]+/)
+      .filter((segment) => segment !== "." && segment !== "..")
       .map((segment) => this.sanitizeFilename(segment))
       .filter(Boolean)
       .join("/");
@@ -590,7 +613,45 @@ export class DownloadManager {
     return this.getDownloadStatusFromRpc();
   }
 
+  private static async cancelOrphanedDownload(downloadKey: string) {
+    if (
+      this.orphanedDownloadCandidate?.downloadKey !== downloadKey ||
+      this.orphanedDownloadCandidate.generation !== this.startGeneration
+    ) {
+      this.orphanedDownloadCandidate = {
+        downloadKey,
+        generation: this.startGeneration,
+      };
+      return;
+    }
+
+    this.orphanedDownloadCandidate = null;
+
+    logger.warn(
+      `[DownloadManager] Download entry for ${downloadKey} no longer exists, cancelling orphaned download`
+    );
+
+    await this.cancelDownload(downloadKey);
+  }
+
   public static async watchDownloads() {
+    const activeDownloadKey = this.downloadingGameId;
+
+    if (activeDownloadKey) {
+      const activeDownload = await downloadsSublevel.get(activeDownloadKey);
+
+      if (!activeDownload) {
+        await this.cancelOrphanedDownload(activeDownloadKey);
+        return;
+      }
+    }
+
+    this.orphanedDownloadCandidate = null;
+
+    if (this.queueHeldForDiskSpace) {
+      await this.retryQueueHeldForDiskSpace();
+    }
+
     const status = await this.getDownloadStatus();
     if (!status) return;
 
@@ -601,6 +662,8 @@ export class DownloadManager {
     ]);
 
     if (!download || !game) return;
+
+    if (await this.haltDownloadIfStorageIsFull(download, game, gameId)) return;
 
     this.sendProgressUpdate(progress, status, game);
 
@@ -615,6 +678,88 @@ export class DownloadManager {
     ) {
       await this.handleDownloadCompletion(download, game, gameId);
     }
+  }
+
+  private static async retryQueueHeldForDiskSpace() {
+    const now = Date.now();
+
+    if (now - this.lastQueueRetry < DISK_SPACE_CHECK_INTERVAL_MS) return;
+
+    this.lastQueueRetry = now;
+
+    await this.processNextQueuedDownload();
+  }
+
+  private static async haltDownloadIfStorageIsFull(
+    download: Download,
+    game: Game,
+    downloadKey: string
+  ) {
+    if (download.progress >= 1) return false;
+
+    const now = Date.now();
+
+    if (
+      this.lastDiskSpaceCheck?.downloadKey === downloadKey &&
+      now - this.lastDiskSpaceCheck.timestamp < DISK_SPACE_CHECK_INTERVAL_MS
+    ) {
+      return false;
+    }
+
+    this.lastDiskSpaceCheck = { downloadKey, timestamp: now };
+
+    const diskSpace = await getDownloadDiskSpace(download);
+
+    if (!diskSpace) {
+      logger.error(
+        `[DownloadManager] Failed to read free space for ${download.downloadPath}`
+      );
+      return false;
+    }
+
+    if (diskSpace.hasEnoughSpace) return false;
+
+    logger.warn(
+      `[DownloadManager] Halting ${downloadKey}: ${download.downloadPath} has ${diskSpace.freeBytes} bytes free, ${diskSpace.requiredBytes} needed`
+    );
+
+    this.lastDiskSpaceCheck = null;
+
+    await this.pauseDownload(downloadKey);
+    WindowManager.sendToAppWindows("on-download-progress", null);
+
+    await downloadsSublevel.put(downloadKey, {
+      ...download,
+      status: "error",
+      queued: false,
+      pinnedToHero: false,
+      extracting: false,
+    });
+
+    const downloads = await downloadsSublevel.values().all();
+    const layoutState = await getDownloadLayoutStateRecord();
+    await setDownloadLayoutQueues(
+      downloads,
+      layoutState.queueOrder.filter((id) => id !== downloadKey),
+      [
+        downloadKey,
+        ...layoutState.pausedOrder.filter((id) => id !== downloadKey),
+      ]
+    );
+
+    WindowManager.sendDownloadsUpdated();
+    WindowManager.sendToAppWindows("on-download-halted", game.title);
+
+    await publishDownloadHaltedNotification(game).catch((error) => {
+      logger.error(
+        "[DownloadManager] Failed to publish download halted notification",
+        error
+      );
+    });
+
+    await this.processNextQueuedDownload();
+
+    return true;
   }
 
   private static sendProgressUpdate(
@@ -688,11 +833,8 @@ export class DownloadManager {
       }
     } else {
       const gameFilesManager = new GameFilesManager(game.shop, game.objectId);
-      const installerFound = await gameFilesManager.searchAndPromptInstaller();
-      if (!installerFound) {
-        void gameFilesManager.searchAndBindExecutable();
-        void gameFilesManager.autoLinkClassicsDiscs();
-      }
+      gameFilesManager.searchAndBindExecutable();
+      void gameFilesManager.autoLinkClassicsDiscs();
     }
 
     await this.processNextQueuedDownload();
@@ -824,6 +966,22 @@ export class DownloadManager {
     );
 
     if (nextItemOnQueue) {
+      const diskSpace = await getDownloadDiskSpace(nextItemOnQueue);
+
+      if (diskSpace && !diskSpace.hasEnoughSpace) {
+        if (!this.queueHeldForDiskSpace) {
+          logger.warn(
+            `[DownloadManager] Keeping the queue on hold: ${nextItemOnQueue.downloadPath} has ${diskSpace.freeBytes} bytes free, ${diskSpace.requiredBytes} needed`
+          );
+          WindowManager.sendDownloadsUpdated();
+        }
+
+        this.queueHeldForDiskSpace = true;
+        return;
+      }
+
+      this.queueHeldForDiskSpace = false;
+
       const nextDownloadId = levelKeys.game(
         nextItemOnQueue.shop,
         nextItemOnQueue.objectId
@@ -846,6 +1004,7 @@ export class DownloadManager {
         await this.handleRuntimeDownloadError(nextDownloadId, error);
       }
     } else {
+      this.queueHeldForDiskSpace = false;
       this.downloadingGameId = null;
       this.usingJsDownloader = false;
       this.jsDownloader = null;
@@ -1036,6 +1195,7 @@ export class DownloadManager {
       game_id: levelKeys.game(download.shop, download.objectId),
       url: download.uri,
       save_path: download.downloadPath,
+      trackers: download.customTrackers,
     });
   }
 
@@ -1079,6 +1239,8 @@ export class DownloadManager {
         return this.getVikingFileDownloadOptions(download, resumingFilename);
       case Downloader.Rootz:
         return this.getRootzDownloadOptions(download, resumingFilename);
+      case Downloader.ArchiveOrg:
+        return this.getArchiveOrgDownloadOptions(download, resumingFilename);
       default:
         return null;
     }
@@ -1402,6 +1564,20 @@ export class DownloadManager {
     );
   }
 
+  private static async getArchiveOrgDownloadOptions(
+    download: Download,
+    resumingFilename?: string
+  ) {
+    const resolvedFile = resolveArchiveOrgFile(download.uri);
+    if (!resolvedFile) throw new Error(DownloadError.ArchiveOrgInvalidFileUrl);
+
+    return this.buildDownloadOptions(
+      resolvedFile.url,
+      download.downloadPath,
+      resumingFilename ?? this.sanitizeFilename(resolvedFile.filename)
+    );
+  }
+
   private static async getRootzDownloadOptions(
     download: Download,
     resumingFilename?: string
@@ -1511,6 +1687,7 @@ export class DownloadManager {
             ? download.fileIndices
             : undefined,
           metadata_timeout_ms: hasSelectedFileIndices ? 60_000 : undefined,
+          trackers: download.customTrackers,
         };
       }
       case Downloader.RealDebrid: {
@@ -1725,13 +1902,16 @@ export class DownloadManager {
     const isHttp = this.isHttpDownloader(download.downloader);
     const downloadId = levelKeys.game(download.shop, download.objectId);
 
+    this.queueHeldForDiskSpace = false;
+
+    // The generation token lets a concurrent cancel/restart for the same id
+    // invalidate this in-flight preparation before it spawns a downloader.
+    const myGeneration = ++this.startGeneration;
+
     if (isHttp) {
       logger.log("[DownloadManager] Using JS HTTP downloader");
 
       // Set preparing state immediately so UI knows download is starting.
-      // The generation token lets a concurrent cancel/restart for the same id
-      // invalidate this in-flight preparation before it spawns a downloader.
-      const myGeneration = ++this.startGeneration;
       this.downloadingGameId = downloadId;
       this.isPreparingDownload = true;
       this.usingJsDownloader = true;
@@ -1742,9 +1922,6 @@ export class DownloadManager {
             download.uri
           );
           if (!entries?.length) {
-            this.isPreparingDownload = false;
-            this.usingJsDownloader = false;
-            this.downloadingGameId = null;
             throw new Error(DownloadError.NotCachedOnAllDebrid);
           }
 
@@ -1787,9 +1964,6 @@ export class DownloadManager {
           const options = await this.getJsDownloadOptions(download);
 
           if (!options) {
-            this.isPreparingDownload = false;
-            this.usingJsDownloader = false;
-            this.downloadingGameId = null;
             throw new Error("Failed to get download options for JS downloader");
           }
 
@@ -1822,10 +1996,13 @@ export class DownloadManager {
           });
         }
       } catch (err) {
-        this.isPreparingDownload = false;
-        this.usingJsDownloader = false;
-        this.downloadingGameId = null;
-        this.allDebridBatch = null;
+        if (this.startGeneration === myGeneration) {
+          this.isPreparingDownload = false;
+          this.usingJsDownloader = false;
+          this.downloadingGameId = null;
+          this.allDebridBatch = null;
+        }
+
         throw err;
       }
     } else {
@@ -1856,23 +2033,32 @@ export class DownloadManager {
         });
 
         const downloadWasCancelledOrReplaced =
-          this.downloadingGameId !== downloadId;
+          this.downloadingGameId !== downloadId ||
+          this.startGeneration !== myGeneration;
 
         if (downloadWasCancelledOrReplaced) {
-          await PythonRPC.rpc
-            .call("action", { action: "cancel", game_id: downloadId })
-            .catch((error) => {
-              logger.error(
-                "[DownloadManager] Failed to cancel stale torrent download",
-                error
-              );
-            });
+          const wasReplacedBySameGame = this.downloadingGameId === downloadId;
+
+          if (!wasReplacedBySameGame) {
+            await PythonRPC.rpc
+              .call("action", { action: "cancel", game_id: downloadId })
+              .catch((error) => {
+                logger.error(
+                  "[DownloadManager] Failed to cancel stale torrent download",
+                  error
+                );
+              });
+          }
+
           return;
         }
 
         this.isPreparingDownload = false;
       } catch (error) {
-        if (this.downloadingGameId === downloadId) {
+        if (
+          this.downloadingGameId === downloadId &&
+          this.startGeneration === myGeneration
+        ) {
           this.downloadingGameId = previousDownloadingGameId;
           this.isPreparingDownload = previousIsPreparingDownload;
           this.usingJsDownloader = previousUsingJsDownloader;

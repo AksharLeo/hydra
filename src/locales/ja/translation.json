@@ -98,8 +98,6 @@
     "edit_game_modal_drop_to_replace_icon": "ドロップしてアイコンを置き換え",
     "edit_game_modal_drop_to_replace_logo": "ドロップしてロゴを置き換え",
     "edit_game_modal_drop_to_replace_hero": "ドロップしてヒーローを置き換え",
-    "edit_game_modal_sgdb_search": "SteamGridDBを検索…",
-    "edit_game_modal_sgdb_no_results": "結果が見つかりません",
     "install_decky_plugin": "Deckyプラグインをインストール",
     "update_decky_plugin": "Deckyプラグインを更新",
     "decky_plugin_installed_version": "Deckyプラグイン（v{{version}}）",
@@ -112,7 +110,9 @@
     "decky_plugin_installation_error": "Deckyプラグインのインストール中にエラーが発生しました: {{error}}",
     "custom_assets_not_sync": "カスタムアートワークはアカウントと同期されません。",
     "confirm": "確認",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "edit_game_modal_sgdb_search": "SteamGridDBを検索…",
+    "edit_game_modal_sgdb_no_results": "結果が見つかりません"
   },
   "header": {
     "search": "ゲームを検索",
@@ -463,7 +463,6 @@
     "download_error_alldebrid_rate_limit_exceeded": "AllDebridのレート制限を超えました。しばらく待ってから再試行してください。",
     "download_error_premiumize_unavailable": "Premiumizeは一時的に利用できません。後でもう一度お試しください。",
     "download_error_alldebrid_unavailable": "AllDebridは一時的に利用できません。後でもう一度お試しください。",
-    "download_error_vikingfile_nimbus_quota_exceeded": "VikingFileのNimbusクォータが本日終了しました。明日再試行してください。",
     "download_error_invalid_magnet": "無効なマグネットリンクです。",
     "download_error_torrent_metadata_timeout": "トレントメタデータの取得がタイムアウトしました。再試行してください。",
     "download_error_torrent_metadata_incomplete": "トレントメタデータが不完全で現在処理できません。",
@@ -542,7 +541,8 @@
     "create_steam_shortcut_modal_cancel_button": "キャンセル",
     "delete_shortcut_success": "Steamショートカットを削除しました",
     "delete_shortcut_error": "Steamショートカットの削除に失敗しました",
-    "delete_steam_shortcut": "Steamショートカットを削除"
+    "delete_steam_shortcut": "Steamショートカットを削除",
+    "download_error_vikingfile_nimbus_quota_exceeded": "VikingFileのNimbusクォータが本日終了しました。明日再試行してください。"
   },
   "activation": {
     "title": "Hydraをアクティベート",

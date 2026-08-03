@@ -77,8 +77,6 @@
     "edit_game_modal_drop_to_replace_icon": "Ievelciet, lai aizstātu ikonu",
     "edit_game_modal_drop_to_replace_logo": "Ievelciet, lai aizstātu logotipu",
     "edit_game_modal_drop_to_replace_hero": "Ievelciet, lai aizstātu vāku",
-    "edit_game_modal_sgdb_search": "Meklēt SteamGridDB…",
-    "edit_game_modal_sgdb_no_results": "Rezultāti nav atrasti",
     "install_decky_plugin": "Instalēt Decky spraudni",
     "update_decky_plugin": "Atjaunināt Decky spraudni",
     "decky_plugin_installed_version": "Decky spraudnis (v{{version}})",
@@ -112,7 +110,9 @@
     "expand_collections": "Expand collections",
     "collapse_collections": "Collapse collections",
     "expand_games": "Expand games",
-    "collapse_games": "Collapse games"
+    "collapse_games": "Collapse games",
+    "edit_game_modal_sgdb_search": "Meklēt SteamGridDB…",
+    "edit_game_modal_sgdb_no_results": "Rezultāti nav atrasti"
   },
   "header": {
     "search": "Meklēt",

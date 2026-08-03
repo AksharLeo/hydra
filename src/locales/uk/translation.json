@@ -30,7 +30,6 @@
     "playable_button_title": "Показати лише ігри, які можна грати зараз",
     "add_custom_game_tooltip": "Додати власну гру",
     "show_playable_only_tooltip": "Показати лише доступні для гри",
-    "hide_steam_games_tooltip": "Приховати ігри Steam",
     "custom_game_modal": "Додати власну гру",
     "custom_game_modal_description": "Додайте власну гру до бібліотеки, вибравши виконуваний файл",
     "custom_game_modal_executable_path": "Шлях до виконуваного файлу",
@@ -78,8 +77,6 @@
     "edit_game_modal_drop_to_replace_icon": "Перетягніть для заміни іконки",
     "edit_game_modal_drop_to_replace_logo": "Перетягніть для заміни логотипу",
     "edit_game_modal_drop_to_replace_hero": "Перетягніть для заміни обкладинки",
-    "edit_game_modal_sgdb_search": "Пошук у SteamGridDB…",
-    "edit_game_modal_sgdb_no_results": "Нічого не знайдено",
     "install_decky_plugin": "Встановити плагін Decky",
     "update_decky_plugin": "Оновити плагін Decky",
     "decky_plugin_installed_version": "Плагін Decky (v{{version}})",
@@ -113,7 +110,10 @@
     "expand_collections": "Expand collections",
     "collapse_collections": "Collapse collections",
     "expand_games": "Expand games",
-    "collapse_games": "Collapse games"
+    "collapse_games": "Collapse games",
+    "hide_steam_games_tooltip": "Приховати ігри Steam",
+    "edit_game_modal_sgdb_search": "Пошук у SteamGridDB…",
+    "edit_game_modal_sgdb_no_results": "Нічого не знайдено"
   },
   "header": {
     "search": "Пошук",
@@ -566,8 +566,13 @@
     "yes_cancel": "Yes, cancel",
     "delete_archive_title": "Would you like to delete {{fileName}}?",
     "delete_archive_description": "The file has been successfully extracted and it's no longer needed.",
-    "yes": "Так",
-    "no": "Ні",
+    "yes": "Yes",
+    "no": "No",
+    "network": "NETWORK",
+    "peak": "PEAK",
+    "files": "FILES",
+    "move_up": "Move up",
+    "move_down": "Move down",
     "installer_found_title": "Знайдено встановлювач",
     "installer_found_description": "Знайдено файл встановлення: {{fileName}}. Бажаєте запустити його для встановлення гри?",
     "installer_found_launch": "Запустити встановлювач",
@@ -575,12 +580,7 @@
     "installer_closed_description": "Встановлювач закрито. Будь ласка, виберіть виконуваний файл гри.",
     "installer_select_executable": "Вибрати виконуваний файл гри",
     "installer_delete_folder_title": "Видалити папку з встановлювачем?",
-    "installer_delete_folder_description": "Бажаєте видалити папку з встановлювачем?\n{{folderPath}}",
-    "network": "МЕРЕЖА",
-    "peak": "ПІК",
-    "files": "ФАЙЛИ",
-    "move_up": "Перемістити вгору",
-    "move_down": "Перемістити вниз"
+    "installer_delete_folder_description": "Бажаєте видалити папку з встановлювачем?\n{{folderPath}}"
   },
   "settings": {
     "downloads_path": "Тека завантажень",

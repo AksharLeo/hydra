@@ -45,14 +45,8 @@ export function ProfileHero() {
   const [isCopyButtonHovered, setIsCopyButtonHovered] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const {
-    isMe,
-    isMyOfficialProfile,
-    getUserProfile,
-    userProfile,
-    heroBackground,
-    backgroundImage,
-  } = useContext(userProfileContext);
+  const { isMe, getUserProfile, userProfile, heroBackground, backgroundImage } =
+    useContext(userProfileContext);
   const {
     signOut,
     updateFriendRequestState,
@@ -258,7 +252,6 @@ export function ProfileHero() {
     handleFriendAction,
     handleSignOut,
     isMe,
-    isMyOfficialProfile,
     t,
     isPerformingAction,
     userProfile,
@@ -312,7 +305,6 @@ export function ProfileHero() {
       <EditProfileModal
         visible={showEditProfileModal}
         onClose={() => setShowEditProfileModal(false)}
-        isOfficialProfile={isMyOfficialProfile}
       />
 
       <FullscreenMediaModal

@@ -78,8 +78,6 @@
     "edit_game_modal_drop_to_replace_icon": "İkonu değiştirmek için buraya bırak",
     "edit_game_modal_drop_to_replace_logo": "Logoyu değiştirmek için buraya bırak",
     "edit_game_modal_drop_to_replace_hero": "Hero'yu değiştirmek için buraya bırak",
-    "edit_game_modal_sgdb_search": "SteamGridDB'de ara…",
-    "edit_game_modal_sgdb_no_results": "Sonuç bulunamadı",
     "install_decky_plugin": "Decky Plugin Kur",
     "update_decky_plugin": "Decky Plugin Güncelle",
     "decky_plugin_installed_version": "Decky Plugin (v{{version}})",
@@ -112,7 +110,9 @@
     "expand_collections": "Expand collections",
     "collapse_collections": "Collapse collections",
     "expand_games": "Expand games",
-    "collapse_games": "Collapse games"
+    "collapse_games": "Collapse games",
+    "edit_game_modal_sgdb_search": "SteamGridDB'de ara…",
+    "edit_game_modal_sgdb_no_results": "Sonuç bulunamadı"
   },
   "header": {
     "search": "Oyunlarda Ara",

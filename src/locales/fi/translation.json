@@ -77,8 +77,6 @@
     "edit_game_modal_drop_to_replace_icon": "Pudota korvataksesi kuvake",
     "edit_game_modal_drop_to_replace_logo": "Pudota korvataksesi logo",
     "edit_game_modal_drop_to_replace_hero": "Pudota korvataksesi kansikuva",
-    "edit_game_modal_sgdb_search": "Hae SteamGridDB:stä…",
-    "edit_game_modal_sgdb_no_results": "Ei tuloksia",
     "install_decky_plugin": "Asenna Decky-lisäosa",
     "update_decky_plugin": "Päivitä Decky-lisäosa",
     "decky_plugin_installed_version": "Decky-lisäosa (v{{version}})",
@@ -112,7 +110,9 @@
     "expand_collections": "Expand collections",
     "collapse_collections": "Collapse collections",
     "expand_games": "Expand games",
-    "collapse_games": "Collapse games"
+    "collapse_games": "Collapse games",
+    "edit_game_modal_sgdb_search": "Hae SteamGridDB:stä…",
+    "edit_game_modal_sgdb_no_results": "Ei tuloksia"
   },
   "header": {
     "search": "Hae",

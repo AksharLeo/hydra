@@ -35,6 +35,7 @@ import type {
   ShopDetailsWithAssets,
   AchievementCustomNotificationPosition,
   AchievementNotificationInfo,
+  AchievementNotificationRequest,
   Game,
   DiskUsage,
   NetworkInterface,
@@ -64,7 +65,6 @@ import type {
   ArtworkPage,
   GameArtworkSelection,
 } from "@types";
-
 import type { AxiosProgressEvent } from "axios";
 
 export interface DriveInfo {
@@ -112,6 +112,12 @@ declare global {
     ) => Promise<void>;
     pauseGameSeed: (shop: GameShop, objectId: string) => Promise<void>;
     resumeGameSeed: (shop: GameShop, objectId: string) => Promise<void>;
+    saveGlobalTrackers: (
+      manual: string[],
+      url: string | null,
+      appendManual: boolean,
+      appendUrl: boolean
+    ) => Promise<void>;
     updateDownloadQueuePosition: (
       shop: GameShop,
       objectId: string,
@@ -187,12 +193,6 @@ declare global {
       objectId: string,
       autoRunGamemode: boolean
     ) => Promise<void>;
-    toggleGameLaunchViaSteam: (
-      shop: GameShop,
-      objectId: string,
-      launchViaSteam: boolean
-    ) => Promise<void>;
-    checkGameOnSteam: (shop: GameShop, objectId: string) => Promise<boolean>;
     isGamemodeAvailable: () => Promise<boolean>;
     isMangohudAvailable: () => Promise<boolean>;
     isWinetricksAvailable: () => Promise<boolean>;
@@ -216,9 +216,11 @@ declare global {
       iconUrl?: string;
       logoImageUrl?: string;
       libraryHeroImageUrl?: string;
+      customCoverImageUrl?: string | null;
       originalIconPath?: string;
       originalLogoPath?: string;
       originalHeroPath?: string;
+      customOriginalCoverPath?: string;
     }) => Promise<Game>;
     copyCustomGameAsset: (
       sourcePath: string,
@@ -442,6 +444,7 @@ declare global {
       objectId: string,
       playtimeInSeconds: number
     ) => Promise<void>;
+    resetGamePlayTime: (shop: GameShop, objectId: string) => Promise<void>;
     /* User preferences */
     authenticateRealDebrid: (apiToken: string) => Promise<RealDebridUser>;
     authenticatePremiumize: (apiToken: string) => Promise<PremiumizeUser>;
@@ -645,28 +648,13 @@ declare global {
     onExtractionFailed: (
       cb: (shop: GameShop, objectId: string) => void
     ) => () => Electron.IpcRenderer;
+    onDownloadHalted: (
+      cb: (gameTitle: string) => void
+    ) => () => Electron.IpcRenderer;
     onArchiveDeletionPrompt: (
       cb: (archivePaths: string[]) => void
     ) => () => Electron.IpcRenderer;
     deleteArchive: (filePath: string) => Promise<boolean>;
-    onInstallerFound: (
-      cb: (info: {
-        shop: string;
-        objectId: string;
-        exePath: string;
-        folderPath: string;
-      }) => void
-    ) => () => Electron.IpcRenderer;
-    onInstallerClosed: (
-      cb: (info: { shop: string; objectId: string; folderPath: string }) => void
-    ) => () => Electron.IpcRenderer;
-    launchInstallerAndWatch: (
-      shop: string,
-      objectId: string,
-      exePath: string,
-      folderPath: string
-    ) => Promise<void>;
-    deleteInstallerFolder: (folderPath: string) => Promise<boolean>;
     getDefaultWinePrefixSelectionPath: () => Promise<string | null>;
     createSteamShortcut: (
       shop: GameShop,
@@ -836,24 +824,9 @@ declare global {
     checkForUpdates: () => Promise<boolean>;
     restartAndInstallUpdate: () => Promise<void>;
 
-    /* Fork updater */
-    onForkUpdaterEvent: (cb: (event: ForkUpdaterEvent) => void) => () => void;
-
     /* Auth */
     getAuth: () => Promise<Auth | null>;
     signOut: () => Promise<void>;
-    selfHostedSignIn: (userToken: string) => Promise<void>;
-    openSelfHostedDashboard: () => Promise<void>;
-    importFromHydraCloud: (
-      officialToken: string
-    ) => Promise<{ imported: number; achievements: number }>;
-    openHydraCloudImport: () => Promise<{
-      imported: number;
-      achievements: number;
-    }>;
-    getOfficialProfile: () => Promise<any>;
-    signInOfficial: () => Promise<void>;
-    onOfficialSignIn: (cb: () => void) => () => void;
     openAuthWindow: (page: AuthPage) => Promise<void>;
     minimizeAuthWindow: () => Promise<void>;
     closeAuthWindow: () => Promise<void>;
@@ -861,6 +834,42 @@ declare global {
     onSignIn: (cb: () => void) => () => Electron.IpcRenderer;
     onAccountUpdated: (cb: () => void) => () => Electron.IpcRenderer;
     onSignOut: (cb: () => void) => () => Electron.IpcRenderer;
+
+    /* Self-hosted */
+    openSelfHostedDashboard: () => Promise<void>;
+    getOfficialProfile: () => Promise<any>;
+    signInOfficial: () => Promise<void>;
+    selfHostedSignIn: (userToken: string) => Promise<void>;
+    openHydraCloudImport: () => Promise<{
+      imported: number;
+      achievements: number;
+    }>;
+    importFromHydraCloud: (officialToken: string) => Promise<void>;
+    onOfficialSignIn: (cb: () => void) => () => void;
+
+    /* Installer */
+    onInstallerFound: (
+      cb: (info: {
+        shop: string;
+        objectId: string;
+        exePath: string;
+        folderPath: string;
+      }) => void
+    ) => () => void;
+    onInstallerClosed: (
+      cb: (info: { shop: string; objectId: string; folderPath: string }) => void
+    ) => () => void;
+    launchInstallerAndWatch: (
+      shop: string,
+      objectId: string,
+      exePath: string,
+      folderPath: string
+    ) => Promise<void>;
+    deleteInstallerFolder: (folderPath: string) => Promise<void>;
+    checkGameOnSteam: (shop: GameShop, objectId: string) => Promise<boolean>;
+
+    /* Fork updater */
+    onForkUpdaterEvent: (cb: (event: ForkUpdaterEvent) => void) => () => void;
 
     /* User */
     getComparedUnlockedAchievements: (
@@ -935,13 +944,19 @@ declare global {
         achievements: AchievementNotificationInfo[]
       ) => void
     ) => () => Electron.IpcRenderer;
-    onCombinedAchievementsUnlocked: (
-      cb: (
-        gameCount: number,
-        achievementCount: number,
-        position: AchievementCustomNotificationPosition
-      ) => void
+    onPrepareAchievementNotification: (
+      cb: (request: AchievementNotificationRequest) => void
     ) => () => Electron.IpcRenderer;
+    onStartAchievementNotification: (
+      cb: (requestId: string) => void
+    ) => () => Electron.IpcRenderer;
+    achievementNotificationHostReady: () => Promise<void>;
+    achievementNotificationContentReady: (requestId: string) => Promise<void>;
+    achievementNotificationFinished: (requestId: string) => Promise<void>;
+    achievementNotificationFailed: (
+      requestId?: string,
+      reason?: string
+    ) => Promise<void>;
     updateAchievementCustomNotificationWindow: () => Promise<void>;
     showAchievementTestNotification: () => Promise<void>;
 

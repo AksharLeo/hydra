@@ -79,8 +79,6 @@
     "edit_game_modal_drop_to_replace_icon": "Trascina per sostituire l'icona",
     "edit_game_modal_drop_to_replace_logo": "Trascina per sostituire il logo",
     "edit_game_modal_drop_to_replace_hero": "Trascina per sostituire l'hero",
-    "edit_game_modal_sgdb_search": "Cerca su SteamGridDB…",
-    "edit_game_modal_sgdb_no_results": "Nessun risultato trovato",
     "install_decky_plugin": "Installa plugin Decky",
     "update_decky_plugin": "Aggiorna plugin Decky",
     "decky_plugin_installed_version": "Plugin Decky (v{{version}})",
@@ -112,7 +110,9 @@
     "expand_collections": "Expand collections",
     "collapse_collections": "Collapse collections",
     "expand_games": "Expand games",
-    "collapse_games": "Collapse games"
+    "collapse_games": "Collapse games",
+    "edit_game_modal_sgdb_search": "Cerca su SteamGridDB…",
+    "edit_game_modal_sgdb_no_results": "Nessun risultato trovato"
   },
   "header": {
     "search": "Cerca giochi",

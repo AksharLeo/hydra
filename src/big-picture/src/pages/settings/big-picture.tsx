@@ -60,6 +60,7 @@ export function BigPictureSettingsSection({
   const { t } = useTranslation("big_picture");
   const userPreferences = useUserPreferences();
   const [form, setForm] = useState<BigPictureForm>(DEFAULT_FORM);
+
   useEffect(() => {
     if (!userPreferences) return;
 

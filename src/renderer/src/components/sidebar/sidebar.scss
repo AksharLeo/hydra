@@ -86,6 +86,14 @@
     padding-bottom: calc(globals.$spacing-unit * 2);
   }
 
+  &__game-list-empty {
+    margin: 0;
+    padding: calc(globals.$spacing-unit * 2);
+    font-size: 12px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
   &__handle {
     width: 5px;
     height: 100%;
@@ -158,8 +166,19 @@
   }
 
   &__menu-item-button-label {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+
+  &__game-adornments {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
   &__friends-icon {
@@ -191,15 +210,6 @@
     }
   }
 
-  &__game-icon-wrapper {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    min-height: 20px;
-    flex-shrink: 0;
-  }
-
   &__game-icon {
     width: 20px;
     height: 20px;
@@ -209,28 +219,8 @@
     background-size: cover;
   }
 
-  &__game-source-badge {
-    position: absolute;
-    bottom: -3px;
-    right: -3px;
-    width: 9px;
-    height: 9px;
-    border-radius: 2px;
-    background: rgba(0, 0, 0, 0.75);
-    padding: 1px;
-
-    &--steam {
-      color: #c7d5e0;
-    }
-
-    &--hydra {
-      color: #ffffff;
-    }
-  }
-
   &__game-favorite-icon {
     flex-shrink: 0;
-    margin-left: auto;
     color: #ffffff;
     opacity: 0.85;
   }
@@ -243,7 +233,7 @@
     padding: 4px 6px;
     border-radius: 6px;
     display: flex;
-    margin-left: auto;
+    flex-shrink: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.5);
   }
@@ -270,35 +260,14 @@
     flex-shrink: 0;
   }
 
-  &__section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  &__section-toggle {
-    background: none;
-    border: none;
-    color: globals.$muted-color;
+  &__search-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 0;
-    cursor: pointer;
-  }
+    gap: calc(globals.$spacing-unit);
 
-  &__section-toggle-chevron {
-    transition: transform 0.15s ease;
-    transform: rotate(0deg);
-
-    &--expanded {
-      transform: rotate(90deg);
+    .text-field-container {
+      flex: 1;
     }
-  }
-
-  &__section-title {
-    text-transform: uppercase;
-    font-weight: bold;
   }
 
   &__menu-empty {
@@ -327,61 +296,6 @@
     padding-bottom: globals.$spacing-unit;
   }
 
-  &__bottom-buttons {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &__help-button {
-    color: globals.$muted-color;
-    padding: globals.$spacing-unit calc(globals.$spacing-unit * 2);
-    gap: 9px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    border-top: solid 1px globals.$border-color;
-    transition: background-color ease 0.1s;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-  }
-
-  &__help-button-icon {
-    background: linear-gradient(
-      0deg,
-      globals.$brand-teal 50%,
-      globals.$brand-blue 100%
-    );
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    border-radius: 50%;
-  }
-
-  &__play-button {
-    background: none;
-    border: none;
-    color: globals.$muted-color;
-    cursor: pointer;
-    padding: 0;
-
-    &:active {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    &--active {
-      color: globals.$brand-teal;
-    }
-
-    svg {
-      display: block;
-    }
-  }
-
   &__add-button {
     background: none;
     border: none;
@@ -390,11 +304,7 @@
     padding: 0;
 
     &:hover {
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    &:active {
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.6);
     }
 
     svg {
@@ -402,45 +312,28 @@
     }
   }
 
-  &__collections {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 2px 0 4px;
-  }
-
-  &__collection-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid transparent;
-    border-radius: 4px;
+  &__play-button {
+    background: none;
+    border: none;
     color: globals.$muted-color;
     cursor: pointer;
-    font-size: 11px;
-    padding: 3px 7px;
-    transition:
-      background-color 0.1s ease,
-      color 0.1s ease;
-    white-space: nowrap;
-    max-width: 100%;
-    overflow: hidden;
-
-    span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    padding: 0;
+    transition: color 0.15s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.8);
     }
 
     &--active {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.2);
-      color: #fff;
+      color: globals.$brand-teal;
+
+      &:hover {
+        color: rgba(globals.$brand-teal, 0.6);
+      }
+    }
+
+    svg {
+      display: block;
     }
   }
 

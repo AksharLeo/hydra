@@ -1,10 +1,6 @@
 import type { LibraryGame } from "@types";
 import { DotsThreeVerticalIcon } from "@phosphor-icons/react";
-import type {
-  CSSProperties,
-  MouseEvent as ReactMouseEvent,
-  RefObject,
-} from "react";
+import type { MouseEvent as ReactMouseEvent, RefObject } from "react";
 import {
   FocusItem,
   HorizontalLibraryGameCard,
@@ -24,33 +20,7 @@ import {
   useFocusAnimatedCover,
   useLibraryGameCardPresentation,
 } from "./card-presentation";
-import SteamLogo from "@renderer/assets/steam-logo.svg?react";
-import HydraIcon from "../../../assets/hydra-icon.svg?react";
 import { useNavigationIsFocused } from "../../../stores";
-
-function GameSourceBadge({ type }: { type: "steam" | "hydra" }) {
-  const style: CSSProperties = {
-    position: "absolute",
-    bottom: 6,
-    right: 6,
-    width: 16,
-    height: 16,
-    borderRadius: 3,
-    background: "rgba(0,0,0,0.75)",
-    padding: 2,
-    display: "flex",
-    color: type === "steam" ? "#c7d5e0" : "#fff",
-  };
-  return (
-    <div style={style}>
-      {type === "steam" ? (
-        <SteamLogo width={12} height={12} />
-      ) : (
-        <HydraIcon width={12} height={12} />
-      )}
-    </div>
-  );
-}
 
 export interface VerticalLibraryGameCardProps {
   game: LibraryGame;
@@ -127,9 +97,6 @@ export function VerticalLibraryGameCard({
   const isFocused = useNavigationIsFocused(focusId);
   const displayCover = useFocusAnimatedCover(activeImageSource, isFocused);
   const gameDetailsPath = getBigPictureGameDetailsPath(game);
-  const isSteamSynced =
-    game.shop === "steam" && !game.download && !game.executablePath;
-  const isPirated = Boolean(game.download);
   const coverMedia =
     game.shop === "launchbox" && activeImageSource && !isChosenCoverActive ? (
       <ClassicsVerticalCoverMedia
@@ -138,19 +105,13 @@ export function VerticalLibraryGameCard({
         onImageError={handleCoverImageError}
       />
     ) : null;
-  const coverOverlay = (() => {
-    if (classicsPlatformLabel != null) {
-      return (
-        <ClassicsCoverBadges
-          platformLabel={classicsPlatformLabel}
-          emulatorIcon={classicsEmulatorIcon}
-        />
-      );
-    }
-    if (isSteamSynced) return <GameSourceBadge type="steam" />;
-    if (isPirated) return <GameSourceBadge type="hydra" />;
-    return null;
-  })();
+  const coverOverlay =
+    classicsPlatformLabel != null ? (
+      <ClassicsCoverBadges
+        platformLabel={classicsPlatformLabel}
+        emulatorIcon={classicsEmulatorIcon}
+      />
+    ) : null;
 
   const openContextMenuFromRect = (
     rect: DOMRect,
@@ -253,22 +214,13 @@ export function HorizontalLibraryGameListCard({
   } = useLibraryGameCardPresentation(game, "horizontal");
   const focusId = getLibraryFocusListItemId(game.id);
   const gameDetailsPath = getBigPictureGameDetailsPath(game);
-  const isSteamSynced =
-    game.shop === "steam" && !game.download && !game.executablePath;
-  const isPirated = Boolean(game.download);
-  const coverOverlay = (() => {
-    if (classicsPlatformLabel != null) {
-      return (
-        <ClassicsCoverBadges
-          platformLabel={classicsPlatformLabel}
-          emulatorIcon={classicsEmulatorIcon}
-        />
-      );
-    }
-    if (isSteamSynced) return <GameSourceBadge type="steam" />;
-    if (isPirated) return <GameSourceBadge type="hydra" />;
-    return null;
-  })();
+  const coverOverlay =
+    classicsPlatformLabel != null ? (
+      <ClassicsCoverBadges
+        platformLabel={classicsPlatformLabel}
+        emulatorIcon={classicsEmulatorIcon}
+      />
+    ) : null;
 
   const openContextMenuFromRect = (
     rect: DOMRect,

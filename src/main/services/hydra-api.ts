@@ -19,6 +19,7 @@ export interface HydraApiOptions {
   ifModifiedSince?: Date;
   ifNoneMatch?: string;
   validateStatus?: (status: number) => boolean;
+  signal?: AbortSignal;
 }
 
 interface HydraApiUserAuth {
@@ -72,10 +73,14 @@ export class HydraApi {
     this.selfHostedConfig = { url, masterToken, userToken: userToken ?? null };
     if (this.instance) this.instance.defaults.baseURL = url;
     if (flags) {
-      if (flags.useSelfHostedCatalogue !== undefined) this.useSelfHostedCatalogue = flags.useSelfHostedCatalogue;
-      if (flags.useSelfHostedReviews !== undefined) this.useSelfHostedReviews = flags.useSelfHostedReviews;
-      if (flags.useSelfHostedSocial !== undefined) this.useSelfHostedSocial = flags.useSelfHostedSocial;
-      if (flags.useSelfHostedDownloadSources !== undefined) this.useSelfHostedDownloadSources = flags.useSelfHostedDownloadSources;
+      if (flags.useSelfHostedCatalogue !== undefined)
+        this.useSelfHostedCatalogue = flags.useSelfHostedCatalogue;
+      if (flags.useSelfHostedReviews !== undefined)
+        this.useSelfHostedReviews = flags.useSelfHostedReviews;
+      if (flags.useSelfHostedSocial !== undefined)
+        this.useSelfHostedSocial = flags.useSelfHostedSocial;
+      if (flags.useSelfHostedDownloadSources !== undefined)
+        this.useSelfHostedDownloadSources = flags.useSelfHostedDownloadSources;
     }
   }
 
@@ -251,12 +256,17 @@ export class HydraApi {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
   private static isSocialUrl(url: string): boolean {
-    return /^\/(profile\/blocks|features|badges|profile\/notifications)/.test(url);
+    return /^\/(profile\/blocks|features|badges|profile\/notifications)/.test(
+      url
+    );
   }
 
   private static isOfficialOnlyUrl(url: string) {
     // Download sources: route to self-hosted if toggle is on
-    if (this.useSelfHostedDownloadSources && url.startsWith("/download-sources")) {
+    if (
+      this.useSelfHostedDownloadSources &&
+      url.startsWith("/download-sources")
+    ) {
       return false;
     }
     if (this.OFFICIAL_ONLY_PREFIXES.some((prefix) => url.startsWith(prefix)))
@@ -301,6 +311,14 @@ export class HydraApi {
     return expiresAt > new Date();
   }
 
+  public static updateUserSubscription(
+    subscription?: { expiresAt: Date | string | null } | null
+  ) {
+    this.userAuth.subscription = subscription
+      ? { expiresAt: subscription.expiresAt }
+      : null;
+  }
+
   static async handleExternalAuth(uri: string) {
     const { payload } = url.parse(uri, true).query;
 
@@ -323,6 +341,11 @@ export class HydraApi {
       subscription: null,
     };
 
+    const { AchievementWatcherManager } = await import(
+      "./achievements/achievement-watcher-manager"
+    );
+    AchievementWatcherManager.resetSessionState();
+
     logger.log(
       "Sign in received. Token expiration timestamp:",
       tokenExpirationTimestamp
@@ -341,11 +364,11 @@ export class HydraApi {
 
     await getUserData().then((userDetails) => {
       if (userDetails?.subscription) {
-        this.userAuth.subscription = {
+        this.updateUserSubscription({
           expiresAt: userDetails.subscription.expiresAt
             ? new Date(userDetails.subscription.expiresAt)
             : null,
-        };
+        });
       }
     });
 
@@ -367,13 +390,18 @@ export class HydraApi {
     }
   }
 
-  static handleSignOut() {
+  static async handleSignOut() {
     this.userAuth = {
       authToken: "",
       refreshToken: "",
       expirationTimestamp: 0,
       subscription: null,
     };
+
+    const { AchievementWatcherManager } = await import(
+      "./achievements/achievement-watcher-manager"
+    );
+    AchievementWatcherManager.resetSessionState();
 
     this.sendSignOutEvent();
     this.post("/auth/logout", {}, { needsAuth: false }).catch(() => {});
@@ -577,9 +605,13 @@ export class HydraApi {
   }
 
   private static getAxiosConfig(url?: string) {
-    const isSocialOverride = url && this.isSocialUrl(url) && !this.useSelfHostedSocial;
+    const isSocialOverride =
+      url && this.isSocialUrl(url) && !this.useSelfHostedSocial;
     const useSelfHosted =
-      this.selfHostedConfig && url && !this.isOfficialOnlyUrl(url) && !isSocialOverride;
+      this.selfHostedConfig &&
+      url &&
+      !this.isOfficialOnlyUrl(url) &&
+      !isSocialOverride;
     if (useSelfHosted) {
       const token =
         this.selfHostedConfig!.userToken ?? this.selfHostedConfig!.masterToken;
@@ -646,7 +678,22 @@ export class HydraApi {
     }
 
     if (needsSubscription && !this.hasActiveSubscription()) {
-      throw new SubscriptionRequiredError();
+      await this.refreshUserSubscription();
+
+      if (!this.hasActiveSubscription()) {
+        throw new SubscriptionRequiredError();
+      }
+    }
+  }
+
+  private static async refreshUserSubscription() {
+    if (!this.isLoggedIn()) return;
+
+    try {
+      const userDetails = await getUserData();
+      if (userDetails) this.updateUserSubscription(userDetails.subscription);
+    } catch (err) {
+      logger.error("Failed to refresh subscription state", err);
     }
   }
 
@@ -669,6 +716,7 @@ export class HydraApi {
         ...this.getAxiosConfig(url),
         headers,
         validateStatus: options?.validateStatus,
+        signal: options?.signal,
       })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
@@ -693,6 +741,7 @@ export class HydraApi {
         ...this.getAxiosConfig(url),
         headers,
         validateStatus: options?.validateStatus,
+        signal: options?.signal,
       })
       .then((response) => ({
         status: response.status,
@@ -710,7 +759,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .post<T>(url, data, this.getAxiosConfig(url))
+      .post<T>(url, data, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }
@@ -723,7 +775,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .put<T>(url, data, this.getAxiosConfig(url))
+      .put<T>(url, data, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }
@@ -736,7 +791,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .patch<T>(url, data, this.getAxiosConfig(url))
+      .patch<T>(url, data, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }
@@ -745,7 +803,10 @@ export class HydraApi {
     await this.validateOptions(url, options);
 
     return this.getInstanceForUrl(url)
-      .delete<T>(url, this.getAxiosConfig(url))
+      .delete<T>(url, {
+        ...this.getAxiosConfig(url),
+        signal: options?.signal,
+      })
       .then((response) => response.data)
       .catch(this.handleUnauthorizedError);
   }

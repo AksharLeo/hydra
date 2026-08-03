@@ -16,7 +16,7 @@ import {
   useToast,
   useUserDetails,
 } from "@renderer/hooks";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { gameDetailsContext } from "@renderer/context";
@@ -27,6 +27,7 @@ import {
 import { DiscSelectionModal } from "../modals/disc-selection-modal";
 
 import "./hero-panel-actions.scss";
+import { useEffect } from "react";
 
 export function HeroPanelActions() {
   const [toggleLibraryGameDisabled, setToggleLibraryGameDisabled] =
@@ -63,7 +64,6 @@ export function HeroPanelActions() {
 
   const navigate = useNavigate();
 
-  const [isOwnedOnSteam, setIsOwnedOnSteam] = useState(false);
   const [showDiscSelectionModal, setShowDiscSelectionModal] = useState(false);
   const [pendingClassicsLaunch, setPendingClassicsLaunch] = useState<{
     discPath: string | undefined;
@@ -91,14 +91,6 @@ export function HeroPanelActions() {
       );
     };
   }, [game?.objectId, game?.shop, game?.discs?.length]);
-
-  useEffect(() => {
-    if (game?.shop !== "steam") return;
-    window.electron
-      .checkGameOnSteam(game.shop, game.objectId)
-      .then(setIsOwnedOnSteam)
-      .catch(() => setIsOwnedOnSteam(false));
-  }, [game?.shop, game?.objectId]);
 
   useEffect(() => {
     const onFavoriteToggled = () => {
@@ -295,21 +287,6 @@ export function HeroPanelActions() {
       return;
     }
 
-    const steamLaunch =
-      game.shop === "steam" &&
-      (game.launchViaSteam === true ||
-        (game.launchViaSteam == null && isOwnedOnSteam));
-
-    if (steamLaunch) {
-      window.electron.openGame(
-        game.shop,
-        game.objectId,
-        game.executablePath ?? "",
-        game.launchOptions
-      );
-      return;
-    }
-
     if (game.executablePath) {
       window.electron.openGame(
         game.shop,
@@ -393,12 +370,7 @@ export function HeroPanelActions() {
     const isPlayableClassics =
       game?.shop === "launchbox" && (game?.discs?.length ?? 0) > 0;
 
-    const canLaunchViaSteam =
-      game?.shop === "steam" &&
-      (game?.launchViaSteam === true ||
-        (game?.launchViaSteam == null && isOwnedOnSteam));
-
-    if (game?.executablePath || isPlayableClassics || canLaunchViaSteam) {
+    if (game?.executablePath || isPlayableClassics) {
       return (
         <Button
           onClick={openGame}

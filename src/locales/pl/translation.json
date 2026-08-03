@@ -98,8 +98,6 @@
     "edit_game_modal_drop_to_replace_icon": "Upuść, aby zastąpić ikonę",
     "edit_game_modal_drop_to_replace_logo": "Upuść, aby zastąpić logo",
     "edit_game_modal_drop_to_replace_hero": "Upuść, aby zastąpić grafikę biblioteki",
-    "edit_game_modal_sgdb_search": "Szukaj na SteamGridDB…",
-    "edit_game_modal_sgdb_no_results": "Brak wyników",
     "install_decky_plugin": "Zainstaluj wtyczkę Decky",
     "update_decky_plugin": "Zaktualizuj wtyczkę Decky",
     "decky_plugin_installed_version": "Wtyczka Decky (v{{version}})",
@@ -113,7 +111,9 @@
     "custom_assets_not_sync": "Twoje niestandardowe grafiki nie zostaną zsynchronizowane z kontem.",
     "confirm": "Potwierdź",
     "cancel": "Anuluj",
-    "big_picture": "Tryb Big Picture"
+    "big_picture": "Tryb Big Picture",
+    "edit_game_modal_sgdb_search": "Szukaj na SteamGridDB…",
+    "edit_game_modal_sgdb_no_results": "Brak wyników"
   },
   "header": {
     "search": "Szukaj",
@@ -553,7 +553,6 @@
     "protondb_tier_platinum": "Platynowy",
     "protondb_tier_unknown": "Nieznany",
     "protondb_badge_title": "ProtonDB {{tier}}",
-    "download_error_vikingfile_nimbus_quota_exceeded": "Limit Nimbus dla VikingFile na dziś się wyczerpał. Spróbuj ponownie jutro.",
     "create_steam_shortcut_modal_vr_flag": "Gra VR (w Steamie: zaktualizuj flagę VR lub usuń/utwórz ponownie skrót)",
     "create_steam_shortcut_modal_create_button": "Utwórz",
     "create_steam_shortcut_modal_cancel_button": "Anuluj",
@@ -604,7 +603,8 @@
     "not_enough_space_detail": "Za mało miejsca — potrzeba {{needed}}, dostępne jest tylko {{available}}.",
     "detecting_drives": "Wykrywanie napędów...",
     "browse": "Przeglądaj",
-    "delete_archive_files_after_extraction": "Zawsze usuwaj zarchiwizowane pliki po wypakowaniu"
+    "delete_archive_files_after_extraction": "Zawsze usuwaj zarchiwizowane pliki po wypakowaniu",
+    "download_error_vikingfile_nimbus_quota_exceeded": "Limit Nimbus dla VikingFile na dziś się wyczerpał. Spróbuj ponownie jutro."
   },
   "activation": {
     "enter_activation_code": "Wpisz kod aktywacyjny",

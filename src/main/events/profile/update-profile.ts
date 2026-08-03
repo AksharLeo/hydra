@@ -19,17 +19,13 @@ const uploadImage = async (
   const fileBuffer = fs.readFileSync(imagePath);
   const fileSizeInBytes = stat.size;
 
-  const postFn = HydraApi.post.bind(HydraApi);
-
-  const response = await postFn<{ presignedUrl: string }>(
+  const response = await HydraApi.post<{ presignedUrl: string }>(
     `/presigned-urls/${type}`,
     {
       imageExt: path.extname(imagePath).slice(1),
       imageLength: fileSizeInBytes,
     }
   );
-
-  if (!response) throw new Error("Failed to get presigned URL");
 
   const mimeType = await fileTypeFromFile(imagePath);
 

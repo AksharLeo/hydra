@@ -106,6 +106,7 @@ export interface Download {
   automaticallyDeleteArchiveFiles: boolean;
   fileIndices?: number[];
   selectedFilesSize?: number | null;
+  customTrackers?: string[];
 }
 
 export interface DownloadLayoutState {
@@ -189,6 +190,10 @@ export interface UserPreferences {
   bigPictureDiagnosticsPosition?: BigPictureDiagnosticsPosition;
   maxDownloadSpeedBytesPerSecond?: number | null;
   torrentNetworkInterface?: string | null;
+  globalTrackers?: string[];
+  appendGlobalTrackers?: boolean;
+  globalTrackersUrl?: string;
+  appendGlobalTrackersUrl?: boolean;
   defaultProtonPath?: string | null;
   autoRunMangohud?: boolean;
   autoRunGamemode?: boolean;

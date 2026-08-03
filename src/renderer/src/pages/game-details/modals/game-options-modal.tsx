@@ -36,6 +36,7 @@ import { useSubscription } from "@renderer/hooks/use-subscription";
 import { RemoveGameFromLibraryModal } from "./remove-from-library-modal";
 import { ResetAchievementsModal } from "./reset-achievements-modal";
 import { ChangeGamePlaytimeModal } from "./change-game-playtime-modal";
+import { ResetPlaytimeModal } from "./reset-playtime-modal";
 import {
   AlertIcon,
   CloudIcon,
@@ -106,6 +107,7 @@ export function GameOptionsModal({
   const [showResetAchievementsModal, setShowResetAchievementsModal] =
     useState(false);
   const [showChangePlaytimeModal, setShowChangePlaytimeModal] = useState(false);
+  const [showResetPlaytimeModal, setShowResetPlaytimeModal] = useState(false);
   const [isDeletingAchievements, setIsDeletingAchievements] = useState(false);
   const [automaticCloudSync, setAutomaticCloudSync] = useState(
     game.automaticCloudSync ?? false
@@ -123,10 +125,6 @@ export function GameOptionsModal({
   const [autoRunGamemode, setAutoRunGamemode] = useState<boolean>(
     game.autoRunGamemode === true
   );
-  const [launchViaSteam, setLaunchViaSteam] = useState<boolean | null>(
-    game.launchViaSteam ?? null
-  );
-  const [isOwnedOnSteam, setIsOwnedOnSteam] = useState(false);
   const [gamemodeAvailable, setGamemodeAvailable] = useState(false);
   const [mangohudAvailable, setMangohudAvailable] = useState(false);
   const [winetricksAvailable, setWinetricksAvailable] = useState(false);
@@ -196,17 +194,6 @@ export function GameOptionsModal({
   useEffect(() => {
     setAutoRunGamemode(game.autoRunGamemode === true);
   }, [game.autoRunGamemode]);
-  useEffect(() => {
-    setLaunchViaSteam(game.launchViaSteam ?? null);
-  }, [game.launchViaSteam]);
-
-  useEffect(() => {
-    if (game.shop !== "steam") return;
-    globalThis.window.electron
-      .checkGameOnSteam(game.shop, game.objectId)
-      .then(setIsOwnedOnSteam)
-      .catch(() => setIsOwnedOnSteam(false));
-  }, [game.shop, game.objectId]);
 
   useEffect(() => {
     if (!visible || globalThis.window.electron.platform !== "linux") return;
@@ -622,16 +609,6 @@ export function GameOptionsModal({
     updateGame();
   };
 
-  const handleChangeLaunchViaSteam = async (value: boolean) => {
-    setLaunchViaSteam(value);
-    await globalThis.window.electron.toggleGameLaunchViaSteam(
-      game.shop,
-      game.objectId,
-      value
-    );
-    updateGame();
-  };
-
   const applyProtonPathChange = async (protonPath: string) => {
     try {
       await globalThis.window.electron.selectGameProtonPath(
@@ -854,10 +831,23 @@ export function GameOptionsModal({
         game.objectId,
         sec
       );
-      await Promise.all([updateGame(), updateLibrary()]);
+      await updateGame();
       showSuccessToast(t("update_playtime_success"));
     } catch {
       showErrorToast(t("update_playtime_error"));
+    }
+  };
+
+  const handleResetPlaytime = async () => {
+    try {
+      await globalThis.window.electron.resetGamePlayTime(
+        game.shop,
+        game.objectId
+      );
+      await updateGame();
+      showSuccessToast(t("reset_playtime_success"));
+    } catch {
+      showErrorToast(t("reset_playtime_error"));
     }
   };
 
@@ -903,8 +893,6 @@ export function GameOptionsModal({
       onResetGameTitle: handleResetGameTitle,
       onChangeLaunchOptions: handleChangeLaunchOptions,
       onClearLaunchOptions: handleClearLaunchOptions,
-      launchViaSteam: launchViaSteam ?? isOwnedOnSteam,
-      onToggleLaunchViaSteam: handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
       drives,
@@ -939,9 +927,6 @@ export function GameOptionsModal({
       handleResetGameTitle,
       handleChangeLaunchOptions,
       handleClearLaunchOptions,
-      launchViaSteam,
-      isOwnedOnSteam,
-      handleChangeLaunchViaSteam,
       isTransferring,
       transferProgress,
       drives,
@@ -976,6 +961,12 @@ export function GameOptionsModal({
         visible={showChangePlaytimeModal}
         onClose={() => setShowChangePlaytimeModal(false)}
         changePlaytime={handleChangePlaytime}
+        game={game}
+      />
+      <ResetPlaytimeModal
+        visible={showResetPlaytimeModal}
+        onClose={() => setShowResetPlaytimeModal(false)}
+        resetPlaytime={handleResetPlaytime}
         game={game}
       />
       <CreateSteamShortcutModal
@@ -1084,6 +1075,7 @@ export function GameOptionsModal({
                   setShowResetAchievementsModal(true)
                 }
                 onOpenChangePlaytime={() => setShowChangePlaytimeModal(true)}
+                onOpenResetPlaytime={() => setShowResetPlaytimeModal(true)}
                 onOpenRemoveFiles={() => setShowDeleteModal(true)}
               />
             )}

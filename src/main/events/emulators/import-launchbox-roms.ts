@@ -10,14 +10,13 @@ import {
 } from "./classics-import-state";
 import { isWithin } from "./rom-path-utils";
 import { HydraApi, WindowManager, emulators, logger } from "@main/services";
-import { platformToSystem } from "@main/helpers";
+import { clearFinishedDownload, platformToSystem } from "@main/helpers";
 import {
   fetchShopDetailsForSkus,
   normalizeSku,
   type LaunchboxShopDetailsEntry,
 } from "@main/services/emulators";
 import {
-  downloadsSublevel,
   gamesShopAssetsSublevel,
   gamesShopCacheSublevel,
   gamesSublevel,
@@ -61,12 +60,14 @@ const ymlValueForGame = (primaryPath: string): string =>
 
 const mapToShopDetails = (
   objectId: string,
-  entry: LaunchboxShopDetailsEntry
+  entry: LaunchboxShopDetailsEntry,
+  language: string
 ): ShopDetails => {
   const data = entry.data;
   const description = data?.description ?? "";
   return {
     objectId,
+    descriptionLanguage: language,
     name: data?.title ?? "",
     platform: entry.platform ?? data?.platform ?? undefined,
     skus: entry.skus ?? undefined,
@@ -172,7 +173,7 @@ const persistEntryLocally = async (
   const gameKey = levelKeys.game(shop, objectId);
   const cacheKey = levelKeys.gameShopCacheItem(shop, objectId, language);
 
-  const shopDetails = mapToShopDetails(objectId, entry);
+  const shopDetails = mapToShopDetails(objectId, entry, language);
   await gamesShopCacheSublevel.put(cacheKey, shopDetails).catch((err) => {
     logger.error("Could not cache launchbox shop details", err);
   });
@@ -206,7 +207,7 @@ const persistEntryLocally = async (
 
   const existing = await gamesSublevel.get(gameKey);
   if (existing) {
-    await downloadsSublevel.del(gameKey).catch(() => {});
+    await clearFinishedDownload(shop, objectId);
     existing.isDeleted = false;
     existing.addedToLibraryAt ??= new Date();
     if (platform && !existing.platform) {
@@ -817,7 +818,7 @@ export async function runLaunchboxImport(
         .filter((s): s is string => s !== null && s.length > 0)
     )
   );
-  const skuLookup = await fetchShopDetailsForSkus(uniqueSkus);
+  const skuLookup = await fetchShopDetailsForSkus(uniqueSkus, language);
   if (signal.cancelled) return cancelledResult();
 
   const { enriched, groupCanonical } = buildEnriched(
